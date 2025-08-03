@@ -6,7 +6,6 @@ import { MapPin, Star, Utensils, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import ReviewCard from "@/components/ReviewCard";
-import VisitorCounter from "@/components/VisitorCounter";
 import heroImage from "@/assets/hero-margarita.jpg";
 
 const sampleReviews = [
@@ -105,11 +104,6 @@ const Index = () => {
           
           <div className="max-w-2xl mx-auto px-4">
             <SearchBar onSearch={handleSearch} />
-          </div>
-          
-          {/* Visitor Counter */}
-          <div className="mt-8 flex justify-center px-4">
-            <VisitorCounter />
           </div>
         </div>
         
