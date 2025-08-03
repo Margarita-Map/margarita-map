@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Users, ChefHat } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import AgaveRating from "@/components/AgaveRating";
+import { useSEO } from "@/hooks/useSEO";
 
 const recipes = [
   {
@@ -104,6 +105,12 @@ const recipes = [
 ];
 
 const Recipes = () => {
+  useSEO({
+    title: "Top Margarita Recipes | How to Make Perfect Margaritas at Home",
+    description: "Master the art of margarita making with our curated collection of top-rated recipes. From classic lime to spicy jalapeño and frozen strawberry margaritas - step-by-step instructions included.",
+    keywords: "margarita recipes, how to make margaritas, cocktail recipes, tequila drinks, lime margarita, frozen margarita, jalapeño margarita, mezcal margarita"
+  });
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "Easy": return "bg-primary text-primary-foreground";

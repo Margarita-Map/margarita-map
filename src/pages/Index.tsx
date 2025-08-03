@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSEO } from "@/hooks/useSEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Star, Utensils, Clock } from "lucide-react";
@@ -60,6 +61,12 @@ const sampleReviews = [
 
 const Index = () => {
   const [searchResults, setSearchResults] = useState(sampleReviews);
+
+  useSEO({
+    title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
+    description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
+    keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
+  });
 
   const handleSearch = (location: string) => {
     // In a real app, this would make an API call to search for bars near the location

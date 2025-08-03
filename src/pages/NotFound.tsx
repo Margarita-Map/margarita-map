@@ -1,8 +1,15 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { useSEO } from "@/hooks/useSEO";
 
 const NotFound = () => {
   const location = useLocation();
+
+  useSEO({
+    title: "Page Not Found | Margarita Quest Hub",
+    description: "The page you're looking for doesn't exist. Return to find the best margaritas near you with our honest reviews and bar locator.",
+    keywords: "404, page not found, margarita finder"
+  });
 
   useEffect(() => {
     console.error(
