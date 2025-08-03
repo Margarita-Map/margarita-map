@@ -1,12 +1,209 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapPin, Star, Utensils, Clock } from "lucide-react";
+import Navbar from "@/components/Navbar";
+import SearchBar from "@/components/SearchBar";
+import ReviewCard from "@/components/ReviewCard";
+import heroImage from "@/assets/hero-margarita.jpg";
+
+const sampleReviews = [
+  {
+    id: "1",
+    barName: "Tropical Paradise Bar",
+    location: "123 Beach Ave, Miami, FL",
+    drinkName: "Classic Lime Margarita",
+    rating: 5,
+    price: "$12",
+    review: "Perfect balance of lime and tequila! The salt rim was perfectly done and the drink was ice cold. Best margarita I've had in Miami!",
+    author: "Sarah M.",
+    date: "2 days ago",
+    distance: "0.3 miles"
+  },
+  {
+    id: "2", 
+    barName: "Casa Agave",
+    location: "456 Sunset Blvd, Los Angeles, CA",
+    drinkName: "Spicy Jalapeño Margarita",
+    rating: 4,
+    price: "$14",
+    review: "Great kick from the jalapeños! Could use a bit more lime but overall a solid drink. The atmosphere here is amazing.",
+    author: "Mike R.",
+    date: "1 week ago",
+    distance: "1.2 miles"
+  },
+  {
+    id: "3",
+    barName: "Lime & Salt Cantina",
+    location: "789 Margarita St, Austin, TX",
+    drinkName: "Frozen Strawberry Margarita",
+    rating: 5,
+    price: "$11",
+    review: "Absolutely delicious! Fresh strawberries and perfectly blended. Great for hot Texas days. Will definitely be back!",
+    author: "Jessica L.",
+    date: "3 days ago",
+    distance: "0.8 miles"
+  },
+  {
+    id: "4",
+    barName: "El Corazón Tequila Bar",
+    location: "321 Tequila Way, San Diego, CA",
+    drinkName: "Smoky Mezcal Margarita",
+    rating: 4,
+    price: "$16",
+    review: "Unique smoky flavor from the mezcal. Not for everyone but I loved it! Premium ingredients and beautiful presentation.",
+    author: "Carlos V.",
+    date: "5 days ago",
+    distance: "2.1 miles"
+  }
+];
 
 const Index = () => {
+  const [searchResults, setSearchResults] = useState(sampleReviews);
+
+  const handleSearch = (location: string) => {
+    // In a real app, this would make an API call to search for bars near the location
+    console.log("Searching for margaritas near:", location);
+    // For now, we'll just show the sample data
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-gradient-tropical">
+      <Navbar />
+      
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        >
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+        
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <div className="animate-float mb-8">
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 drop-shadow-lg">
+              Find Your Perfect
+              <span className="block bg-gradient-sunset bg-clip-text text-transparent">
+                Margarita 🍹
+              </span>
+            </h1>
+          </div>
+          
+          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-lg">
+            Discover the best margaritas near you with honest reviews from real people. 
+            Rate drinks with our agave scale and find your next favorite spot!
+          </p>
+          
+          <div className="max-w-2xl mx-auto">
+            <SearchBar onSearch={handleSearch} />
+          </div>
+        </div>
+        
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="text-white/70 text-sm">Scroll to explore</div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-background/90 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <h2 className="text-4xl font-bold text-center mb-12">
+            Why MargaritaFinder? 🌟
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <Card className="text-center hover:shadow-lime transition-all duration-300 hover:scale-105">
+              <CardHeader>
+                <div className="mx-auto w-16 h-16 bg-gradient-lime rounded-full flex items-center justify-center mb-4">
+                  <Star className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-xl">Agave Rating System</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Our unique 1-5 agave plant rating system gives you honest reviews from real margarita lovers.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-sunset transition-all duration-300 hover:scale-105">
+              <CardHeader>
+                <div className="mx-auto w-16 h-16 bg-gradient-sunset rounded-full flex items-center justify-center mb-4">
+                  <MapPin className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-xl">Find Nearby Bars</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Locate the best margarita spots near you with distance, prices, and instant rideshare booking.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="text-center hover:shadow-lime transition-all duration-300 hover:scale-105">
+              <CardHeader>
+                <div className="mx-auto w-16 h-16 bg-gradient-tropical rounded-full flex items-center justify-center mb-4">
+                  <Utensils className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-xl">Master Recipes</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Learn to make perfect margaritas at home with our curated collection of top-rated recipes.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Reviews Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-4xl font-bold">
+              Recent Reviews 📝
+            </h2>
+            <Button variant="festive">
+              <Star className="w-4 h-4" />
+              Write a Review
+            </Button>
+          </div>
+          
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+            {searchResults.map((review) => (
+              <ReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Button variant="tropical" size="lg">
+              View All Reviews
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 bg-gradient-sunset">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">
+            Ready to Find Your Perfect Margarita? 🍹
+          </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Join thousands of margarita enthusiasts discovering amazing drinks and sharing honest reviews.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button variant="lime" size="lg" className="font-bold">
+              Start Exploring
+            </Button>
+            <Button variant="tropical" size="lg">
+              Share Your Review
+            </Button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
