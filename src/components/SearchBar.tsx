@@ -35,37 +35,37 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
   };
 
   return (
-    <div className="bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-6 shadow-sunset">
-      <h3 className="text-xl font-bold mb-4 text-center">
+    <div className="bg-card/90 backdrop-blur-sm border border-border rounded-2xl p-4 md:p-6 shadow-sunset">
+      <h3 className="text-lg md:text-xl font-bold mb-4 text-center leading-tight">
         Find the Best Margaritas Near You! 🍹
       </h3>
       
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="flex-1 relative">
-          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
           <Input
             type="text"
             placeholder="Enter city, zip code, or address..."
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="pl-10 h-12"
+            className="pl-12 h-14 md:h-12 text-base"
           />
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-3">
           <Button 
             type="button" 
             variant="tropical" 
             onClick={handleCurrentLocation}
-            className="h-12 px-4"
+            className="h-14 md:h-12 px-4 w-full sm:w-auto text-base font-medium"
           >
-            <MapPin className="w-4 h-4" />
-            Current
+            <MapPin className="w-5 h-5 mr-2" />
+            Use Current Location
           </Button>
           
-          <Button type="submit" variant="festive" className="h-12 px-6">
-            <Search className="w-4 h-4" />
-            Search
+          <Button type="submit" variant="festive" className="h-14 md:h-12 px-6 w-full sm:w-auto text-base font-bold">
+            <Search className="w-5 h-5 mr-2" />
+            Search Bars
           </Button>
         </div>
       </form>

@@ -72,7 +72,7 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20 md:py-0">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -80,39 +80,39 @@ const Index = () => {
           <div className="absolute inset-0 bg-black/40" />
         </div>
         
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <div className="animate-float mb-8">
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 drop-shadow-lg">
+        <div className="relative z-10 text-center max-w-4xl mx-auto">
+          <div className="animate-float mb-6 md:mb-8">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
               Find Your Perfect
-              <span className="block bg-gradient-sunset bg-clip-text text-transparent">
+              <span className="block bg-gradient-sunset bg-clip-text text-transparent mt-2">
                 Margarita 🍹
               </span>
             </h1>
           </div>
           
-          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-lg">
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">
             Discover the best margaritas near you with honest reviews from real people. 
             Rate drinks with our agave scale and find your next favorite spot!
           </p>
           
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl mx-auto px-4">
             <SearchBar onSearch={handleSearch} />
           </div>
         </div>
         
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="text-white/70 text-sm">Scroll to explore</div>
+        <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="text-white/70 text-sm text-center px-4">Scroll to explore</div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-background/90 backdrop-blur-sm">
+      <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
             Why MargaritaFinder? 🌟
           </h2>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid gap-6 md:grid-cols-3 md:gap-8 max-w-5xl mx-auto">
             <Card className="text-center hover:shadow-lime transition-all duration-300 hover:scale-105">
               <CardHeader>
                 <div className="mx-auto w-16 h-16 bg-gradient-lime rounded-full flex items-center justify-center mb-4">
@@ -159,26 +159,26 @@ const Index = () => {
       </section>
 
       {/* Reviews Section */}
-      <section className="py-20">
+      <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-12">
-            <h2 className="text-4xl font-bold">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold">
               Recent Reviews 📝
             </h2>
-            <Button variant="festive">
-              <Star className="w-4 h-4" />
+            <Button variant="festive" size="lg" className="w-full sm:w-auto">
+              <Star className="w-5 h-5" />
               Write a Review
             </Button>
           </div>
           
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2 xl:gap-8">
             {searchResults.map((review) => (
               <ReviewCard key={review.id} review={review} />
             ))}
           </div>
           
-          <div className="text-center mt-12">
-            <Button variant="tropical" size="lg">
+          <div className="text-center mt-8 md:mt-12">
+            <Button variant="tropical" size="lg" className="w-full sm:w-auto">
               View All Reviews
             </Button>
           </div>
@@ -186,19 +186,19 @@ const Index = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-sunset">
+      <section className="py-12 md:py-20 bg-gradient-sunset">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6 leading-tight">
             Ready to Find Your Perfect Margarita? 🍹
           </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
             Join thousands of margarita enthusiasts discovering amazing drinks and sharing honest reviews.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="lime" size="lg" className="font-bold">
+            <Button variant="lime" size="lg" className="font-bold w-full sm:w-auto">
               Start Exploring
             </Button>
-            <Button variant="tropical" size="lg">
+            <Button variant="tropical" size="lg" className="w-full sm:w-auto">
               Share Your Review
             </Button>
           </div>

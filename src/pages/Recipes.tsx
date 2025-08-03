@@ -117,17 +117,17 @@ const Recipes = () => {
     <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-4 bg-gradient-sunset bg-clip-text text-transparent">
+      <main className="container mx-auto px-4 py-6 md:py-8">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-gradient-sunset bg-clip-text text-transparent leading-tight">
             Top Margarita Recipes 🍹
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
             Master the art of the perfect margarita with these curated recipes
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2 max-w-6xl mx-auto">
+        <div className="grid gap-6 lg:grid-cols-2 xl:gap-8 max-w-6xl mx-auto">
           {recipes.map((recipe) => (
             <Card key={recipe.id} className="hover:shadow-sunset transition-all duration-300 hover:scale-105 bg-card/90 backdrop-blur-sm">
               <CardHeader>
