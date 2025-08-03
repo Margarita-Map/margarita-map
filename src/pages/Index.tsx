@@ -7,83 +7,71 @@ import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import ReviewCard from "@/components/ReviewCard";
 import heroImage from "@/assets/hero-margarita.jpg";
-
-const sampleReviews = [
-  {
-    id: "1",
-    barName: "Tropical Paradise Bar",
-    location: "123 Beach Ave, Miami, FL",
-    drinkName: "Classic Lime Margarita",
-    rating: 5,
-    price: "$12",
-    review: "Perfect balance of lime and tequila! The salt rim was perfectly done and the drink was ice cold. Best margarita I've had in Miami!",
-    author: "Sarah M.",
-    date: "2 days ago",
-    distance: "0.3 miles"
-  },
-  {
-    id: "2", 
-    barName: "Casa Agave",
-    location: "456 Sunset Blvd, Los Angeles, CA",
-    drinkName: "Spicy Jalapeño Margarita",
-    rating: 4,
-    price: "$14",
-    review: "Great kick from the jalapeños! Could use a bit more lime but overall a solid drink. The atmosphere here is amazing.",
-    author: "Mike R.",
-    date: "1 week ago",
-    distance: "1.2 miles"
-  },
-  {
-    id: "3",
-    barName: "Lime & Salt Cantina",
-    location: "789 Margarita St, Austin, TX",
-    drinkName: "Frozen Strawberry Margarita",
-    rating: 5,
-    price: "$11",
-    review: "Absolutely delicious! Fresh strawberries and perfectly blended. Great for hot Texas days. Will definitely be back!",
-    author: "Jessica L.",
-    date: "3 days ago",
-    distance: "0.8 miles"
-  },
-  {
-    id: "4",
-    barName: "El Corazón Tequila Bar",
-    location: "321 Tequila Way, San Diego, CA",
-    drinkName: "Smoky Mezcal Margarita",
-    rating: 4,
-    price: "$16",
-    review: "Unique smoky flavor from the mezcal. Not for everyone but I loved it! Premium ingredients and beautiful presentation.",
-    author: "Carlos V.",
-    date: "5 days ago",
-    distance: "2.1 miles"
-  }
-];
-
+const sampleReviews = [{
+  id: "1",
+  barName: "Tropical Paradise Bar",
+  location: "123 Beach Ave, Miami, FL",
+  drinkName: "Classic Lime Margarita",
+  rating: 5,
+  price: "$12",
+  review: "Perfect balance of lime and tequila! The salt rim was perfectly done and the drink was ice cold. Best margarita I've had in Miami!",
+  author: "Sarah M.",
+  date: "2 days ago",
+  distance: "0.3 miles"
+}, {
+  id: "2",
+  barName: "Casa Agave",
+  location: "456 Sunset Blvd, Los Angeles, CA",
+  drinkName: "Spicy Jalapeño Margarita",
+  rating: 4,
+  price: "$14",
+  review: "Great kick from the jalapeños! Could use a bit more lime but overall a solid drink. The atmosphere here is amazing.",
+  author: "Mike R.",
+  date: "1 week ago",
+  distance: "1.2 miles"
+}, {
+  id: "3",
+  barName: "Lime & Salt Cantina",
+  location: "789 Margarita St, Austin, TX",
+  drinkName: "Frozen Strawberry Margarita",
+  rating: 5,
+  price: "$11",
+  review: "Absolutely delicious! Fresh strawberries and perfectly blended. Great for hot Texas days. Will definitely be back!",
+  author: "Jessica L.",
+  date: "3 days ago",
+  distance: "0.8 miles"
+}, {
+  id: "4",
+  barName: "El Corazón Tequila Bar",
+  location: "321 Tequila Way, San Diego, CA",
+  drinkName: "Smoky Mezcal Margarita",
+  rating: 4,
+  price: "$16",
+  review: "Unique smoky flavor from the mezcal. Not for everyone but I loved it! Premium ingredients and beautiful presentation.",
+  author: "Carlos V.",
+  date: "5 days ago",
+  distance: "2.1 miles"
+}];
 const Index = () => {
   const [searchResults, setSearchResults] = useState(sampleReviews);
-
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
-
   const handleSearch = (location: string) => {
     // In a real app, this would make an API call to search for bars near the location
     console.log("Searching for margaritas near:", location);
     // For now, we'll just show the sample data
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-tropical">
+  return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20 md:py-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        >
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+        backgroundImage: `url(${heroImage})`
+      }}>
           <div className="absolute inset-0 bg-black/40" />
         </div>
         
@@ -97,10 +85,7 @@ const Index = () => {
             </h1>
           </div>
           
-          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">
-            Discover the best margaritas near you with honest reviews from real people. 
-            Rate drinks with our agave scale and find your next favorite spot!
-          </p>
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Discover the best margaritas near you with honest reviews from real people. Rate drinks with our agave scale and find your next favorite spot! Let your favorite bartender and establishment how much you appreciate them.</p>
           
           <div className="max-w-2xl mx-auto px-4">
             <SearchBar onSearch={handleSearch} />
@@ -179,9 +164,7 @@ const Index = () => {
           </div>
           
           <div className="grid gap-6 lg:grid-cols-2 xl:gap-8">
-            {searchResults.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
+            {searchResults.map(review => <ReviewCard key={review.id} review={review} />)}
           </div>
           
           <div className="text-center mt-8 md:mt-12">
@@ -211,8 +194,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
