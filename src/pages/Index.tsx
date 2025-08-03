@@ -6,6 +6,7 @@ import { MapPin, Star, Utensils, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import ReviewCard from "@/components/ReviewCard";
+import MapLocator from "@/components/MapLocator";
 import heroImage from "@/assets/hero-margarita.jpg";
 const sampleReviews = [{
   id: "1",
@@ -54,15 +55,24 @@ const sampleReviews = [{
 }];
 const Index = () => {
   const [searchResults, setSearchResults] = useState(sampleReviews);
+  const [searchLocation, setSearchLocation] = useState<string>("");
+  
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
+  
   const handleSearch = (location: string) => {
-    // In a real app, this would make an API call to search for bars near the location
+    setSearchLocation(location);
     console.log("Searching for margaritas near:", location);
-    // For now, we'll just show the sample data
+    // The map will automatically update based on the searchLocation state
+  };
+
+  const handleLocationSelect = (place: any) => {
+    console.log("Selected place:", place);
+    // Here you could fetch margarita reviews for this specific place
+    // or add it to a favorites list
   };
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
@@ -146,6 +156,21 @@ const Index = () => {
                 </p>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Map Section */}
+      <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
+            Explore Nearby Locations 🗺️
+          </h2>
+          <div className="max-w-4xl mx-auto">
+            <MapLocator 
+              searchLocation={searchLocation} 
+              onLocationSelect={handleLocationSelect}
+            />
           </div>
         </div>
       </section>
