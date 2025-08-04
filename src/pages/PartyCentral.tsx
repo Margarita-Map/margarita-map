@@ -131,28 +131,38 @@ const PartyCentral = () => {
             Share where you're partying and see where friends are going!
           </p>
           
-          {user ? (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
             <Button 
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => window.location.href = '/'}
               size="lg"
-              className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+              className="bg-gradient-to-r from-green-500 to-lime-500 hover:from-green-600 hover:to-lime-600"
             >
-              <Users className="mr-2 h-5 w-5" />
-              {showForm ? "Cancel" : "Share Your Party Plans"}
+              🍹 View Drink Specials
             </Button>
-          ) : (
-            <Card className="max-w-md mx-auto bg-white/10 backdrop-blur-md border-white/20">
-              <CardContent className="p-6 text-center">
-                <p className="text-white mb-4">Sign in to share your party plans!</p>
-                <Button 
-                  onClick={() => window.location.href = '/auth'}
-                  className="bg-white/20 hover:bg-white/30 text-white"
-                >
-                  Sign In
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+            
+            {user ? (
+              <Button 
+                onClick={() => setShowForm(!showForm)}
+                size="lg"
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+              >
+                <Users className="mr-2 h-5 w-5" />
+                {showForm ? "Cancel" : "Share Your Party Plans"}
+              </Button>
+            ) : (
+              <Card className="max-w-md bg-white/10 backdrop-blur-md border-white/20">
+                <CardContent className="p-6 text-center">
+                  <p className="text-white mb-4">Sign in to share your party plans!</p>
+                  <Button 
+                    onClick={() => window.location.href = '/auth'}
+                    className="bg-white/20 hover:bg-white/30 text-white"
+                  >
+                    Sign In
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
 
         {showForm && (
