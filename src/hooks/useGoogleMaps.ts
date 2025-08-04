@@ -21,10 +21,12 @@ export const useGoogleMaps = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    // For now, using the provided API key directly
+    // In production, this should be handled through Supabase edge functions
+    const apiKey = 'AIzaSyCwDTKVyOFsjfKl-KW6gFzGO4fXfVunjcw';
     
     if (!apiKey) {
-      setError('Google Maps API key not found');
+      setError('Google Maps API key not configured');
       return;
     }
 
