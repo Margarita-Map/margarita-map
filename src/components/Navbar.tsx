@@ -31,10 +31,12 @@ const Navbar = () => {
         Recipes
       </Link>
 
-      <Button variant="festive" className="font-bold w-full md:w-auto justify-center md:justify-start" size="lg">
-        <Star className="w-5 h-5" />
-        Rate a Drink
-      </Button>
+      <Link to="/rate-drink">
+        <Button variant="festive" className="font-bold w-full md:w-auto justify-center md:justify-start" size="lg">
+          <Star className="w-5 h-5" />
+          Rate a Drink
+        </Button>
+      </Link>
     </>
   );
 
