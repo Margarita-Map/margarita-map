@@ -56,19 +56,16 @@ const sampleReviews = [{
 const Index = () => {
   const [searchResults, setSearchResults] = useState(sampleReviews);
   const [searchLocation, setSearchLocation] = useState<string>("");
-  
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
-  
   const handleSearch = (location: string) => {
     setSearchLocation(location);
     console.log("Searching for margaritas near:", location);
     // The map will automatically update based on the searchLocation state
   };
-
   const handleLocationSelect = (place: any) => {
     console.log("Selected place:", place);
     // Here you could fetch margarita reviews for this specific place
@@ -108,57 +105,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
-            Why MargaritaFinder? 🌟
-          </h2>
-          
-          <div className="grid gap-6 md:grid-cols-3 md:gap-8 max-w-5xl mx-auto">
-            <Card className="text-center hover:shadow-lime transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="mx-auto w-16 h-16 bg-gradient-lime rounded-full flex items-center justify-center mb-4">
-                  <Star className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-xl">Agave Rating System</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Our unique 1-5 agave plant rating system gives you honest reviews from real margarita lovers.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-sunset transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="mx-auto w-16 h-16 bg-gradient-sunset rounded-full flex items-center justify-center mb-4">
-                  <MapPin className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-xl">Find Nearby Bars</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Locate the best margarita spots near you with distance, prices, and instant rideshare booking.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-lime transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="mx-auto w-16 h-16 bg-gradient-tropical rounded-full flex items-center justify-center mb-4">
-                  <Utensils className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-xl">Master Recipes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Learn to make perfect margaritas at home with our curated collection of top-rated recipes.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+      
 
       {/* Map Section */}
       <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
@@ -167,10 +114,7 @@ const Index = () => {
             Explore Nearby Locations 🗺️
           </h2>
           <div className="max-w-4xl mx-auto">
-            <MapLocator 
-              searchLocation={searchLocation} 
-              onLocationSelect={handleLocationSelect}
-            />
+            <MapLocator searchLocation={searchLocation} onLocationSelect={handleLocationSelect} />
           </div>
         </div>
       </section>
