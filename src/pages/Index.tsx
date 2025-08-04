@@ -108,7 +108,7 @@ const Index = () => {
       
 
       {/* Map Section */}
-      <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
+      <section id="map-section" className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
             Find the Best Margaritas Near You! 🗺️
@@ -214,14 +214,30 @@ const Index = () => {
           <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
             Join thousands of margarita enthusiasts discovering amazing drinks and sharing honest reviews.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="lime" size="lg" className="font-bold w-full sm:w-auto">
-              Start Exploring
-            </Button>
-            <Button variant="tropical" size="lg" className="w-full sm:w-auto">
-              Share Your Review
-            </Button>
-          </div>
+           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+             <Button 
+               variant="lime" 
+               size="lg" 
+               className="font-bold w-full sm:w-auto"
+               onClick={() => {
+                 // Scroll to the map section
+                 const mapSection = document.querySelector('#map-section');
+                 if (mapSection) {
+                   mapSection.scrollIntoView({ behavior: 'smooth' });
+                 }
+               }}
+             >
+               Start Exploring
+             </Button>
+             <Button 
+               variant="tropical" 
+               size="lg" 
+               className="w-full sm:w-auto"
+               onClick={() => navigate('/rate-drink')}
+             >
+               Share Your Review
+             </Button>
+           </div>
         </div>
       </section>
 
