@@ -71,7 +71,7 @@ const Index = () => {
         </div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto">
-          <p className="text-xl md:text-2xl text-white/80 mb-4 font-medium tracking-wide">
+          <p className="text-xl md:text-2xl text-green-400 mb-4 font-medium tracking-wide">
             The Official Drink of Fun
           </p>
           <div className="animate-float mb-6 md:mb-8">
