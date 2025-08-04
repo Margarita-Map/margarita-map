@@ -167,8 +167,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     const request = {
       location: searchLocation,
       radius: 5000, // 5km radius
-      type: "bar",
-      keyword: "cocktail bar restaurant drinks"
+      type: "restaurant",
+      keyword: "cocktail bar restaurant drinks mexican food tacos margaritas"
     };
 
     service.nearbySearch(request, (results, status) => {
