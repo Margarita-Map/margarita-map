@@ -59,7 +59,14 @@ const Index = () => {
   };
   const handlePlaceSelect = (place: PlaceDetails) => {
     console.log("Selected place from list:", place);
-    // Could highlight the corresponding marker on the map
+    // Navigate to rate drink page with the selected place information
+    navigate('/rate-drink', { 
+      state: { 
+        selectedPlace: place,
+        placeName: place.name,
+        placeId: place.id
+      }
+    });
   };
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
