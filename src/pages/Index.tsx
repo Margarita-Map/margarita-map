@@ -14,6 +14,7 @@ import PlacesList from "@/components/PlacesList";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { useNearbyReviews } from "@/hooks/useNearbyReviews";
 import heroImage from "@/assets/hero-margarita.jpg";
+import celebrationImage from "@/assets/celebration-margaritas.jpg";
 // Remove the sample reviews since we're using real data now
 const Index = () => {
   const [searchLocation, setSearchLocation] = useState<string>("");
@@ -214,8 +215,13 @@ const Index = () => {
 
       {/* Bottom Image Section */}
       <section className="pb-0">
-        <div className="w-full">
-          
+        <div className="w-full h-96 relative overflow-hidden">
+          <img 
+            src={celebrationImage} 
+            alt="Friends celebrating with margaritas" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
       </section>
     </div>;
