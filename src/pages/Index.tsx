@@ -8,6 +8,8 @@ import SearchBar from "@/components/SearchBar";
 import ReviewCard from "@/components/ReviewCard";
 import MapLocator from "@/components/MapLocator";
 import AddEstablishmentForm from "@/components/AddEstablishmentForm";
+import DrinkSpecialsList from "@/components/DrinkSpecialsList";
+import ManageEstablishment from "@/components/ManageEstablishment";
 import PlacesList from "@/components/PlacesList";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { useNearbyReviews } from "@/hooks/useNearbyReviews";
@@ -17,6 +19,7 @@ const Index = () => {
   const [searchLocation, setSearchLocation] = useState<string>("");
   const [nearbyPlaces, setNearbyPlaces] = useState<PlaceDetails[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showManageForm, setShowManageForm] = useState(false);
   const { reviews, loading: reviewsLoading, error: reviewsError } = useNearbyReviews(nearbyPlaces);
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
@@ -98,6 +101,26 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Drink Specials Section */}
+      <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Today's Drink Specials 🍸
+            </h2>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Check out the best drink deals happening right now at establishments near you.
+            </p>
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <DrinkSpecialsList 
+              restaurantIds={nearbyPlaces.map(place => place.id)} 
+              maxItems={8}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Reviews Section */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
@@ -153,24 +176,38 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Don't See Your Establishment? 🏪
+              For Bar & Restaurant Owners 🏪
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
-              Bar or restaurant owners can add their establishment to our directory and start receiving reviews from margarita enthusiasts.
+              Add your establishment to our directory and manage your daily drink specials to attract more customers.
             </p>
-            <Button 
-              variant="tropical" 
-              size="lg" 
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="mb-8"
-            >
-              {showAddForm ? "Hide Form" : "Add Your Establishment"}
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+              <Button 
+                variant="tropical" 
+                size="lg" 
+                onClick={() => setShowAddForm(!showAddForm)}
+              >
+                {showAddForm ? "Hide Form" : "Add Your Establishment"}
+              </Button>
+              <Button 
+                variant="festive" 
+                size="lg" 
+                onClick={() => setShowManageForm(!showManageForm)}
+              >
+                {showManageForm ? "Hide Management" : "Manage Specials"}
+              </Button>
+            </div>
           </div>
           
           {showAddForm && (
-            <div className="animate-in slide-in-from-top duration-300">
+            <div className="animate-in slide-in-from-top duration-300 mb-8">
               <AddEstablishmentForm onSuccess={() => setShowAddForm(false)} />
+            </div>
+          )}
+
+          {showManageForm && (
+            <div className="animate-in slide-in-from-top duration-300">
+              <ManageEstablishment />
             </div>
           )}
         </div>

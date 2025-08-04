@@ -14,6 +14,59 @@ export type Database = {
   }
   public: {
     Tables: {
+      drink_specials: {
+        Row: {
+          created_at: string
+          day_of_week: string
+          description: string | null
+          drink_name: string
+          end_time: string | null
+          id: string
+          is_active: boolean
+          regular_price: number | null
+          restaurant_id: string
+          special_price: number | null
+          start_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: string
+          description?: string | null
+          drink_name: string
+          end_time?: string | null
+          id?: string
+          is_active?: boolean
+          regular_price?: number | null
+          restaurant_id: string
+          special_price?: number | null
+          start_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: string
+          description?: string | null
+          drink_name?: string
+          end_time?: string | null
+          id?: string
+          is_active?: boolean
+          regular_price?: number | null
+          restaurant_id?: string
+          special_price?: number | null
+          start_time?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drink_specials_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
