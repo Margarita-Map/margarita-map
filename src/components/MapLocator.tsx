@@ -166,7 +166,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
     const request = {
       location: searchLocation,
-      radius: 5000, // 5km radius
+      radius: 13000, // 13km radius (about 8 miles)
       type: "restaurant",
       keyword: "cocktail bar restaurant drinks mexican food tacos margaritas"
     };
