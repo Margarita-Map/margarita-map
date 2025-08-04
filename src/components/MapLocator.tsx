@@ -72,10 +72,10 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
   useEffect(() => {
     if (!isLoaded || !mapRef.current || !window.google) return;
 
-    // Initialize map
+    // Initialize map - will be updated with user location
     const map = new window.google.maps.Map(mapRef.current, {
       zoom: 13,
-      center: { lat: 40.7128, lng: -74.0060 }, // Default to NYC
+      center: { lat: 39.8283, lng: -98.5795 }, // Center of US as default
       styles: [
         {
           featureType: "poi",
@@ -107,6 +107,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
           const userLatLng = new window.google.maps.LatLng(userLocation.lat, userLocation.lng);
           userLocationRef.current = userLatLng;
           map.setCenter(userLocation);
+          map.setZoom(14); // Zoom in closer to user location
           
           // Add user location marker
           new window.google.maps.Marker({
@@ -122,6 +123,10 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
             },
             title: "Your Location"
           });
+
+          // Now search for bars near user's actual location
+          const service = new window.google.maps.places.PlacesService(map);
+          searchNearbyBars(service, map, userLatLng);
         },
         (error) => {
           console.log("Error getting user location:", error);
@@ -129,9 +134,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
       );
     }
 
-    // Search for bars and restaurants near the location
-    const service = new window.google.maps.places.PlacesService(map);
-    searchNearbyBars(service, map);
+    // Only search after getting user location
+    // searchNearbyBars will be called after geolocation success
 
   }, [isLoaded]);
 
@@ -166,7 +170,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
     const request = {
       location: searchLocation,
-      radius: 13000, // 13km radius (about 8 miles)
+      radius: 3200, // 2 miles radius for more local results
       type: "restaurant",
       keyword: "cocktail bar restaurant drinks mexican food tacos margaritas"
     };
