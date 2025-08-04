@@ -247,6 +247,13 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Powered by SWEENY */}
+      <section className="py-8 bg-background text-center">
+        <h3 className="text-2xl md:text-3xl font-bold text-red-600">
+          Powered by SWEENY
+        </h3>
+      </section>
+
       {/* Bottom Image Section */}
       <section className="pb-0">
         <div className="w-full h-96 relative overflow-hidden">
