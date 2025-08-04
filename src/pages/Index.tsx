@@ -9,56 +9,13 @@ import ReviewCard from "@/components/ReviewCard";
 import MapLocator from "@/components/MapLocator";
 import PlacesList from "@/components/PlacesList";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
+import { useNearbyReviews } from "@/hooks/useNearbyReviews";
 import heroImage from "@/assets/hero-margarita.jpg";
-const sampleReviews = [{
-  id: "1",
-  barName: "Tropical Paradise Bar",
-  location: "123 Beach Ave, Miami, FL",
-  drinkName: "Classic Lime Margarita",
-  rating: 5,
-  price: "$12",
-  review: "Perfect balance of lime and tequila! The salt rim was perfectly done and the drink was ice cold. Best margarita I've had in Miami!",
-  author: "Sarah M.",
-  date: "2 days ago",
-  distance: "0.3 miles"
-}, {
-  id: "2",
-  barName: "Casa Agave",
-  location: "456 Sunset Blvd, Los Angeles, CA",
-  drinkName: "Spicy Jalapeño Margarita",
-  rating: 4,
-  price: "$14",
-  review: "Great kick from the jalapeños! Could use a bit more lime but overall a solid drink. The atmosphere here is amazing.",
-  author: "Mike R.",
-  date: "1 week ago",
-  distance: "1.2 miles"
-}, {
-  id: "3",
-  barName: "Lime & Salt Cantina",
-  location: "789 Margarita St, Austin, TX",
-  drinkName: "Frozen Strawberry Margarita",
-  rating: 5,
-  price: "$11",
-  review: "Absolutely delicious! Fresh strawberries and perfectly blended. Great for hot Texas days. Will definitely be back!",
-  author: "Jessica L.",
-  date: "3 days ago",
-  distance: "0.8 miles"
-}, {
-  id: "4",
-  barName: "El Corazón Tequila Bar",
-  location: "321 Tequila Way, San Diego, CA",
-  drinkName: "Smoky Mezcal Margarita",
-  rating: 4,
-  price: "$16",
-  review: "Unique smoky flavor from the mezcal. Not for everyone but I loved it! Premium ingredients and beautiful presentation.",
-  author: "Carlos V.",
-  date: "5 days ago",
-  distance: "2.1 miles"
-}];
+// Remove the sample reviews since we're using real data now
 const Index = () => {
-  const [searchResults, setSearchResults] = useState(sampleReviews);
   const [searchLocation, setSearchLocation] = useState<string>("");
   const [nearbyPlaces, setNearbyPlaces] = useState<PlaceDetails[]>([]);
+  const { reviews, loading: reviewsLoading, error: reviewsError } = useNearbyReviews(nearbyPlaces);
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
@@ -144,7 +101,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 md:mb-12">
             <h2 className="text-3xl md:text-4xl font-bold">
-              Recent Reviews 📝
+              Recent Reviews in Your Area 📝
             </h2>
             <Button variant="festive" size="lg" className="w-full sm:w-auto">
               <Star className="w-5 h-5" />
@@ -152,15 +109,40 @@ const Index = () => {
             </Button>
           </div>
           
-          <div className="grid gap-6 lg:grid-cols-2 xl:gap-8">
-            {searchResults.map(review => <ReviewCard key={review.id} review={review} />)}
-          </div>
+          {reviewsLoading && (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+              <p className="text-muted-foreground">Loading reviews...</p>
+            </div>
+          )}
           
-          <div className="text-center mt-8 md:mt-12">
-            <Button variant="tropical" size="lg" className="w-full sm:w-auto">
-              View All Reviews
-            </Button>
-          </div>
+          {reviewsError && (
+            <div className="text-center py-8">
+              <p className="text-destructive">Error loading reviews: {reviewsError}</p>
+            </div>
+          )}
+          
+          {!reviewsLoading && !reviewsError && reviews.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No reviews found for places in this area. Be the first to leave a review!</p>
+            </div>
+          )}
+          
+          {!reviewsLoading && !reviewsError && reviews.length > 0 && (
+            <div className="grid gap-6 lg:grid-cols-2 xl:gap-8">
+              {reviews.slice(0, 6).map(review => (
+                <ReviewCard key={review.id} review={review} />
+              ))}
+            </div>
+          )}
+          
+          {!reviewsLoading && !reviewsError && reviews.length > 6 && (
+            <div className="text-center mt-8 md:mt-12">
+              <Button variant="tropical" size="lg" className="w-full sm:w-auto">
+                View All Reviews ({reviews.length})
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
