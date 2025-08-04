@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface SearchBarProps {
   onSearch: (location: string) => void;
@@ -9,28 +10,76 @@ interface SearchBarProps {
 
 const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [location, setLocation] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (location.trim()) {
-      onSearch(location.trim());
+    if (!location.trim()) {
+      toast({
+        title: "Enter a location",
+        description: "Please enter a city, zip code, or address to search.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSearching(true);
+    try {
+      await onSearch(location.trim());
+      toast({
+        title: "Searching for bars...",
+        description: `Finding margarita spots near ${location.trim()}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Search error",
+        description: "There was an issue searching for locations. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSearching(false);
     }
   };
 
   const handleCurrentLocation = () => {
     if (navigator.geolocation) {
+      setIsSearching(true);
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          onSearch(`${latitude},${longitude}`);
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            await onSearch(`${latitude},${longitude}`);
+            toast({
+              title: "Using your location",
+              description: "Finding margarita spots near you!",
+            });
+          } catch (error) {
+            toast({
+              title: "Search error",
+              description: "There was an issue searching for locations. Please try again.",
+              variant: "destructive"
+            });
+          } finally {
+            setIsSearching(false);
+          }
         },
         (error) => {
           console.error("Error getting location:", error);
-          alert("Unable to get your location. Please enter it manually.");
+          toast({
+            title: "Location error",
+            description: "Unable to get your location. Please enter it manually.",
+            variant: "destructive"
+          });
+          setIsSearching(false);
         }
       );
     } else {
-      alert("Geolocation is not supported by this browser.");
+      toast({
+        title: "Location not supported",
+        description: "Geolocation is not supported by this browser.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -57,15 +106,39 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
             type="button" 
             variant="tropical" 
             onClick={handleCurrentLocation}
+            disabled={isSearching}
             className="h-14 md:h-12 px-4 w-full sm:w-auto text-base font-medium"
           >
-            <MapPin className="w-5 h-5 mr-2" />
-            Use Current Location
+            {isSearching ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Finding Location...
+              </>
+            ) : (
+              <>
+                <MapPin className="w-5 h-5 mr-2" />
+                Use Current Location
+              </>
+            )}
           </Button>
           
-          <Button type="submit" variant="festive" className="h-14 md:h-12 px-6 w-full sm:w-auto text-base font-bold">
-            <Search className="w-5 h-5 mr-2" />
-            Search Bars
+          <Button 
+            type="submit" 
+            variant="festive" 
+            disabled={isSearching || !location.trim()}
+            className="h-14 md:h-12 px-6 w-full sm:w-auto text-base font-bold"
+          >
+            {isSearching ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Searching...
+              </>
+            ) : (
+              <>
+                <Search className="w-5 h-5 mr-2" />
+                Search Bars
+              </>
+            )}
           </Button>
         </div>
       </form>
