@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar, MapPin, Clock, Users } from "lucide-react";
 import { useSEO } from "@/hooks/useSEO";
+import partyImage from "@/assets/party-crowd.jpg";
 
 interface PartyPost {
   id: string;
@@ -121,21 +122,31 @@ const PartyCentral = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            🎉 Party Central 🎉
-          </h1>
-          <p className="text-xl text-white/80 mb-6">
+    <div className="min-h-screen relative">
+      {/* Hero Section with Party Image */}
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in" 
+          style={{ backgroundImage: `url(${partyImage})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-pink-800/80 to-orange-700/80" />
+        </div>
+        
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
+          <div className="animate-scale-in mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg">
+              🎉 Party Central 🎉
+            </h1>
+          </div>
+          <p className="text-xl md:text-2xl text-white/90 mb-8 drop-shadow-lg leading-relaxed">
             Share where you're partying and see where friends are going!
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               onClick={() => window.location.href = '/'}
               size="lg"
-              className="bg-gradient-to-r from-green-500 to-lime-500 hover:from-green-600 hover:to-lime-600"
+              className="bg-gradient-to-r from-green-500 to-lime-500 hover:from-green-600 hover:to-lime-600 hover-scale shadow-lg"
             >
               🍹 View Drink Specials
             </Button>
@@ -144,18 +155,18 @@ const PartyCentral = () => {
               <Button 
                 onClick={() => setShowForm(!showForm)}
                 size="lg"
-                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 hover-scale shadow-lg"
               >
                 <Users className="mr-2 h-5 w-5" />
                 {showForm ? "Cancel" : "Share Your Party Plans"}
               </Button>
             ) : (
-              <Card className="max-w-md bg-white/10 backdrop-blur-md border-white/20">
+              <Card className="max-w-md bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
                 <CardContent className="p-6 text-center">
                   <p className="text-white mb-4">Sign in to share your party plans!</p>
                   <Button 
                     onClick={() => window.location.href = '/auth'}
-                    className="bg-white/20 hover:bg-white/30 text-white"
+                    className="bg-white/20 hover:bg-white/30 text-white hover-scale"
                   >
                     Sign In
                   </Button>
@@ -164,6 +175,11 @@ const PartyCentral = () => {
             )}
           </div>
         </div>
+      </section>
+
+      {/* Main Content */}
+      <div className="bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700">
+        <div className="container mx-auto px-4 py-8">
 
         {showForm && (
           <Card className="max-w-2xl mx-auto mb-8 bg-white/10 backdrop-blur-md border-white/20">
@@ -296,6 +312,7 @@ const PartyCentral = () => {
               </Card>
             ))
           )}
+        </div>
         </div>
       </div>
     </div>
