@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import ReviewCard from "@/components/ReviewCard";
 import MapLocator from "@/components/MapLocator";
+import AddEstablishmentForm from "@/components/AddEstablishmentForm";
 import PlacesList from "@/components/PlacesList";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { useNearbyReviews } from "@/hooks/useNearbyReviews";
@@ -15,6 +16,7 @@ import heroImage from "@/assets/hero-margarita.jpg";
 const Index = () => {
   const [searchLocation, setSearchLocation] = useState<string>("");
   const [nearbyPlaces, setNearbyPlaces] = useState<PlaceDetails[]>([]);
+  const [showAddForm, setShowAddForm] = useState(false);
   const { reviews, loading: reviewsLoading, error: reviewsError } = useNearbyReviews(nearbyPlaces);
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
@@ -141,6 +143,34 @@ const Index = () => {
               <Button variant="tropical" size="lg" className="w-full sm:w-auto">
                 View All Reviews ({reviews.length})
               </Button>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Add Establishment Section */}
+      <section className="py-12 md:py-20 bg-muted/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Don't See Your Establishment? 🏪
+            </h2>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
+              Bar or restaurant owners can add their establishment to our directory and start receiving reviews from margarita enthusiasts.
+            </p>
+            <Button 
+              variant="tropical" 
+              size="lg" 
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="mb-8"
+            >
+              {showAddForm ? "Hide Form" : "Add Your Establishment"}
+            </Button>
+          </div>
+          
+          {showAddForm && (
+            <div className="animate-in slide-in-from-top duration-300">
+              <AddEstablishmentForm onSuccess={() => setShowAddForm(false)} />
             </div>
           )}
         </div>
