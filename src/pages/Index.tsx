@@ -7,6 +7,8 @@ import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import ReviewCard from "@/components/ReviewCard";
 import MapLocator from "@/components/MapLocator";
+import PlacesList from "@/components/PlacesList";
+import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import heroImage from "@/assets/hero-margarita.jpg";
 const sampleReviews = [{
   id: "1",
@@ -56,6 +58,7 @@ const sampleReviews = [{
 const Index = () => {
   const [searchResults, setSearchResults] = useState(sampleReviews);
   const [searchLocation, setSearchLocation] = useState<string>("");
+  const [nearbyPlaces, setNearbyPlaces] = useState<PlaceDetails[]>([]);
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
@@ -70,6 +73,15 @@ const Index = () => {
     console.log("Selected place:", place);
     // Here you could fetch margarita reviews for this specific place
     // or add it to a favorites list
+  };
+
+  const handlePlacesFound = (places: PlaceDetails[]) => {
+    setNearbyPlaces(places);
+  };
+
+  const handlePlaceSelect = (place: PlaceDetails) => {
+    console.log("Selected place from list:", place);
+    // Could highlight the corresponding marker on the map
   };
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
@@ -111,10 +123,18 @@ const Index = () => {
       <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">
-            Explore Nearby Locations 🗺️
+            Find the Best Margaritas Near You! 🗺️
           </h2>
-          <div className="max-w-4xl mx-auto">
-            <MapLocator searchLocation={searchLocation} onLocationSelect={handleLocationSelect} />
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
+            <MapLocator 
+              searchLocation={searchLocation} 
+              onLocationSelect={handleLocationSelect}
+              onPlacesFound={handlePlacesFound}
+            />
+            <PlacesList 
+              places={nearbyPlaces}
+              onPlaceSelect={handlePlaceSelect}
+            />
           </div>
         </div>
       </section>

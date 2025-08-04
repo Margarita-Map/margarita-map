@@ -7,13 +7,31 @@ import { MapPin, Navigation } from "lucide-react";
 interface MapLocatorProps {
   searchLocation?: string;
   onLocationSelect?: (place: google.maps.places.PlaceResult) => void;
+  onPlacesFound?: (places: PlaceDetails[]) => void;
 }
 
-const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
+interface PlaceDetails {
+  id: string;
+  name: string;
+  address: string;
+  rating?: number;
+  priceLevel?: number;
+  phoneNumber?: string;
+  website?: string;
+  photos?: string[];
+  distance?: number;
+  location: {
+    lat: number;
+    lng: number;
+  };
+}
+
+const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLocatorProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const userLocationRef = useRef<google.maps.LatLng | null>(null);
 
   useEffect(() => {
     const loadGoogleMaps = () => {
@@ -31,7 +49,7 @@ const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
       }
 
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry&callback=initMap`;
       script.async = true;
       script.defer = true;
 
@@ -86,6 +104,8 @@ const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           };
+          const userLatLng = new window.google.maps.LatLng(userLocation.lat, userLocation.lng);
+          userLocationRef.current = userLatLng;
           map.setCenter(userLocation);
           
           // Add user location marker
@@ -153,8 +173,42 @@ const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
 
     service.nearbySearch(request, (results, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+        const placeDetails: PlaceDetails[] = [];
+        
         results.slice(0, 20).forEach((place) => {
           if (place.geometry?.location) {
+            // Calculate distance from user location or search center
+            const referenceLocation = userLocationRef.current || searchLocation;
+            let distance: number | undefined;
+            
+            if (referenceLocation) {
+              const placeLatLng = new window.google.maps.LatLng(
+                place.geometry.location.lat(),
+                place.geometry.location.lng()
+              );
+              const distanceInMeters = window.google.maps.geometry.spherical.computeDistanceBetween(
+                referenceLocation,
+                placeLatLng
+              );
+              distance = distanceInMeters * 0.000621371; // Convert meters to miles
+            }
+
+            // Create place details object
+            const placeDetail: PlaceDetails = {
+              id: place.place_id || '',
+              name: place.name || '',
+              address: place.vicinity || '',
+              rating: place.rating,
+              priceLevel: place.price_level,
+              distance,
+              location: {
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+              }
+            };
+            
+            placeDetails.push(placeDetail);
+
             const marker = new window.google.maps.Marker({
               position: place.geometry.location,
               map: map,
@@ -185,6 +239,7 @@ const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
                     <div class="flex items-center mt-1">
                       <span class="text-yellow-500">★</span>
                       <span class="ml-1 text-sm">${place.rating || 'No rating'}</span>
+                      ${distance ? `<span class="ml-2 text-xs text-gray-500">${distance.toFixed(1)} miles</span>` : ''}
                     </div>
                   </div>
                 `
@@ -195,6 +250,15 @@ const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
             markersRef.current.push(marker);
           }
         });
+        
+        // Sort places by distance and notify parent component
+        const sortedPlaces = placeDetails
+          .filter(place => place.distance !== undefined)
+          .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+          
+        if (onPlacesFound) {
+          onPlacesFound(sortedPlaces);
+        }
       }
     });
   };

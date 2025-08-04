@@ -10,6 +10,7 @@ export interface PlaceDetails {
   phoneNumber?: string;
   website?: string;
   photos?: string[];
+  distance?: number; // Distance in miles
   location: {
     lat: number;
     lng: number;
