@@ -123,13 +123,19 @@ const Index = () => {
       {/* Drink Specials Section */}
       <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Today's Drink Specials 🍸
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Check out the best drink deals happening right now at establishments near you.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 md:mb-12">
+            <div className="text-center sm:text-left">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Today's Drink Specials 🍸
+              </h2>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
+                Check out the best drink deals happening right now at establishments near you.
+              </p>
+            </div>
+            <Button variant="tropical" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/party-central')}>
+              <Utensils className="w-5 h-5" />
+              View All Specials
+            </Button>
           </div>
           <div className="max-w-4xl mx-auto">
             <DrinkSpecialsList restaurantIds={nearbyPlaces.map(place => place.id)} maxItems={8} />
