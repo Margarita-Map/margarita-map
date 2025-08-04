@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AuthPage from "./pages/AuthPage";
 import Recipes from "./pages/Recipes";
 import RateDrink from "./pages/RateDrink";
+import PartyCentral from "./pages/PartyCentral";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/recipes" element={<Recipes />} />
           <Route path="/rate-drink" element={<RateDrink />} />
+          <Route path="/party-central" element={<PartyCentral />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

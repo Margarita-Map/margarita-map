@@ -67,6 +67,42 @@ export type Database = {
           },
         ]
       }
+      party_posts: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          location: string
+          party_date: string
+          party_time: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          location: string
+          party_date: string
+          party_time?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string
+          party_date?: string
+          party_time?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
