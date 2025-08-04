@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Navigation } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MapLocatorProps {
   searchLocation?: string;
@@ -156,7 +157,113 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     });
   }, [searchLocation]);
 
-  const searchNearbyBars = (
+  const loadSupabaseRestaurants = async (map: google.maps.Map, searchLocation: google.maps.LatLng) => {
+    try {
+      const { data: restaurants, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .not('latitude', 'is', null)
+        .not('longitude', 'is', null);
+
+      if (error) {
+        console.error('Error fetching restaurants:', error);
+        return [];
+      }
+
+      const restaurantDetails: PlaceDetails[] = [];
+      const referenceLocation = userLocationRef.current || searchLocation;
+
+      restaurants?.forEach(restaurant => {
+        if (restaurant.latitude && restaurant.longitude) {
+          const restaurantLatLng = new window.google.maps.LatLng(
+            restaurant.latitude,
+            restaurant.longitude
+          );
+
+          // Calculate distance
+          let distance: number | undefined;
+          if (referenceLocation) {
+            const distanceInMeters = window.google.maps.geometry.spherical.computeDistanceBetween(
+              referenceLocation,
+              restaurantLatLng
+            );
+            distance = distanceInMeters * 0.000621371; // Convert meters to miles
+            
+            // Only include restaurants within 10 miles
+            if (distance > 10) return;
+          }
+
+          const restaurantDetail: PlaceDetails = {
+            id: restaurant.id,
+            name: restaurant.name,
+            address: restaurant.address,
+            phoneNumber: restaurant.phone,
+            website: restaurant.website,
+            photos: [],
+            distance,
+            location: {
+              lat: restaurant.latitude,
+              lng: restaurant.longitude
+            }
+          };
+
+          restaurantDetails.push(restaurantDetail);
+
+          // Create marker with different icon for Supabase restaurants
+          const marker = new window.google.maps.Marker({
+            position: { lat: restaurant.latitude, lng: restaurant.longitude },
+            map: map,
+            title: restaurant.name,
+            icon: {
+              url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#8B5CF6"/>
+                  <circle cx="12" cy="9" r="2.5" fill="white"/>
+                </svg>
+              `),
+              scaledSize: new window.google.maps.Size(30, 30)
+            }
+          });
+
+          // Add click listener to marker
+          marker.addListener("click", () => {
+            const websiteLink = restaurant.website 
+              ? `<br><a href="${restaurant.website}" target="_blank" style="color: #8B5CF6; text-decoration: underline;">Visit Website</a>`
+              : '';
+            
+            const phoneLink = restaurant.phone 
+              ? `<br><a href="tel:${restaurant.phone}" style="color: #8B5CF6; text-decoration: underline;">${restaurant.phone}</a>`
+              : '';
+            
+            const infoWindow = new window.google.maps.InfoWindow({
+              content: `
+                <div class="p-2">
+                  <h3 class="font-bold text-lg">${restaurant.name}</h3>
+                  <p class="text-sm text-gray-600">${restaurant.address}</p>
+                  <div class="flex items-center mt-1">
+                    <span class="text-purple-500 text-xs font-medium">★ Member Restaurant</span>
+                    ${distance ? `<span class="ml-2 text-xs text-gray-500">${distance.toFixed(1)} miles</span>` : ''}
+                  </div>
+                  ${phoneLink}
+                  ${websiteLink}
+                </div>
+              `
+            });
+            infoWindow.open(map, marker);
+          });
+
+          markersRef.current.push(marker);
+        }
+      });
+
+      return restaurantDetails;
+    } catch (error) {
+      console.error('Error loading Supabase restaurants:', error);
+      return [];
+    }
+  };
+
+  const searchNearbyBars = async (
     service: google.maps.places.PlacesService, 
     map: google.maps.Map, 
     location?: google.maps.LatLng
@@ -168,6 +275,9 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     const searchLocation = location || map.getCenter();
     if (!searchLocation) return;
 
+    // Load Supabase restaurants first
+    const supabaseRestaurants = await loadSupabaseRestaurants(map, searchLocation);
+
     const request = {
       location: searchLocation,
       radius: 3200, // 2 miles radius for more local results
@@ -177,7 +287,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
     service.nearbySearch(request, (results, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-        const placeDetails: PlaceDetails[] = [];
+        const placeDetails: PlaceDetails[] = [...supabaseRestaurants];
         
         // Process each place and get detailed information
         const processPlace = async (place: google.maps.places.PlaceResult, index: number) => {
@@ -269,7 +379,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
                 markersRef.current.push(marker);
 
                 // If this is the last place, sort and notify parent
-                if (placeDetails.length === Math.min(results.length, 50)) {
+                if (placeDetails.length === Math.min(results.length + supabaseRestaurants.length, 50)) {
                   const sortedPlaces = placeDetails
                     .filter(place => place.distance !== undefined)
                     .sort((a, b) => (a.distance || 0) - (b.distance || 0));
@@ -285,6 +395,14 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
         // Process up to 50 places
         results.slice(0, 50).forEach(processPlace);
+      } else {
+        // If Google Places search fails, still show Supabase restaurants
+        if (supabaseRestaurants.length > 0 && onPlacesFound) {
+          const sortedPlaces = supabaseRestaurants
+            .filter(place => place.distance !== undefined)
+            .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+          onPlacesFound(sortedPlaces);
+        }
       }
     });
   };
@@ -366,9 +484,19 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
             </div>
           )}
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          Click on markers to see bar details and ratings
-        </p>
+        <div className="text-xs text-muted-foreground mt-2 space-y-1">
+          <p>Click on markers to see bar details and ratings</p>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+              <span>Member Restaurants</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              <span>Google Places</span>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
