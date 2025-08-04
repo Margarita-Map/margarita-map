@@ -123,7 +123,13 @@ const DrinkSpecialsList = ({ restaurantIds, maxItems = 10 }: DrinkSpecialsListPr
     return (
       <div className="text-center py-8">
         <Wine className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-        <p className="text-muted-foreground">No drink specials found in this area.</p>
+        <h3 className="text-lg font-semibold mb-2">No Current Specials</h3>
+        <p className="text-muted-foreground mb-2">
+          Check back later for amazing drink deals!
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Specials are updated daily by local establishments
+        </p>
       </div>
     );
   }
