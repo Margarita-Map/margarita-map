@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +41,7 @@ const PartyCentral = () => {
     party_time: ""
   });
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkUser();
@@ -144,7 +146,16 @@ const PartyCentral = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
-              onClick={() => window.location.href = '/'}
+              onClick={() => {
+                navigate('/');
+                // Scroll to drink specials section after navigation
+                setTimeout(() => {
+                  const drinkSpecialsSection = document.querySelector('[data-section="drink-specials"]');
+                  if (drinkSpecialsSection) {
+                    drinkSpecialsSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }, 100);
+              }}
               size="lg"
               className="bg-gradient-to-r from-green-500 to-lime-500 hover:from-green-600 hover:to-lime-600 hover-scale shadow-lg"
             >
@@ -165,7 +176,7 @@ const PartyCentral = () => {
                 <CardContent className="p-6 text-center">
                   <p className="text-white mb-4">Sign in to share your party plans!</p>
                   <Button 
-                    onClick={() => window.location.href = '/auth'}
+                    onClick={() => navigate('/auth')}
                     className="bg-white/20 hover:bg-white/30 text-white hover-scale"
                   >
                     Sign In

@@ -121,7 +121,7 @@ const Index = () => {
       </section>
 
       {/* Drink Specials Section */}
-      <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
+      <section data-section="drink-specials" className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 md:mb-12">
             <div className="text-center sm:text-left">
