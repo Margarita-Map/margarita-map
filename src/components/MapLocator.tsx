@@ -175,7 +175,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
       if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
         const placeDetails: PlaceDetails[] = [];
         
-        results.slice(0, 20).forEach((place) => {
+        results.slice(0, 50).forEach((place) => {
           if (place.geometry?.location) {
             // Calculate distance from user location or search center
             const referenceLocation = userLocationRef.current || searchLocation;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,17 @@ interface PlacesListProps {
 
 const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  const visiblePlaces = useMemo(() => {
+    return places.slice(0, visibleCount);
+  }, [places, visibleCount]);
+
+  const hasMorePlaces = places.length > visibleCount;
+
+  const loadMorePlaces = () => {
+    setVisibleCount(prev => Math.min(prev + 12, places.length));
+  };
 
   const formatDistance = (distance: number) => {
     if (distance < 1) {
@@ -57,13 +68,18 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MapPin className="w-5 h-5" />
-          Closest Places ({places.length})
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-5 h-5" />
+            Closest Places
+          </div>
+          <span className="text-sm font-normal text-muted-foreground">
+            Showing {visiblePlaces.length} of {places.length}
+          </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {places.map((place) => (
+      <CardContent className="space-y-4 max-h-96 overflow-y-auto">
+        {visiblePlaces.map((place) => (
           <div
             key={place.id}
             className={`p-4 rounded-lg border transition-all cursor-pointer hover:shadow-md ${
@@ -163,6 +179,18 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
             )}
           </div>
         ))}
+        
+        {hasMorePlaces && (
+          <div className="pt-4 border-t">
+            <Button 
+              variant="outline" 
+              onClick={loadMorePlaces}
+              className="w-full"
+            >
+              Load More Places ({places.length - visibleCount} remaining)
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
