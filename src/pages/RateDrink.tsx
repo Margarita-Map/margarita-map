@@ -4,13 +4,20 @@ import { Badge } from "@/components/ui/badge";
 import { Star, MapPin, DollarSign, ThumbsUp, PenTool } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useSEO } from "@/hooks/useSEO";
+import { useNavigate } from "react-router-dom";
 
 const RateDrink = () => {
+  const navigate = useNavigate();
+  
   useSEO({
     title: "Rate a Drink - The BEST Margaritas near me",
     description: "Share your margarita experience! Rate drinks, add taste notes, and help others find the best margaritas.",
     keywords: "rate margarita, drink review, margarita rating, taste notes, agave rating"
   });
+
+  const handleFindBar = () => {
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-sunrise">
@@ -166,7 +173,11 @@ const RateDrink = () => {
         </div>
 
         <div className="text-center">
-          <Button size="lg" className="bg-gradient-sunset hover:bg-gradient-sunset/90 text-white border-0 font-bold px-8">
+          <Button 
+            size="lg" 
+            className="bg-gradient-sunset hover:bg-gradient-sunset/90 text-white border-0 font-bold px-8"
+            onClick={handleFindBar}
+          >
             <MapPin className="w-5 h-5 mr-2" />
             Start Rating - Find a Bar
           </Button>
