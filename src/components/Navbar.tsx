@@ -60,7 +60,7 @@ const Navbar = () => {
             <div className="text-2xl md:text-3xl animate-shake">🍹</div>
             <span className="text-lg md:text-2xl font-bold bg-gradient-sunset bg-clip-text text-transparent leading-tight">
               <span className="hidden sm:inline">The BEST Margaritas near me</span>
-              <span className="sm:hidden">Margarita Quest</span>
+              <span className="sm:hidden">The Best Margaritas Near You</span>
             </span>
           </Link>
 
