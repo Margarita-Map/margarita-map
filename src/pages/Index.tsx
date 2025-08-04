@@ -232,6 +232,17 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Bottom Image Section */}
+      <section className="pb-0">
+        <div className="w-full">
+          <img 
+            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=1200&h=400&fit=crop&crop=center" 
+            alt="Beautiful margarita collection" 
+            className="w-full h-64 md:h-80 object-cover"
+          />
+        </div>
+      </section>
     </div>;
 };
 export default Index;
