@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSEO } from "@/hooks/useSEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,7 @@ import heroImage from "@/assets/hero-margarita.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
 // Remove the sample reviews since we're using real data now
 const Index = () => {
+  const navigate = useNavigate();
   const [searchLocation, setSearchLocation] = useState<string>("");
   const [nearbyPlaces, setNearbyPlaces] = useState<PlaceDetails[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -135,7 +137,7 @@ const Index = () => {
             <h2 className="text-3xl md:text-4xl font-bold">
               Recent Reviews in Your Area 📝
             </h2>
-            <Button variant="festive" size="lg" className="w-full sm:w-auto">
+            <Button variant="festive" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
               <Star className="w-5 h-5" />
               Write a Review
             </Button>
