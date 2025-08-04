@@ -175,90 +175,112 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
       if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
         const placeDetails: PlaceDetails[] = [];
         
-        results.slice(0, 50).forEach((place) => {
-          if (place.geometry?.location) {
-            // Calculate distance from user location or search center
-            const referenceLocation = userLocationRef.current || searchLocation;
-            let distance: number | undefined;
-            
-            if (referenceLocation) {
-              const placeLatLng = new window.google.maps.LatLng(
-                place.geometry.location.lat(),
-                place.geometry.location.lng()
-              );
-              const distanceInMeters = window.google.maps.geometry.spherical.computeDistanceBetween(
-                referenceLocation,
-                placeLatLng
-              );
-              distance = distanceInMeters * 0.000621371; // Convert meters to miles
-            }
+        // Process each place and get detailed information
+        const processPlace = async (place: google.maps.places.PlaceResult, index: number) => {
+          if (place.geometry?.location && place.place_id) {
+            // Get detailed place information including website
+            service.getDetails({
+              placeId: place.place_id,
+              fields: ['name', 'formatted_address', 'rating', 'price_level', 'formatted_phone_number', 'website', 'photos', 'geometry']
+            }, (detailedPlace, detailStatus) => {
+              if (detailStatus === window.google.maps.places.PlacesServiceStatus.OK && detailedPlace) {
+                // Calculate distance from user location or search center
+                const referenceLocation = userLocationRef.current || searchLocation;
+                let distance: number | undefined;
+                
+                if (referenceLocation) {
+                  const placeLatLng = new window.google.maps.LatLng(
+                    place.geometry!.location!.lat(),
+                    place.geometry!.location!.lng()
+                  );
+                  const distanceInMeters = window.google.maps.geometry.spherical.computeDistanceBetween(
+                    referenceLocation,
+                    placeLatLng
+                  );
+                  distance = distanceInMeters * 0.000621371; // Convert meters to miles
+                }
 
-            // Create place details object
-            const placeDetail: PlaceDetails = {
-              id: place.place_id || '',
-              name: place.name || '',
-              address: place.vicinity || '',
-              rating: place.rating,
-              priceLevel: place.price_level,
-              distance,
-              location: {
-                lat: place.geometry.location.lat(),
-                lng: place.geometry.location.lng()
-              }
-            };
-            
-            placeDetails.push(placeDetail);
+                // Create place details object with full information
+                const placeDetail: PlaceDetails = {
+                  id: place.place_id || '',
+                  name: detailedPlace.name || place.name || '',
+                  address: detailedPlace.formatted_address || place.vicinity || '',
+                  rating: detailedPlace.rating || place.rating,
+                  priceLevel: detailedPlace.price_level || place.price_level,
+                  phoneNumber: detailedPlace.formatted_phone_number,
+                  website: detailedPlace.website,
+                  photos: detailedPlace.photos?.map(photo => photo.getUrl({ maxWidth: 400 })) || [],
+                  distance,
+                  location: {
+                    lat: place.geometry!.location!.lat(),
+                    lng: place.geometry!.location!.lng()
+                  }
+                };
+                
+                placeDetails.push(placeDetail);
 
-            const marker = new window.google.maps.Marker({
-              position: place.geometry.location,
-              map: map,
-              title: place.name,
-              icon: {
-                url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#10B981"/>
-                    <circle cx="12" cy="9" r="2.5" fill="white"/>
-                  </svg>
-                `),
-                scaledSize: new window.google.maps.Size(30, 30)
+                const marker = new window.google.maps.Marker({
+                  position: place.geometry!.location,
+                  map: map,
+                  title: placeDetail.name,
+                  icon: {
+                    url: "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#10B981"/>
+                        <circle cx="12" cy="9" r="2.5" fill="white"/>
+                      </svg>
+                    `),
+                    scaledSize: new window.google.maps.Size(30, 30)
+                  }
+                });
+
+                // Add click listener to marker
+                marker.addListener("click", () => {
+                  if (onLocationSelect) {
+                    onLocationSelect(place);
+                  }
+                  
+                  // Show info window with website link if available
+                  const websiteLink = placeDetail.website 
+                    ? `<br><a href="${placeDetail.website}" target="_blank" style="color: #10B981; text-decoration: underline;">Visit Website</a>`
+                    : '';
+                  
+                  const infoWindow = new window.google.maps.InfoWindow({
+                    content: `
+                      <div class="p-2">
+                        <h3 class="font-bold text-lg">${placeDetail.name}</h3>
+                        <p class="text-sm text-gray-600">${placeDetail.address}</p>
+                        <div class="flex items-center mt-1">
+                          <span class="text-yellow-500">★</span>
+                          <span class="ml-1 text-sm">${placeDetail.rating || 'No rating'}</span>
+                          ${distance ? `<span class="ml-2 text-xs text-gray-500">${distance.toFixed(1)} miles</span>` : ''}
+                        </div>
+                        ${websiteLink}
+                      </div>
+                    `
+                  });
+                  infoWindow.open(map, marker);
+                });
+
+                markersRef.current.push(marker);
+
+                // If this is the last place, sort and notify parent
+                if (placeDetails.length === Math.min(results.length, 50)) {
+                  const sortedPlaces = placeDetails
+                    .filter(place => place.distance !== undefined)
+                    .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+                    
+                  if (onPlacesFound) {
+                    onPlacesFound(sortedPlaces);
+                  }
+                }
               }
             });
-
-            // Add click listener to marker
-            marker.addListener("click", () => {
-              if (onLocationSelect) {
-                onLocationSelect(place);
-              }
-              
-              // Show info window
-              const infoWindow = new window.google.maps.InfoWindow({
-                content: `
-                  <div class="p-2">
-                    <h3 class="font-bold text-lg">${place.name}</h3>
-                    <p class="text-sm text-gray-600">${place.vicinity || ''}</p>
-                    <div class="flex items-center mt-1">
-                      <span class="text-yellow-500">★</span>
-                      <span class="ml-1 text-sm">${place.rating || 'No rating'}</span>
-                      ${distance ? `<span class="ml-2 text-xs text-gray-500">${distance.toFixed(1)} miles</span>` : ''}
-                    </div>
-                  </div>
-                `
-              });
-              infoWindow.open(map, marker);
-            });
-
-            markersRef.current.push(marker);
           }
-        });
-        
-        // Sort places by distance and notify parent component
-        const sortedPlaces = placeDetails
-          .filter(place => place.distance !== undefined)
-          .sort((a, b) => (a.distance || 0) - (b.distance || 0));
-          
-        if (onPlacesFound) {
-          onPlacesFound(sortedPlaces);
-        }
+        };
+
+        // Process up to 50 places
+        results.slice(0, 50).forEach(processPlace);
       }
     });
   };
