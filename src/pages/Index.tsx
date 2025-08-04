@@ -20,7 +20,11 @@ const Index = () => {
   const [nearbyPlaces, setNearbyPlaces] = useState<PlaceDetails[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showManageForm, setShowManageForm] = useState(false);
-  const { reviews, loading: reviewsLoading, error: reviewsError } = useNearbyReviews(nearbyPlaces);
+  const {
+    reviews,
+    loading: reviewsLoading,
+    error: reviewsError
+  } = useNearbyReviews(nearbyPlaces);
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
@@ -36,11 +40,9 @@ const Index = () => {
     // Here you could fetch margarita reviews for this specific place
     // or add it to a favorites list
   };
-
   const handlePlacesFound = (places: PlaceDetails[]) => {
     setNearbyPlaces(places);
   };
-
   const handlePlaceSelect = (place: PlaceDetails) => {
     console.log("Selected place from list:", place);
     // Could highlight the corresponding marker on the map
@@ -88,15 +90,8 @@ const Index = () => {
             Find the Best Margaritas Near You! 🗺️
           </h2>
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
-            <MapLocator 
-              searchLocation={searchLocation} 
-              onLocationSelect={handleLocationSelect}
-              onPlacesFound={handlePlacesFound}
-            />
-            <PlacesList 
-              places={nearbyPlaces}
-              onPlaceSelect={handlePlaceSelect}
-            />
+            <MapLocator searchLocation={searchLocation} onLocationSelect={handleLocationSelect} onPlacesFound={handlePlacesFound} />
+            <PlacesList places={nearbyPlaces} onPlaceSelect={handlePlaceSelect} />
           </div>
         </div>
       </section>
@@ -113,10 +108,7 @@ const Index = () => {
             </p>
           </div>
           <div className="max-w-4xl mx-auto">
-            <DrinkSpecialsList 
-              restaurantIds={nearbyPlaces.map(place => place.id)} 
-              maxItems={8}
-            />
+            <DrinkSpecialsList restaurantIds={nearbyPlaces.map(place => place.id)} maxItems={8} />
           </div>
         </div>
       </section>
@@ -134,40 +126,28 @@ const Index = () => {
             </Button>
           </div>
           
-          {reviewsLoading && (
-            <div className="text-center py-8">
+          {reviewsLoading && <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
               <p className="text-muted-foreground">Loading reviews...</p>
-            </div>
-          )}
+            </div>}
           
-          {reviewsError && (
-            <div className="text-center py-8">
+          {reviewsError && <div className="text-center py-8">
               <p className="text-destructive">Error loading reviews: {reviewsError}</p>
-            </div>
-          )}
+            </div>}
           
-          {!reviewsLoading && !reviewsError && reviews.length === 0 && (
-            <div className="text-center py-8">
+          {!reviewsLoading && !reviewsError && reviews.length === 0 && <div className="text-center py-8">
               <p className="text-muted-foreground">No reviews found for places in this area. Be the first to leave a review!</p>
-            </div>
-          )}
+            </div>}
           
-          {!reviewsLoading && !reviewsError && reviews.length > 0 && (
-            <div className="grid gap-6 lg:grid-cols-2 xl:gap-8">
-              {reviews.slice(0, 6).map(review => (
-                <ReviewCard key={review.id} review={review} />
-              ))}
-            </div>
-          )}
+          {!reviewsLoading && !reviewsError && reviews.length > 0 && <div className="grid gap-6 lg:grid-cols-2 xl:gap-8">
+              {reviews.slice(0, 6).map(review => <ReviewCard key={review.id} review={review} />)}
+            </div>}
           
-          {!reviewsLoading && !reviewsError && reviews.length > 6 && (
-            <div className="text-center mt-8 md:mt-12">
+          {!reviewsLoading && !reviewsError && reviews.length > 6 && <div className="text-center mt-8 md:mt-12">
               <Button variant="tropical" size="lg" className="w-full sm:w-auto">
                 View All Reviews ({reviews.length})
               </Button>
-            </div>
-          )}
+            </div>}
         </div>
       </section>
 
@@ -182,34 +162,22 @@ const Index = () => {
               Add your establishment to our directory and manage your daily drink specials to attract more customers.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Button 
-                variant="tropical" 
-                size="lg" 
-                onClick={() => setShowAddForm(!showAddForm)}
-              >
+              <Button variant="tropical" size="lg" onClick={() => setShowAddForm(!showAddForm)}>
                 {showAddForm ? "Hide Form" : "Add Your Establishment"}
               </Button>
-              <Button 
-                variant="festive" 
-                size="lg" 
-                onClick={() => setShowManageForm(!showManageForm)}
-              >
+              <Button variant="festive" size="lg" onClick={() => setShowManageForm(!showManageForm)}>
                 {showManageForm ? "Hide Management" : "Manage Specials"}
               </Button>
             </div>
           </div>
           
-          {showAddForm && (
-            <div className="animate-in slide-in-from-top duration-300 mb-8">
+          {showAddForm && <div className="animate-in slide-in-from-top duration-300 mb-8">
               <AddEstablishmentForm onSuccess={() => setShowAddForm(false)} />
-            </div>
-          )}
+            </div>}
 
-          {showManageForm && (
-            <div className="animate-in slide-in-from-top duration-300">
+          {showManageForm && <div className="animate-in slide-in-from-top duration-300">
               <ManageEstablishment />
-            </div>
-          )}
+            </div>}
         </div>
       </section>
 
@@ -236,11 +204,7 @@ const Index = () => {
       {/* Bottom Image Section */}
       <section className="pb-0">
         <div className="w-full">
-          <img 
-            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=1200&h=400&fit=crop&crop=center" 
-            alt="Beautiful margarita collection" 
-            className="w-full h-64 md:h-80 object-cover"
-          />
+          
         </div>
       </section>
     </div>;
