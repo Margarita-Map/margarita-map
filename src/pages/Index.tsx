@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSEO } from "@/hooks/useSEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,13 +25,24 @@ const Index = () => {
     loading: reviewsLoading,
     error: reviewsError
   } = useNearbyReviews(nearbyPlaces);
+
+  // Load saved search location on mount
+  useEffect(() => {
+    const savedLocation = localStorage.getItem('lastSearchLocation');
+    if (savedLocation) {
+      setSearchLocation(savedLocation);
+    }
+  }, []);
+
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
+  
   const handleSearch = (location: string) => {
     setSearchLocation(location);
+    localStorage.setItem('lastSearchLocation', location);
     console.log("Searching for margaritas near:", location);
     // The map will automatically update based on the searchLocation state
   };
