@@ -102,6 +102,7 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           name: string
+          owner_id: string | null
           phone: string | null
           updated_at: string
           website: string | null
@@ -113,6 +114,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name: string
+          owner_id?: string | null
           phone?: string | null
           updated_at?: string
           website?: string | null
@@ -124,6 +126,7 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name?: string
+          owner_id?: string | null
           phone?: string | null
           updated_at?: string
           website?: string | null

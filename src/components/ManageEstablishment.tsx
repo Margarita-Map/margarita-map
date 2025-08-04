@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building, Plus, Wine } from "lucide-react";
+import { Building, Plus, Wine, LogIn, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import DrinkSpecialsForm from "./DrinkSpecialsForm";
@@ -18,14 +19,37 @@ const ManageEstablishment = () => {
   const [selectedRestaurant, setSelectedRestaurant] = useState<string>("");
   const [showSpecialsForm, setShowSpecialsForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     const fetchRestaurants = async () => {
       try {
         const { data, error } = await supabase
           .from('restaurants')
           .select('id, name, address')
+          .eq('owner_id', user.id)
           .order('name');
 
         if (error) {
@@ -47,7 +71,15 @@ const ManageEstablishment = () => {
     };
 
     fetchRestaurants();
-  }, [toast]);
+  }, [user, toast]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Signed out",
+      description: "You've been signed out successfully.",
+    });
+  };
 
   const handleSpecialAdded = () => {
     setShowSpecialsForm(false);
@@ -56,6 +88,31 @@ const ManageEstablishment = () => {
       description: "Your drink special has been added.",
     });
   };
+
+  if (!user) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building className="w-5 h-5" />
+            Establishment Management
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Sign in to manage your establishment and add daily drink specials.
+          </p>
+        </CardHeader>
+        <CardContent className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            You need to be signed in to manage your establishment.
+          </p>
+          <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto">
+            <LogIn className="w-4 h-4 mr-2" />
+            Sign In / Register
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (loading) {
     return (
@@ -66,17 +123,64 @@ const ManageEstablishment = () => {
     );
   }
 
+  if (restaurants.length === 0) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Building className="w-5 h-5" />
+                Establishment Management
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mt-2">
+                No establishments found. Add your establishment first to manage drink specials.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <User className="w-4 h-4" />
+                {user.email}
+              </div>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-center py-8">
+            Please add your establishment first using the "Add Your Establishment" form above.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building className="w-5 h-5" />
-            Manage Your Establishment
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Select your establishment to manage drink specials and other features.
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Building className="w-5 h-5" />
+                Manage Your Establishment
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Select your establishment to manage drink specials and other features.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <User className="w-4 h-4" />
+                {user.email}
+              </div>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">

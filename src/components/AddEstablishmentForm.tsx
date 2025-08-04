@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Phone, Globe, Building } from "lucide-react";
+import { MapPin, Phone, Globe, Building, LogIn } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -21,8 +22,26 @@ const AddEstablishmentForm = ({ onSuccess }: AddEstablishmentFormProps) => {
     website: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const { geocodeAddress, isLoaded } = useGoogleMaps();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check authentication status
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -33,6 +52,15 @@ const AddEstablishmentForm = ({ onSuccess }: AddEstablishmentFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to add your establishment.",
+        variant: "destructive"
+      });
+      return;
+    }
     
     if (!formData.name.trim() || !formData.address.trim()) {
       toast({
@@ -73,7 +101,8 @@ const AddEstablishmentForm = ({ onSuccess }: AddEstablishmentFormProps) => {
           phone: formData.phone.trim() || null,
           website: website || null,
           latitude,
-          longitude
+          longitude,
+          owner_id: user.id
         });
 
       if (error) {
@@ -114,6 +143,31 @@ const AddEstablishmentForm = ({ onSuccess }: AddEstablishmentFormProps) => {
       setIsSubmitting(false);
     }
   };
+
+  if (!user) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building className="w-5 h-5" />
+            Add Your Establishment
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Sign in to add your bar or restaurant to our directory.
+          </p>
+        </CardHeader>
+        <CardContent className="text-center space-y-4">
+          <p className="text-muted-foreground">
+            You need to be signed in to add your establishment.
+          </p>
+          <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto">
+            <LogIn className="w-4 h-4 mr-2" />
+            Sign In / Register
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
