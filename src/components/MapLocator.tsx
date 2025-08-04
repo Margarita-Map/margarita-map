@@ -23,7 +23,7 @@ const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
       }
 
       // Check if API key is available
-      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AlzaSyBd-p22q4Ye79HCGtUfLrsRJOaYekltgq8';
+      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AlzaSyCwDTKVyOFsjfKI-KW6gFzGO4fXfVunjcw';
       if (!apiKey) {
         console.error("Google Maps API key not found. Please add VITE_GOOGLE_MAPS_API_KEY to your environment variables.");
         return;
