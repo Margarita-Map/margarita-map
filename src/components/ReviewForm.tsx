@@ -167,16 +167,21 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-2">
             <User className="w-5 h-5" />
-            Sign In Required
+            Free Sign Up Required
           </CardTitle>
           <CardDescription>
-            You need to be signed in to submit a review
+            It's completely free! Just enter your email and password to start rating drinks.
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center">
-          <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto">
+        <CardContent className="text-center space-y-4">
+          <div className="text-sm text-muted-foreground">
+            <p>✅ Free to join</p>
+            <p>✅ Only email & password needed</p>
+            <p>✅ Start rating immediately</p>
+          </div>
+          <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto bg-gradient-sunset hover:bg-gradient-sunset/90 text-white border-0">
             <LogIn className="w-4 h-4 mr-2" />
-            Sign In to Continue
+            Sign Up Free / Sign In
           </Button>
         </CardContent>
       </Card>
