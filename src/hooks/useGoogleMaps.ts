@@ -23,7 +23,7 @@ export const useGoogleMaps = () => {
   useEffect(() => {
     // For now, using the provided API key directly
     // In production, this should be handled through Supabase edge functions
-    const apiKey = 'AIzaSyCwDTKVyOFsjfKl-KW6gFzGO4fXfVunjcw';
+    const apiKey = 'AIzaSyCwDTKVy0FsjfKI-KW6gFzGO4fXfVunjcw';
     
     if (!apiKey) {
       setError('Google Maps API key not configured');

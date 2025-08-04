@@ -24,7 +24,7 @@ const MapLocator = ({ searchLocation, onLocationSelect }: MapLocatorProps) => {
 
       // For now, we'll handle API key loading through Supabase edge functions
       // This is a placeholder - in production, the API key should be handled securely
-      const apiKey = 'AIzaSyCwDTKVyOFsjfKl-KW6gFzGO4fXfVunjcw'; // Your provided key
+      const apiKey = 'AIzaSyCwDTKVy0FsjfKI-KW6gFzGO4fXfVunjcw'; // Your provided key
       if (!apiKey) {
         console.error("Google Maps API key not configured.");
         return;
