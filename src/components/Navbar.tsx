@@ -52,7 +52,7 @@ const Navbar = () => {
         }`}
       >
         <Trophy className="w-5 h-5" />
-        Tequila Brands
+        Vote For Your Favorite Tequila
       </Link>
 
       <Link to="/rate-drink">
