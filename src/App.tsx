@@ -8,6 +8,7 @@ import AuthPage from "./pages/AuthPage";
 import Recipes from "./pages/Recipes";
 import RateDrink from "./pages/RateDrink";
 import PartyCentral from "./pages/PartyCentral";
+import TequilaBrands from "./pages/TequilaBrands";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/recipes" element={<Recipes />} />
           <Route path="/rate-drink" element={<RateDrink />} />
           <Route path="/party-central" element={<PartyCentral />} />
+          <Route path="/tequila-brands" element={<TequilaBrands />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

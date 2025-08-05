@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      brand_votes: {
+        Row: {
+          brand_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brand_votes_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "tequila_brands"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       drink_specials: {
         Row: {
           created_at: string
@@ -212,6 +241,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tequila_brands: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          submitted_by: string | null
+          updated_at: string
+          user_submitted: boolean
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          submitted_by?: string | null
+          updated_at?: string
+          user_submitted?: boolean
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          submitted_by?: string | null
+          updated_at?: string
+          user_submitted?: boolean
+        }
+        Relationships: []
       }
     }
     Views: {
