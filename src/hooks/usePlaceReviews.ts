@@ -38,11 +38,35 @@ export const usePlaceReviews = (place: PlaceDetails | null) => {
       setError(null);
 
       // First, find the restaurant that matches this place by name and address
-      const { data: restaurants, error: restaurantError } = await supabase
+      // Try multiple matching strategies to find the restaurant
+      let restaurants = null;
+      let restaurantError = null;
+      
+      // Strategy 1: Try exact name match first
+      const nameQuery = await supabase
         .from('restaurants')
         .select('id')
-        .or(`name.ilike.%${place.name}%,address.ilike.%${place.address}%`)
+        .ilike('name', `%${place.name}%`)
         .limit(1);
+      
+      if (nameQuery.error) {
+        restaurantError = nameQuery.error;
+      } else if (nameQuery.data && nameQuery.data.length > 0) {
+        restaurants = nameQuery.data;
+      } else {
+        // Strategy 2: Try address matching if name doesn't work
+        const addressQuery = await supabase
+          .from('restaurants')
+          .select('id')
+          .ilike('address', `%${place.address}%`)
+          .limit(1);
+        
+        if (addressQuery.error) {
+          restaurantError = addressQuery.error;
+        } else {
+          restaurants = addressQuery.data;
+        }
+      }
 
       if (restaurantError) {
         throw restaurantError;
