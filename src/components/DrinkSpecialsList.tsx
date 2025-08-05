@@ -50,9 +50,8 @@ const DrinkSpecialsList = ({ restaurantIds, maxItems = 10 }: DrinkSpecialsListPr
           .eq('is_active', true)
           .order('created_at', { ascending: false });
 
-        if (restaurantIds && restaurantIds.length > 0) {
-          query = query.in('restaurant_id', restaurantIds);
-        }
+        // Only show drink specials for Supabase restaurants (not Google Places)
+        // Don't filter by restaurantIds since they are Google Place IDs, not Supabase UUIDs
 
         if (maxItems) {
           query = query.limit(maxItems);
@@ -90,7 +89,7 @@ const DrinkSpecialsList = ({ restaurantIds, maxItems = 10 }: DrinkSpecialsListPr
     };
 
     fetchSpecials();
-  }, [restaurantIds, maxItems]);
+  }, [maxItems]);
 
   const formatDay = (day: string) => {
     return day.charAt(0).toUpperCase() + day.slice(1);
