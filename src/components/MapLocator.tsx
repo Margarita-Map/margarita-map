@@ -382,8 +382,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
             fields: ['name', 'formatted_address', 'rating', 'price_level', 'formatted_phone_number', 'website', 'photos', 'geometry']
           }, (detailedPlace, detailStatus) => {
             if (detailStatus === window.google.maps.places.PlacesServiceStatus.OK && detailedPlace) {
-              // Calculate distance from user location or search center
-              const referenceLocation = userLocationRef.current || searchLocation;
+              // Calculate distance from search location (prioritize search over user's current location for out-of-town searches)
+              const referenceLocation = searchLocation;
               let distance: number | undefined;
               
               if (referenceLocation) {
@@ -471,9 +471,9 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
                 console.log(`Total places before filtering: ${allPlaces.length}`);
                 console.log('Places with distances:', allPlaces.map(p => ({ name: p.name, distance: p.distance })));
                 
-                // Very lenient filtering for out-of-town searches - include places within 30 miles OR with undefined distance
+                // Much more generous filtering for out-of-town searches - include places within search area OR with undefined distance
                 const sortedPlaces = allPlaces
-                  .filter(place => !place.distance || place.distance <= 30) // Include undefined distances and places within 30 miles
+                  .filter(place => !place.distance || place.distance <= 50) // Include undefined distances and places within reasonable driving distance
                   .sort((a, b) => {
                     // Sort by distance, putting undefined distances at the end
                     if (!a.distance && !b.distance) return 0;
