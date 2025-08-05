@@ -56,6 +56,7 @@ const Index = () => {
     // or add it to a favorites list
   };
   const handlePlacesFound = (places: PlaceDetails[]) => {
+    console.log("Places found in Index.tsx:", places?.length || 0, places);
     setNearbyPlaces(places);
   };
   const handlePlaceSelect = (place: PlaceDetails) => {
