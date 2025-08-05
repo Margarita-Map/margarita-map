@@ -300,10 +300,10 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     let searchesCompleted = 0;
     const totalSearches = 4; // Increased from 2 to 4 searches
 
-    // First search for mexican restaurants and tequila bars (closer radius for better relevance)
+    // First search for mexican restaurants and tequila bars (expanded radius)
     const mexicanRestaurantRequest = {
       location: searchLocation,
-      radius: 5000, // 3 miles radius for more relevant results
+      radius: 8000, // ~5 miles radius for more results
       type: "restaurant",
       keyword: "mexican food margaritas tequila cantina mexican restaurant tex mex tequileria"
     };
@@ -311,7 +311,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     // Second search specifically for cocktail bars and lounges
     const cocktailBarRequest = {
       location: searchLocation,
-      radius: 5000, // 3 miles radius
+      radius: 8000, // ~5 miles radius
       type: "bar",
       keyword: "cocktail bar tequila bar margaritas mezcal agave cocktail lounge"
     };
@@ -319,7 +319,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     // Third search for more Mexican restaurant variations
     const mexicanVariationsRequest = {
       location: searchLocation,
-      radius: 4000, // Slightly smaller radius for closer results
+      radius: 7000, // Expanded for more results
       type: "restaurant", 
       keyword: "authentic mexican tacos burritos quesadillas mexican grill mexican cuisine"
     };
@@ -327,7 +327,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     // Fourth search for casual dining and chains that serve margaritas
     const casualDiningRequest = {
       location: searchLocation,
-      radius: 6000, // Slightly larger to catch chain restaurants
+      radius: 10000, // Larger to catch chain restaurants
       type: "restaurant",
       keyword: "chilis applebees tgi fridays olive garden red lobster margaritas happy hour"
     };
@@ -464,7 +464,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
               markersRef.current.push(marker);
 
               // If this is the last place, combine and sort all places by distance
-              if (processedCount === Math.min(sortedResults.length, 30)) {
+              if (processedCount === Math.min(sortedResults.length, 50)) {
                 const allPlaces = [...placeDetails, ...processedPlaces];
                 
                 // Debug logging
@@ -493,8 +493,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
         }
       };
 
-      // Process up to 30 places (closer results are better)
-      sortedResults.slice(0, 30).forEach(processPlace);
+      // Process up to 50 places to get more variety
+      sortedResults.slice(0, 50).forEach(processPlace);
       
       // If no results from Google, still show Supabase restaurants
       if (sortedResults.length === 0 && supabaseRestaurants.length > 0 && onPlacesFound) {
