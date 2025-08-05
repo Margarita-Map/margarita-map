@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, Phone, Globe, Navigation, StarIcon, Users } from "lucide-react";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { usePlaceRatings } from "@/hooks/usePlaceRatings";
+import PlaceReviewsDialog from "./PlaceReviewsDialog";
 
 interface PlacesListProps {
   places: PlaceDetails[];
@@ -16,6 +17,8 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
   const navigate = useNavigate();
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
+  const [reviewsDialogOpen, setReviewsDialogOpen] = useState(false);
+  const [selectedPlaceForReviews, setSelectedPlaceForReviews] = useState<PlaceDetails | null>(null);
   const { placeRatings, loading: ratingsLoading } = usePlaceRatings(places);
 
   const visiblePlaces = useMemo(() => {
@@ -57,6 +60,18 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
     // Also call the onPlaceSelect prop if provided
     if (onPlaceSelect) {
       onPlaceSelect(place);
+    }
+  };
+
+  const handleViewReviews = (place: PlaceDetails) => {
+    setSelectedPlaceForReviews(place);
+    setReviewsDialogOpen(true);
+  };
+
+  const handleRatePlaceFromDialog = () => {
+    if (selectedPlaceForReviews) {
+      setReviewsDialogOpen(false);
+      handlePlaceClick(selectedPlaceForReviews);
     }
   };
 
@@ -114,7 +129,7 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
                     <Badge 
                       variant="secondary" 
                       className="text-xs flex items-center gap-1 cursor-pointer hover:bg-secondary/80 transition-colors"
-                      onClick={() => handlePlaceClick(place)}
+                      onClick={() => handleViewReviews(place)}
                     >
                       <Users className="w-3 h-3" />
                       {placeRatings[place.id].totalReviews} review{placeRatings[place.id].totalReviews !== 1 ? 's' : ''}
@@ -232,6 +247,13 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
           </div>
         )}
       </CardContent>
+
+      <PlaceReviewsDialog
+        place={selectedPlaceForReviews}
+        open={reviewsDialogOpen}
+        onOpenChange={setReviewsDialogOpen}
+        onRatePlace={handleRatePlaceFromDialog}
+      />
     </Card>
   );
 };
