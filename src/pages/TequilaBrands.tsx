@@ -227,7 +227,7 @@ export default function TequilaBrands() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-primary mb-4 flex items-center justify-center gap-2">
             <Trophy className="h-8 w-8" />
-            Favorite Tequila Brands
+            Vote for Your Favorite Tequila
           </h1>
           <p className="text-muted-foreground text-lg">
             Vote for your favorite tequila brands and see what the community loves most!
