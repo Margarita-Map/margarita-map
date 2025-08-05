@@ -37,11 +37,21 @@ export const usePlaceRatings = (places: PlaceDetails[]) => {
           let matchingRestaurant = restaurants?.find(r => r.id === place.id);
           
           if (!matchingRestaurant) {
-            // Try to match by name (fuzzy matching)
-            matchingRestaurant = restaurants?.find(r => 
-              r.name.toLowerCase().includes(place.name.toLowerCase()) ||
-              place.name.toLowerCase().includes(r.name.toLowerCase())
-            );
+            // Try to match by name (improved fuzzy matching)
+            matchingRestaurant = restaurants?.find(r => {
+              const placeName = place.name.toLowerCase().replace(/[^\w\s]/g, '').trim();
+              const restaurantName = r.name.toLowerCase().replace(/[^\w\s]/g, '').trim();
+              
+              // Check for exact match first
+              if (placeName === restaurantName) return true;
+              
+              // Check if one name contains the other (but with more than 3 characters)
+              if (placeName.length > 3 && restaurantName.length > 3) {
+                return placeName.includes(restaurantName) || restaurantName.includes(placeName);
+              }
+              
+              return false;
+            });
           }
 
           if (matchingRestaurant) {

@@ -60,12 +60,17 @@ export const useNearbyReviews = (nearbyPlaces: PlaceDetails[], userLocation?: { 
         return;
       }
 
-      // Get profiles for all users who made reviews
-      const userIds = [...new Set(reviewsData.map(review => review.user_id))];
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('user_id, display_name')
-        .in('user_id', userIds);
+      // Get profiles for all users who made reviews, filtering out null user_ids
+      const validUserIds = [...new Set(reviewsData.map(review => review.user_id))].filter((id): id is string => id !== null);
+      
+      let profilesData: any[] = [];
+      if (validUserIds.length > 0) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('user_id, display_name')
+          .in('user_id', validUserIds);
+        profilesData = data || [];
+      }
 
       // Create a map of user_id to profile for quick lookup
       const profileMap = new Map(
