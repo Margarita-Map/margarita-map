@@ -2,8 +2,9 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Star, Phone, Globe, Navigation, StarIcon } from "lucide-react";
+import { MapPin, Star, Phone, Globe, Navigation, StarIcon, Users } from "lucide-react";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
+import { usePlaceRatings } from "@/hooks/usePlaceRatings";
 
 interface PlacesListProps {
   places: PlaceDetails[];
@@ -13,6 +14,7 @@ interface PlacesListProps {
 const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
+  const { placeRatings, loading: ratingsLoading } = usePlaceRatings(places);
 
   const visiblePlaces = useMemo(() => {
     return places.slice(0, visibleCount);
@@ -93,7 +95,21 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
           >
             <div className="flex justify-between items-start gap-4">
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg truncate">{place.name}</h3>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-lg truncate">{place.name}</h3>
+                  {placeRatings[place.id]?.hasRatings && (
+                    <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      {placeRatings[place.id].totalReviews} review{placeRatings[place.id].totalReviews !== 1 ? 's' : ''}
+                    </Badge>
+                  )}
+                  {placeRatings[place.id]?.hasRatings && (
+                    <Badge variant="default" className="text-xs flex items-center gap-1 bg-amber-500 hover:bg-amber-600">
+                      <Star className="w-3 h-3 fill-white" />
+                      {placeRatings[place.id].averageRating}/5
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-sm text-muted-foreground truncate mb-2">
                   {place.address}
                 </p>
