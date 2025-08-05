@@ -272,6 +272,51 @@ export type Database = {
         }
         Relationships: []
       }
+      tequila_events: {
+        Row: {
+          contact_info: string | null
+          created_at: string
+          description: string | null
+          event_date: string
+          event_time: string | null
+          id: string
+          price: string | null
+          title: string
+          updated_at: string
+          venue_address: string
+          venue_name: string
+          website: string | null
+        }
+        Insert: {
+          contact_info?: string | null
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_time?: string | null
+          id?: string
+          price?: string | null
+          title: string
+          updated_at?: string
+          venue_address: string
+          venue_name: string
+          website?: string | null
+        }
+        Update: {
+          contact_info?: string | null
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string | null
+          id?: string
+          price?: string | null
+          title?: string
+          updated_at?: string
+          venue_address?: string
+          venue_name?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

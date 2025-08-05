@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MapPin, BookOpen, Star, Menu, PartyPopper, Trophy } from "lucide-react";
+import { MapPin, BookOpen, Star, Menu, PartyPopper, Trophy, Calendar } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 const Navbar = () => {
   const location = useLocation();
@@ -53,6 +53,18 @@ const Navbar = () => {
       >
         <Trophy className="w-5 h-5" />
         Vote For Your Favorite Tequila
+      </Link>
+
+      <Link 
+        to="/tequila-events" 
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium ${
+          location.pathname === '/tequila-events' 
+            ? 'bg-primary text-primary-foreground' 
+            : 'hover:bg-accent hover:text-accent-foreground'
+        }`}
+      >
+        <Calendar className="w-5 h-5" />
+        Tequila Events
       </Link>
 
       <Link to="/rate-drink">
