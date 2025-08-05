@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSEO } from "@/hooks/useSEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Star, Utensils, Clock } from "lucide-react";
+import { MapPin, Star, Utensils, Clock, Car, AlertTriangle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import ReviewCard from "@/components/ReviewCard";
@@ -244,6 +244,50 @@ const Index = () => {
                Share Your Review
              </Button>
            </div>
+        </div>
+      </section>
+
+      {/* Rideshare Section */}
+      <section className="py-12 md:py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <AlertTriangle className="w-6 h-6 text-amber-500" />
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Please Drive Responsibly
+              </h2>
+              <AlertTriangle className="w-6 h-6 text-amber-500" />
+            </div>
+            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+              Enjoying margaritas? Make the smart choice and get a safe ride home. 
+              Your safety and the safety of others matters.
+            </p>
+            
+            <div className="grid sm:grid-cols-2 gap-4 max-w-md mx-auto">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={() => window.open('https://m.uber.com/', '_blank')}
+                className="bg-black text-white hover:bg-black/80 font-medium h-14"
+              >
+                <Car className="w-5 h-5 mr-3" />
+                Get an Uber
+              </Button>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                onClick={() => window.open('https://lyft.com/', '_blank')}
+                className="bg-[#FF00BF] text-white hover:bg-[#FF00BF]/80 font-medium h-14"
+              >
+                <Car className="w-5 h-5 mr-3" />
+                Get a Lyft
+              </Button>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mt-6 italic">
+              "The best nights are the ones you remember safely getting home from."
+            </p>
+          </div>
         </div>
       </section>
 
