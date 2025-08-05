@@ -37,11 +37,11 @@ export const usePlaceReviews = (place: PlaceDetails | null) => {
       setLoading(true);
       setError(null);
 
-      // First, find the restaurant that matches this place
+      // First, find the restaurant that matches this place by name and address
       const { data: restaurants, error: restaurantError } = await supabase
         .from('restaurants')
         .select('id')
-        .or(`id.eq.${place.id},name.ilike.%${place.name}%`)
+        .or(`name.ilike.%${place.name}%,address.ilike.%${place.address}%`)
         .limit(1);
 
       if (restaurantError) {
