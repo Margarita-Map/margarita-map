@@ -1,6 +1,12 @@
 /// <reference types="google.maps" />
 import { useEffect, useState } from 'react';
 
+declare global {
+  interface Window {
+    initGoogleMaps?: () => void;
+  }
+}
+
 export interface PlaceDetails {
   id: string;
   name: string;
@@ -37,11 +43,11 @@ export const useGoogleMaps = () => {
     }
 
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry&callback=initGoogleMaps`;
     script.async = true;
     script.defer = true;
 
-    script.onload = () => {
+    window.initGoogleMaps = () => {
       setIsLoaded(true);
     };
 

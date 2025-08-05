@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Navigation } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
+declare global {
+  interface Window {
+    initMapLocator?: () => void;
+  }
+}
+
 interface MapLocatorProps {
   searchLocation?: string;
   onLocationSelect?: (place: google.maps.places.PlaceResult) => void;
@@ -41,20 +47,31 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
         return;
       }
 
-      // For now, we'll handle API key loading through Supabase edge functions
-      // This is a placeholder - in production, the API key should be handled securely
-      const apiKey = 'AIzaSyCwDTKVy0FsjfKI-KW6gFzGO4fXfVunjcw'; // Your provided key
+      // Check if script is already being loaded
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (existingScript) {
+        // Wait for existing script to load
+        const checkLoaded = setInterval(() => {
+          if (window.google && window.google.maps) {
+            setIsLoaded(true);
+            clearInterval(checkLoaded);
+          }
+        }, 100);
+        return;
+      }
+
+      const apiKey = 'AIzaSyCwDTKVy0FsjfKI-KW6gFzGO4fXfVunjcw';
       if (!apiKey) {
         console.error("Google Maps API key not configured.");
         return;
       }
 
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry&callback=initMap`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry&callback=initMapLocator`;
       script.async = true;
       script.defer = true;
 
-      window.initMap = () => {
+      window.initMapLocator = () => {
         setIsLoaded(true);
       };
 
