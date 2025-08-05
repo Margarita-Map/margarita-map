@@ -471,9 +471,9 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
                 console.log(`Total places before filtering: ${allPlaces.length}`);
                 console.log('Places with distances:', allPlaces.map(p => ({ name: p.name, distance: p.distance })));
                 
-                // More lenient filtering - include places within 15 miles OR with undefined distance
+                // Very lenient filtering for out-of-town searches - include places within 30 miles OR with undefined distance
                 const sortedPlaces = allPlaces
-                  .filter(place => !place.distance || place.distance <= 15) // Include undefined distances and places within 15 miles
+                  .filter(place => !place.distance || place.distance <= 30) // Include undefined distances and places within 30 miles
                   .sort((a, b) => {
                     // Sort by distance, putting undefined distances at the end
                     if (!a.distance && !b.distance) return 0;
