@@ -207,7 +207,7 @@ export type Database = {
           restaurant_id: string
           taste_notes: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
           would_recommend: boolean
         }
         Insert: {
@@ -218,7 +218,7 @@ export type Database = {
           restaurant_id: string
           taste_notes?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           would_recommend?: boolean
         }
         Update: {
@@ -229,7 +229,7 @@ export type Database = {
           restaurant_id?: string
           taste_notes?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           would_recommend?: boolean
         }
         Relationships: [

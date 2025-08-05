@@ -87,16 +87,6 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
   };
 
   const onSubmit = async (data: ReviewFormValues) => {
-    if (!user) {
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in to submit a review.",
-        variant: "destructive",
-      });
-      navigate('/auth');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -109,7 +99,7 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
         .select('id')
         .eq('name', data.restaurant_name)
         .eq('address', data.restaurant_address)
-        .single();
+        .maybeSingle();
 
       if (existingRestaurant) {
         restaurantId = existingRestaurant.id;
@@ -128,11 +118,11 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
         restaurantId = newRestaurant.id;
       }
 
-      // Create the review
+      // Create the review (user_id will be null for anonymous reviews)
       const { error: reviewError } = await supabase
         .from('reviews')
         .insert({
-          user_id: user.id,
+          user_id: user?.id || null,
           restaurant_id: restaurantId,
           agave_rating: data.agave_rating,
           price_point: data.price_point,
@@ -144,7 +134,9 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
 
       toast({
         title: "Review Submitted! 🍹",
-        description: "Thank you for sharing your margarita experience!",
+        description: user 
+          ? "Thank you for sharing your margarita experience!"
+          : "Thank you for your anonymous review! Your feedback helps others discover great margaritas.",
       });
 
       // Navigate back to home page
@@ -161,32 +153,6 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
     }
   };
 
-  if (!user) {
-    return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center gap-2">
-            <User className="w-5 h-5" />
-            Free Sign Up Required
-          </CardTitle>
-          <CardDescription>
-            It's completely free! Just enter your email and password to start rating drinks.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <div className="text-sm text-muted-foreground">
-            <p>✅ Free to join</p>
-            <p>✅ Only email & password needed</p>
-            <p>✅ Start rating immediately</p>
-          </div>
-          <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto bg-gradient-sunset hover:bg-gradient-sunset/90 text-white border-0">
-            <LogIn className="w-4 h-4 mr-2" />
-            Sign Up Free / Sign In
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -197,6 +163,18 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
         </CardTitle>
         <CardDescription>
           Share your thoughts and help others discover great margaritas
+          {!user && (
+            <div className="mt-2 text-sm">
+              <span className="text-muted-foreground">Submitting anonymously. </span>
+              <button 
+                onClick={() => navigate('/auth')} 
+                className="text-primary hover:underline"
+              >
+                Sign up free
+              </button>
+              <span className="text-muted-foreground"> to track your reviews.</span>
+            </div>
+          )}
         </CardDescription>
       </CardHeader>
       <CardContent>
