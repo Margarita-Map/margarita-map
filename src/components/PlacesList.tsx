@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Star, Phone, Globe, Navigation } from "lucide-react";
+import { MapPin, Star, Phone, Globe, Navigation, StarIcon } from "lucide-react";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 
 interface PlacesListProps {
@@ -82,12 +82,11 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
         {visiblePlaces.map((place) => (
           <div
             key={place.id}
-            className={`p-4 rounded-lg border transition-all cursor-pointer hover:shadow-md ${
+            className={`p-4 rounded-lg border transition-all ${
               selectedPlaceId === place.id 
                 ? 'border-primary bg-primary/5' 
                 : 'border-border hover:border-primary/50'
             }`}
-            onClick={() => handlePlaceClick(place)}
           >
             <div className="flex justify-between items-start gap-4">
               <div className="flex-1 min-w-0">
@@ -124,11 +123,18 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
               <div className="flex flex-col gap-2">
                 <Button
                   size="sm"
+                  variant="default"
+                  onClick={() => handlePlaceClick(place)}
+                  className="text-xs bg-primary hover:bg-primary/90"
+                >
+                  <StarIcon className="w-3 h-3 mr-1" />
+                  Rate This Place
+                </Button>
+                
+                <Button
+                  size="sm"
                   variant="outline"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDirections(place);
-                  }}
+                  onClick={() => handleDirections(place)}
                   className="text-xs"
                 >
                   <Navigation className="w-3 h-3 mr-1" />
@@ -140,7 +146,6 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
                     size="sm"
                     variant="outline"
                     asChild
-                    onClick={(e) => e.stopPropagation()}
                     className="text-xs"
                   >
                     <a href={`tel:${place.phoneNumber}`}>
@@ -155,7 +160,6 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
                     size="sm"
                     variant="outline"
                     asChild
-                    onClick={(e) => e.stopPropagation()}
                     className="text-xs"
                   >
                     <a href={place.website} target="_blank" rel="noopener noreferrer">
