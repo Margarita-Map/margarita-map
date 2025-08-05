@@ -18,7 +18,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
     if (!location.trim()) {
       toast({
         title: "Enter a location",
-        description: "Please enter a city, zip code, or address to search.",
+        description: "Please enter a city, zip code, address, or bar/restaurant name to search.",
         variant: "destructive"
       });
       return;
@@ -94,7 +94,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5 z-10" />
           <Input
             type="text"
-            placeholder="Enter city, zip code, or address..."
+            placeholder="Enter city, zip code, address, or bar/restaurant name..."
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             className="pl-12 h-14 md:h-12 text-base"
