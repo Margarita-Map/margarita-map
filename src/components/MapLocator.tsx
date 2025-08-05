@@ -300,20 +300,20 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     let searchesCompleted = 0;
     const totalSearches = 2;
 
-    // First search for general bars and restaurants
+    // First search for mexican restaurants and tequila bars (closer radius for better relevance)
     const request = {
       location: searchLocation,
-      radius: 8000, // 5 miles radius for more results
+      radius: 5000, // 3 miles radius for more relevant results
       type: "restaurant",
-      keyword: "cocktail bar restaurant drinks mexican food tacos margaritas tequila bar mezcal agave tequileria cantina mexican restaurant tex mex authentic mexican cuisine"
+      keyword: "mexican food margaritas tequila cantina mexican restaurant tex mex tequileria"
     };
 
-    // Second search specifically for bars
+    // Second search specifically for cocktail bars and lounges
     const barRequest = {
       location: searchLocation,
-      radius: 8000,
+      radius: 5000, // 3 miles radius
       type: "bar",
-      keyword: "tequila bar mezcal agave cocktail lounge tequileria cantina mexican bar sports bar"
+      keyword: "cocktail bar tequila bar margaritas mezcal agave cocktail lounge"
     };
 
     const handleSearchResults = (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus, searchType: string) => {
@@ -336,7 +336,26 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
     const processAllResults = () => {
       const placeDetails: PlaceDetails[] = [...supabaseRestaurants];
+      const processedPlaces: PlaceDetails[] = [];
+      let processedCount = 0;
+      
       console.log(`Processing ${allResults.length} unique results from all searches`);
+      
+      // Sort results by distance first (based on proximity to search location)
+      const sortedResults = allResults.sort((a, b) => {
+        if (!a.geometry?.location || !b.geometry?.location) return 0;
+        
+        const aDistance = window.google.maps.geometry.spherical.computeDistanceBetween(
+          searchLocation,
+          new window.google.maps.LatLng(a.geometry.location.lat(), a.geometry.location.lng())
+        );
+        const bDistance = window.google.maps.geometry.spherical.computeDistanceBetween(
+          searchLocation,
+          new window.google.maps.LatLng(b.geometry.location.lat(), b.geometry.location.lng())
+        );
+        
+        return aDistance - bDistance;
+      });
       
       // Process each place and get detailed information
       const processPlace = (place: google.maps.places.PlaceResult, index: number) => {
@@ -380,7 +399,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
                 }
               };
               
-              placeDetails.push(placeDetail);
+              processedPlaces.push(placeDetail);
+              processedCount++;
 
               const marker = new window.google.maps.Marker({
                 position: place.geometry!.location,
@@ -427,12 +447,15 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
               markersRef.current.push(marker);
 
-              // If this is the last place, sort and notify parent
-              if (placeDetails.length === Math.min(allResults.length + supabaseRestaurants.length, 50)) {
-                const sortedPlaces = placeDetails
-                  .filter(place => place.distance !== undefined)
+              // If this is the last place, combine and sort all places by distance
+              if (processedCount === Math.min(sortedResults.length, 30)) {
+                const allPlaces = [...placeDetails, ...processedPlaces];
+                const sortedPlaces = allPlaces
+                  .filter(place => place.distance !== undefined && place.distance <= 10) // Only show places within 10 miles
                   .sort((a, b) => (a.distance || 0) - (b.distance || 0));
                   
+                console.log(`Final sorted results: ${sortedPlaces.length} places`);
+                
                 if (onPlacesFound) {
                   onPlacesFound(sortedPlaces);
                 }
@@ -442,13 +465,13 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
         }
       };
 
-      // Process up to 50 places
-      allResults.slice(0, 50).forEach(processPlace);
+      // Process up to 30 places (closer results are better)
+      sortedResults.slice(0, 30).forEach(processPlace);
       
       // If no results from Google, still show Supabase restaurants
-      if (allResults.length === 0 && supabaseRestaurants.length > 0 && onPlacesFound) {
+      if (sortedResults.length === 0 && supabaseRestaurants.length > 0 && onPlacesFound) {
         const sortedPlaces = supabaseRestaurants
-          .filter(place => place.distance !== undefined)
+          .filter(place => place.distance !== undefined && place.distance <= 10)
           .sort((a, b) => (a.distance || 0) - (b.distance || 0));
         onPlacesFound(sortedPlaces);
       }
