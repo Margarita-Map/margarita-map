@@ -206,8 +206,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
             );
             distance = distanceInMeters * 0.000621371; // Convert meters to miles
             
-            // Only include restaurants within 10 miles
-            if (distance > 10) return;
+            // Only include restaurants within 15 miles
+            if (distance > 15) return;
           }
 
           const restaurantDetail: PlaceDetails = {
@@ -297,7 +297,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
     const request = {
       location: searchLocation,
-      radius: 3200, // 2 miles radius for more local results
+      radius: 8000, // 5 miles radius for more results
       type: "restaurant",
       keyword: "cocktail bar restaurant drinks mexican food tacos margaritas tequila bar mezcal agave tequileria cantina"
     };
