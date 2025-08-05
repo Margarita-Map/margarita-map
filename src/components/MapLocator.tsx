@@ -282,7 +282,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
       location: searchLocation,
       radius: 3200, // 2 miles radius for more local results
       type: "restaurant",
-      keyword: "cocktail bar restaurant drinks mexican food tacos margaritas"
+      keyword: "cocktail bar restaurant drinks mexican food tacos margaritas tequila bar mezcal agave tequileria cantina"
     };
 
     service.nearbySearch(request, (results, status) => {
