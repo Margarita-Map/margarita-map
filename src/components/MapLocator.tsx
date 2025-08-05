@@ -466,9 +466,21 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
               // If this is the last place, combine and sort all places by distance
               if (processedCount === Math.min(sortedResults.length, 30)) {
                 const allPlaces = [...placeDetails, ...processedPlaces];
+                
+                // Debug logging
+                console.log(`Total places before filtering: ${allPlaces.length}`);
+                console.log('Places with distances:', allPlaces.map(p => ({ name: p.name, distance: p.distance })));
+                
+                // More lenient filtering - include places within 15 miles OR with undefined distance
                 const sortedPlaces = allPlaces
-                  .filter(place => place.distance !== undefined && place.distance <= 10) // Only show places within 10 miles
-                  .sort((a, b) => (a.distance || 0) - (b.distance || 0));
+                  .filter(place => !place.distance || place.distance <= 15) // Include undefined distances and places within 15 miles
+                  .sort((a, b) => {
+                    // Sort by distance, putting undefined distances at the end
+                    if (!a.distance && !b.distance) return 0;
+                    if (!a.distance) return 1;
+                    if (!b.distance) return -1;
+                    return a.distance - b.distance;
+                  });
                   
                 console.log(`Final sorted results: ${sortedPlaces.length} places`);
                 
