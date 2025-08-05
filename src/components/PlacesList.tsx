@@ -38,8 +38,11 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
   };
 
   const handlePlaceClick = (place: PlaceDetails) => {
+    console.log("Place clicked:", place.name);
     setSelectedPlaceId(place.id);
-    onPlaceSelect?.(place);
+    if (onPlaceSelect) {
+      onPlaceSelect(place);
+    }
   };
 
   const handleDirections = (place: PlaceDetails) => {
