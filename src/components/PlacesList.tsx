@@ -111,7 +111,11 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
                 <div className="flex items-center gap-2 mb-1">
                   <h3 className="font-semibold text-lg truncate">{place.name}</h3>
                   {placeRatings[place.id]?.hasRatings && (
-                    <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                    <Badge 
+                      variant="secondary" 
+                      className="text-xs flex items-center gap-1 cursor-pointer hover:bg-secondary/80 transition-colors"
+                      onClick={() => handlePlaceClick(place)}
+                    >
                       <Users className="w-3 h-3" />
                       {placeRatings[place.id].totalReviews} review{placeRatings[place.id].totalReviews !== 1 ? 's' : ''}
                     </Badge>
