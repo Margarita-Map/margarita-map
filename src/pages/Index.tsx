@@ -46,6 +46,8 @@ const Index = () => {
     setSearchLocation(location);
     localStorage.setItem('lastSearchLocation', location);
     console.log("Searching for margaritas near:", location);
+    // Clear nearby places immediately when starting new search
+    setNearbyPlaces([]);
     // The map will automatically update based on the searchLocation state
   };
   const handleLocationSelect = (place: any) => {
