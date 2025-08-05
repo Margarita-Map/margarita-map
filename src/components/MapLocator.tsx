@@ -298,10 +298,10 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     // Variables for managing multiple searches
     let allResults: google.maps.places.PlaceResult[] = [];
     let searchesCompleted = 0;
-    const totalSearches = 2;
+    const totalSearches = 4; // Increased from 2 to 4 searches
 
     // First search for mexican restaurants and tequila bars (closer radius for better relevance)
-    const request = {
+    const mexicanRestaurantRequest = {
       location: searchLocation,
       radius: 5000, // 3 miles radius for more relevant results
       type: "restaurant",
@@ -309,11 +309,27 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     };
 
     // Second search specifically for cocktail bars and lounges
-    const barRequest = {
+    const cocktailBarRequest = {
       location: searchLocation,
       radius: 5000, // 3 miles radius
       type: "bar",
       keyword: "cocktail bar tequila bar margaritas mezcal agave cocktail lounge"
+    };
+
+    // Third search for more Mexican restaurant variations
+    const mexicanVariationsRequest = {
+      location: searchLocation,
+      radius: 4000, // Slightly smaller radius for closer results
+      type: "restaurant", 
+      keyword: "authentic mexican tacos burritos quesadillas mexican grill mexican cuisine"
+    };
+
+    // Fourth search for casual dining and chains that serve margaritas
+    const casualDiningRequest = {
+      location: searchLocation,
+      radius: 6000, // Slightly larger to catch chain restaurants
+      type: "restaurant",
+      keyword: "chilis applebees tgi fridays olive garden red lobster margaritas happy hour"
     };
 
     const handleSearchResults = (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus, searchType: string) => {
@@ -477,13 +493,21 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
       }
     };
 
-    // Execute both searches
-    service.nearbySearch(request, (results, status) => {
-      handleSearchResults(results, status, "Restaurant");
+    // Execute all four searches
+    service.nearbySearch(mexicanRestaurantRequest, (results, status) => {
+      handleSearchResults(results, status, "Mexican Restaurant");
     });
 
-    service.nearbySearch(barRequest, (results, status) => {
-      handleSearchResults(results, status, "Bar");
+    service.nearbySearch(cocktailBarRequest, (results, status) => {
+      handleSearchResults(results, status, "Cocktail Bar");
+    });
+
+    service.nearbySearch(mexicanVariationsRequest, (results, status) => {
+      handleSearchResults(results, status, "Mexican Variations");
+    });
+
+    service.nearbySearch(casualDiningRequest, (results, status) => {
+      handleSearchResults(results, status, "Casual Dining");
     });
   };
 
