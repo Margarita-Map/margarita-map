@@ -36,13 +36,11 @@ const Index = () => {
       setSearchLocation(savedLocation);
     }
   }, []);
-
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
-  
   const handleSearch = (location: string) => {
     setSearchLocation(location);
     localStorage.setItem('lastSearchLocation', location);
@@ -60,8 +58,8 @@ const Index = () => {
   const handlePlaceSelect = (place: PlaceDetails) => {
     console.log("Selected place from list:", place);
     // Navigate to rate drink page with the selected place information
-    navigate('/rate-drink', { 
-      state: { 
+    navigate('/rate-drink', {
+      state: {
         selectedPlace: place,
         placeName: place.name,
         placeId: place.id
@@ -92,7 +90,7 @@ const Index = () => {
             </h1>
           </div>
           
-          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Discover the best margaritas near you with honest reviews from real people. Rate drinks with our agave scale and find your next favorite spot! Let your favorite bartender and establishment how much you appreciate them.</p>
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Discover the best margaritas near you, anywhere in the world. Rate drinks with our agave scale and find your next favorite spot! Let your favorite bartender and establishment know how much you appreciate them.</p>
           
           <div className="max-w-2xl mx-auto px-4">
             <SearchBar onSearch={handleSearch} />
@@ -221,26 +219,18 @@ const Index = () => {
             Join thousands of margarita enthusiasts discovering amazing drinks and sharing honest reviews.
           </p>
            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-             <Button 
-               variant="lime" 
-               size="lg" 
-               className="font-bold w-full sm:w-auto"
-               onClick={() => {
-                 // Scroll to the map section
-                 const mapSection = document.querySelector('#map-section');
-                 if (mapSection) {
-                   mapSection.scrollIntoView({ behavior: 'smooth' });
-                 }
-               }}
-             >
+             <Button variant="lime" size="lg" className="font-bold w-full sm:w-auto" onClick={() => {
+            // Scroll to the map section
+            const mapSection = document.querySelector('#map-section');
+            if (mapSection) {
+              mapSection.scrollIntoView({
+                behavior: 'smooth'
+              });
+            }
+          }}>
                Start Exploring
              </Button>
-             <Button 
-               variant="tropical" 
-               size="lg" 
-               className="w-full sm:w-auto"
-               onClick={() => navigate('/rate-drink')}
-             >
+             <Button variant="tropical" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
                Share Your Review
              </Button>
            </div>
@@ -264,21 +254,11 @@ const Index = () => {
             </p>
             
             <div className="grid sm:grid-cols-2 gap-4 max-w-md mx-auto">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                onClick={() => window.open('https://m.uber.com/', '_blank')}
-                className="bg-black text-white hover:bg-black/80 font-medium h-14"
-              >
+              <Button variant="outline" size="lg" onClick={() => window.open('https://m.uber.com/', '_blank')} className="bg-black text-white hover:bg-black/80 font-medium h-14">
                 <Car className="w-5 h-5 mr-3" />
                 Get an Uber
               </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                onClick={() => window.open('https://lyft.com/', '_blank')}
-                className="bg-[#FF00BF] text-white hover:bg-[#FF00BF]/80 font-medium h-14"
-              >
+              <Button variant="outline" size="lg" onClick={() => window.open('https://lyft.com/', '_blank')} className="bg-[#FF00BF] text-white hover:bg-[#FF00BF]/80 font-medium h-14">
                 <Car className="w-5 h-5 mr-3" />
                 Get a Lyft
               </Button>
@@ -301,11 +281,7 @@ const Index = () => {
       {/* Bottom Image Section */}
       <section className="pb-0">
         <div className="w-full h-96 relative overflow-hidden">
-          <img 
-            src={celebrationImage} 
-            alt="Friends celebrating with margaritas" 
-            className="w-full h-full object-cover"
-          />
+          <img src={celebrationImage} alt="Friends celebrating with margaritas" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
       </section>
