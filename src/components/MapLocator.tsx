@@ -167,9 +167,9 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
         mapInstanceRef.current.setCenter(location);
         mapInstanceRef.current.setZoom(14);
 
-        // Search for bars near the new location
+        // Search for bars near the new location, but also check if the search is for a specific place
         const service = new window.google.maps.places.PlacesService(mapInstanceRef.current);
-        searchNearbyBars(service, mapInstanceRef.current, location);
+        searchNearbyBars(service, mapInstanceRef.current, location, searchLocation);
       }
     });
   }, [searchLocation]);
@@ -283,7 +283,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
   const searchNearbyBars = async (
     service: google.maps.places.PlacesService, 
     map: google.maps.Map, 
-    location?: google.maps.LatLng
+    location?: google.maps.LatLng,
+    originalSearchQuery?: string
   ) => {
     // Clear existing markers
     markersRef.current.forEach(marker => marker.setMap(null));
@@ -298,7 +299,30 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     // Variables for managing multiple searches
     let allResults: google.maps.places.PlaceResult[] = [];
     let searchesCompleted = 0;
-    const totalSearches = 4; // Increased from 2 to 4 searches
+    let totalSearches = 4; // Base number of searches
+    let specificPlaceFound: google.maps.places.PlaceResult | null = null;
+
+    // If search appears to be for a specific place, do a text search first
+    if (originalSearchQuery) {
+      totalSearches = 5; // Add one more search for specific place
+      service.textSearch({
+        query: originalSearchQuery,
+        location: searchLocation,
+        radius: 15000 // 9+ miles to catch places
+      }, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          // Find the most relevant result (first one is usually most relevant)
+          specificPlaceFound = results[0];
+          if (specificPlaceFound && specificPlaceFound.place_id) {
+            allResults.unshift(specificPlaceFound); // Add to beginning of array for priority
+          }
+        }
+        searchesCompleted++;
+        if (searchesCompleted === totalSearches) {
+          processAllResults();
+        }
+      });
+    }
 
     // First search for mexican restaurants and tequila bars (expanded radius)
     const mexicanRestaurantRequest = {
@@ -472,17 +496,31 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
                 console.log('Places with distances:', allPlaces.map(p => ({ name: p.name, distance: p.distance })));
                 
                 // Much more generous filtering for out-of-town searches - include places within search area OR with undefined distance
-                const sortedPlaces = allPlaces
-                  .filter(place => !place.distance || place.distance <= 50) // Include undefined distances and places within reasonable driving distance
-                  .sort((a, b) => {
+                let sortedPlaces = allPlaces
+                  .filter(place => !place.distance || place.distance <= 50); // Include undefined distances and places within reasonable driving distance
+                  
+                // If there's a specific place found from the search query, prioritize it at the top
+                if (specificPlaceFound && specificPlaceFound.place_id) {
+                  const specificPlaceDetail = sortedPlaces.find(place => place.id === specificPlaceFound.place_id);
+                  if (specificPlaceDetail) {
+                    // Remove the specific place from its current position
+                    sortedPlaces = sortedPlaces.filter(place => place.id !== specificPlaceFound.place_id);
+                    // Add it to the beginning
+                    sortedPlaces.unshift(specificPlaceDetail);
+                  }
+                } else {
+                  // Normal sorting by distance if no specific place was found
+                  sortedPlaces.sort((a, b) => {
                     // Sort by distance, putting undefined distances at the end
                     if (!a.distance && !b.distance) return 0;
                     if (!a.distance) return 1;
                     if (!b.distance) return -1;
                     return a.distance - b.distance;
                   });
+                }
                   
                 console.log(`Final sorted results: ${sortedPlaces.length} places`);
+                console.log('Top 3 places:', sortedPlaces.slice(0, 3).map(p => ({ name: p.name, distance: p.distance })));
                 
                 if (onPlacesFound) {
                   onPlacesFound(sortedPlaces);
