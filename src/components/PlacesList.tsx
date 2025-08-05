@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +13,7 @@ interface PlacesListProps {
 }
 
 const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
+  const navigate = useNavigate();
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(12);
   const { placeRatings, loading: ratingsLoading } = usePlaceRatings(places);
@@ -42,6 +44,17 @@ const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
   const handlePlaceClick = (place: PlaceDetails) => {
     console.log("Place clicked:", place.name);
     setSelectedPlaceId(place.id);
+    
+    // Navigate to rate drink page with the selected place information
+    navigate('/rate-drink', {
+      state: {
+        selectedPlace: place,
+        placeName: place.name,
+        placeId: place.id
+      }
+    });
+    
+    // Also call the onPlaceSelect prop if provided
     if (onPlaceSelect) {
       onPlaceSelect(place);
     }
