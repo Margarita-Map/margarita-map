@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MapPin, BookOpen, Star, Menu, PartyPopper, Trophy, Calendar } from "lucide-react";
+import { MapPin, BookOpen, Star, Menu, PartyPopper, Trophy, Calendar, Facebook } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 const Navbar = () => {
   const location = useLocation();
@@ -91,6 +91,15 @@ const Navbar = () => {
           {/* Desktop menu */}
           <div className="hidden md:flex items-center gap-6">
             <NavLinks />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => window.open('https://facebook.com/thebestmargaritasnearme.com', '_blank')}
+              className="flex items-center gap-2"
+            >
+              <Facebook className="w-4 h-4" />
+              Facebook
+            </Button>
           </div>
 
           {/* Mobile menu */}
@@ -104,6 +113,14 @@ const Navbar = () => {
             <SheetContent side="right" className="w-80 sm:w-96">
               <div className="flex flex-col gap-4 mt-8">
                 <NavLinks />
+                <Button 
+                  variant="ghost" 
+                  onClick={() => window.open('https://facebook.com/thebestmargaritasnearme.com', '_blank')}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium hover:bg-accent hover:text-accent-foreground justify-start"
+                >
+                  <Facebook className="w-5 h-5" />
+                  Facebook
+                </Button>
               </div>
             </SheetContent>
           </Sheet>
