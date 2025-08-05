@@ -33,15 +33,36 @@ export default function TequilaBrands() {
   const [newBrandDescription, setNewBrandDescription] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [votedBrands, setVotedBrands] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     checkUser();
+    loadVotedBrands();
     fetchBrands();
   }, []);
 
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     setUser(user);
+  };
+
+  const loadVotedBrands = () => {
+    try {
+      const saved = localStorage.getItem('tequila-votes');
+      if (saved) {
+        setVotedBrands(new Set(JSON.parse(saved)));
+      }
+    } catch (error) {
+      console.error('Error loading saved votes:', error);
+    }
+  };
+
+  const saveVotedBrands = (brands: Set<string>) => {
+    try {
+      localStorage.setItem('tequila-votes', JSON.stringify([...brands]));
+    } catch (error) {
+      console.error('Error saving votes:', error);
+    }
   };
 
   const fetchBrands = async () => {
@@ -65,27 +86,20 @@ export default function TequilaBrands() {
 
       if (votesError) throw votesError;
 
-      // Get user's votes if logged in
-      let userVotes = [];
-      if (user) {
-        const { data: userVotesData } = await supabase
-          .from('brand_votes')
-          .select('brand_id')
-          .eq('user_id', user.id);
-        userVotes = userVotesData || [];
-      }
-
       // Count votes per brand
       const voteCounts = votesData.reduce((acc, vote) => {
         acc[vote.brand_id] = (acc[vote.brand_id] || 0) + 1;
         return acc;
       }, {});
 
+      // For anonymous voting, use localStorage to track votes
+      const localVotes = Array.from(votedBrands);
+
       // Combine data
       const brandsWithVotes = brandsData.map(brand => ({
         ...brand,
         vote_count: voteCounts[brand.id] || 0,
-        user_voted: userVotes.some(vote => vote.brand_id === brand.id)
+        user_voted: localVotes.includes(brand.id)
       }));
 
       // Sort by vote count (descending)
@@ -105,43 +119,43 @@ export default function TequilaBrands() {
   };
 
   const handleVote = async (brandId: string) => {
-    if (!user) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to vote for your favorite brands",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       const brand = brands.find(b => b.id === brandId);
       if (!brand) return;
 
+      const newVotedBrands = new Set(votedBrands);
+
       if (brand.user_voted) {
-        // Remove vote
+        // Remove vote from database and localStorage
         const { error } = await supabase
           .from('brand_votes')
           .delete()
-          .eq('user_id', user.id)
           .eq('brand_id', brandId);
 
         if (error) throw error;
+
+        newVotedBrands.delete(brandId);
+        setVotedBrands(newVotedBrands);
+        saveVotedBrands(newVotedBrands);
 
         toast({
           title: "Vote removed",
           description: `Removed your vote for ${brand.name}`,
         });
       } else {
-        // Add vote
+        // Add vote to database and localStorage
         const { error } = await supabase
           .from('brand_votes')
           .insert({
-            user_id: user.id,
-            brand_id: brandId
+            brand_id: brandId,
+            user_id: user?.id || null
           });
 
         if (error) throw error;
+
+        newVotedBrands.add(brandId);
+        setVotedBrands(newVotedBrands);
+        saveVotedBrands(newVotedBrands);
 
         toast({
           title: "Vote cast",
@@ -321,7 +335,7 @@ export default function TequilaBrands() {
         {!user && (
           <div className="text-center mt-8">
             <p className="text-muted-foreground">
-              Sign in to vote for your favorite brands and add new ones to the list!
+              Sign in to add new brands to the voting list!
             </p>
           </div>
         )}
