@@ -147,7 +147,7 @@ const AuthPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building className="w-5 h-5" />
-              Establishment Owner Access
+              Party Planner Access
             </CardTitle>
           </CardHeader>
           <CardContent>

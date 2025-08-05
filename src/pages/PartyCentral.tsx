@@ -174,7 +174,7 @@ const PartyCentral = () => {
             ) : (
               <Card className="max-w-md bg-white/10 backdrop-blur-md border-white/20 shadow-lg">
                 <CardContent className="p-6 text-center">
-                  <p className="text-white mb-4">Sign in to share your party plans!</p>
+                  <p className="text-white mb-4">Sign in to share your party plans</p>
                   <Button 
                     onClick={() => navigate('/auth')}
                     className="bg-white/20 hover:bg-white/30 text-white hover-scale"
