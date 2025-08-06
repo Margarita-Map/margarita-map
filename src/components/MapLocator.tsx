@@ -37,58 +37,32 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
   const userLocationRef = useRef<google.maps.LatLng | null>(null);
+  const [isMapInitialized, setIsMapInitialized] = useState(false);
+
+  // Use the shared Google Maps state from useGoogleMaps hook
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const loadGoogleMaps = () => {
+    // Check if Google Maps is already loaded by the useGoogleMaps hook
+    if (window.google && window.google.maps) {
+      setIsLoaded(true);
+      return;
+    }
+
+    // Wait for the shared Google Maps instance to load
+    const checkLoaded = setInterval(() => {
       if (window.google && window.google.maps) {
         setIsLoaded(true);
-        return;
+        clearInterval(checkLoaded);
       }
+    }, 100);
 
-      // Check if script is already being loaded
-      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
-      if (existingScript) {
-        // Wait for existing script to load
-        const checkLoaded = setInterval(() => {
-          if (window.google && window.google.maps) {
-            setIsLoaded(true);
-            clearInterval(checkLoaded);
-          }
-        }, 100);
-        return;
-      }
-
-      const apiKey = 'AIzaSyCwDTKVy0FsjfKI-KW6gFzGO4fXfVunjcw';
-      if (!apiKey) {
-        console.error("Google Maps API key not configured.");
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,geometry&callback=initMapLocator`;
-      script.async = true;
-      script.defer = true;
-
-      window.initMapLocator = () => {
-        setIsLoaded(true);
-      };
-
-      document.head.appendChild(script);
-
-      return () => {
-        if (document.head.contains(script)) {
-          document.head.removeChild(script);
-        }
-      };
-    };
-
-    loadGoogleMaps();
+    return () => clearInterval(checkLoaded);
   }, []);
 
   useEffect(() => {
-    if (!isLoaded || !mapRef.current || !window.google) return;
+    if (!isLoaded || !mapRef.current || !window.google || isMapInitialized) return;
 
     // Initialize map - will be updated with user location
     const map = new window.google.maps.Map(mapRef.current, {
@@ -113,6 +87,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
     });
 
     mapInstanceRef.current = map;
+    setIsMapInitialized(true);
 
     // Get user's location
     if (navigator.geolocation) {
@@ -148,17 +123,15 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
         },
         (error) => {
           console.log("Error getting user location:", error);
+          // Map is still initialized even without user location
         }
       );
     }
 
-    // Only search after getting user location
-    // searchNearbyBars will be called after geolocation success
-
-  }, [isLoaded]);
+  }, [isLoaded, isMapInitialized]);
 
   useEffect(() => {
-    if (!searchLocation || !mapInstanceRef.current || !window.google) return;
+    if (!searchLocation || !mapInstanceRef.current || !window.google || !isMapInitialized) return;
 
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: searchLocation }, (results, status) => {
@@ -172,7 +145,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
         searchNearbyBars(service, mapInstanceRef.current, location, searchLocation);
       }
     });
-  }, [searchLocation]);
+  }, [searchLocation, isMapInitialized]);
 
   const loadSupabaseRestaurants = async (map: google.maps.Map, searchLocation: google.maps.LatLng) => {
     try {
