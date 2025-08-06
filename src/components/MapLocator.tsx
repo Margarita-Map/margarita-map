@@ -40,6 +40,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
   const markersRef = useRef<google.maps.Marker[]>([]);
   const userLocationRef = useRef<google.maps.LatLng | null>(null);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
+  const pendingSearchRef = useRef<string | null>(null);
 
   // Use the shared Google Maps state from useGoogleMaps hook
   const [isLoaded, setIsLoaded] = useState(false);
@@ -90,6 +91,16 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     mapInstanceRef.current = map;
     setIsMapInitialized(true);
     
+    // Process any pending search that was queued before map was ready
+    if (pendingSearchRef.current) {
+      const searchTerm = pendingSearchRef.current;
+      pendingSearchRef.current = null;
+      // Use setTimeout to ensure map is fully ready
+      setTimeout(() => {
+        performSearch(searchTerm);
+      }, 100);
+    }
+    
     // Notify parent that map is ready for searches
     if (onMapReady) {
       onMapReady();
@@ -136,21 +147,33 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
 
   }, [isLoaded, isMapInitialized]);
 
-  useEffect(() => {
-    if (!searchLocation || !mapInstanceRef.current || !window.google || !isMapInitialized) return;
+  const performSearch = (searchTerm: string) => {
+    if (!mapInstanceRef.current || !window.google || !isMapInitialized) return;
 
     const geocoder = new window.google.maps.Geocoder();
-    geocoder.geocode({ address: searchLocation }, (results, status) => {
+    geocoder.geocode({ address: searchTerm }, (results, status) => {
       if (status === "OK" && results && results[0] && mapInstanceRef.current) {
         const location = results[0].geometry.location;
         mapInstanceRef.current.setCenter(location);
-        mapInstanceRef.current.setZoom(14);
+        mapInstanceRef.current.setZoom(12);
 
         // Search for bars near the new location, but also check if the search is for a specific place
         const service = new window.google.maps.places.PlacesService(mapInstanceRef.current);
-        searchNearbyBars(service, mapInstanceRef.current, location, searchLocation);
+        searchNearbyBars(service, mapInstanceRef.current, location, searchTerm);
       }
     });
+  };
+
+  useEffect(() => {
+    if (!searchLocation) return;
+
+    // If map is ready, perform search immediately
+    if (mapInstanceRef.current && window.google && isMapInitialized) {
+      performSearch(searchLocation);
+    } else {
+      // Queue the search to be performed when map becomes ready
+      pendingSearchRef.current = searchLocation;
+    }
   }, [searchLocation, isMapInitialized]);
 
   const loadSupabaseRestaurants = async (map: google.maps.Map, searchLocation: google.maps.LatLng) => {
