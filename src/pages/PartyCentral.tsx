@@ -328,6 +328,16 @@ const PartyCentral = () => {
                   {post.description && (
                     <p className="text-white/80 text-sm">{post.description}</p>
                   )}
+                  
+                  <div className="mt-4 pt-3 border-t border-white/20">
+                    <Button 
+                      onClick={() => navigate(`/party/${post.id}`)}
+                      className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                      size="sm"
+                    >
+                      View Party & Check In
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))

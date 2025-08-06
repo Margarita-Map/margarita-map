@@ -96,6 +96,44 @@ export type Database = {
           },
         ]
       }
+      party_checkins: {
+        Row: {
+          checked_in_at: string
+          created_at: string
+          guest_name: string | null
+          id: string
+          message: string | null
+          party_id: string
+          user_id: string | null
+        }
+        Insert: {
+          checked_in_at?: string
+          created_at?: string
+          guest_name?: string | null
+          id?: string
+          message?: string | null
+          party_id: string
+          user_id?: string | null
+        }
+        Update: {
+          checked_in_at?: string
+          created_at?: string
+          guest_name?: string | null
+          id?: string
+          message?: string | null
+          party_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "party_checkins_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "party_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       party_posts: {
         Row: {
           created_at: string
