@@ -15,6 +15,7 @@ interface MapLocatorProps {
   searchLocation?: string;
   onLocationSelect?: (place: google.maps.places.PlaceResult) => void;
   onPlacesFound?: (places: PlaceDetails[]) => void;
+  onMapReady?: () => void;
 }
 
 interface PlaceDetails {
@@ -33,7 +34,7 @@ interface PlaceDetails {
   };
 }
 
-const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLocatorProps) => {
+const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapReady }: MapLocatorProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
@@ -88,6 +89,11 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound }: MapLoca
 
     mapInstanceRef.current = map;
     setIsMapInitialized(true);
+    
+    // Notify parent that map is ready for searches
+    if (onMapReady) {
+      onMapReady();
+    }
 
     // Get user's location
     if (navigator.geolocation) {

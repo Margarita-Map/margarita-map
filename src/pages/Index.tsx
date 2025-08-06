@@ -27,6 +27,7 @@ const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showManageForm, setShowManageForm] = useState(false);
   const { isLoaded: isMapLoaded } = useGoogleMaps();
+  const [isMapReady, setIsMapReady] = useState(false);
   const {
     reviews,
     loading: reviewsLoading,
@@ -113,7 +114,7 @@ const Index = () => {
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Discover the best margaritas near you, anywhere in the world. Rate drinks with our agave scale and find your next favorite spot! Let your favorite bartender and establishment know how much you appreciate them. If your establishment isn't listed, scroll down and add it to our list. Check for daily drink specials and tequila tasting events where ever you are. </p>
           
           <div className="max-w-2xl mx-auto px-4">
-            <SearchBar onSearch={handleSearch} isMapLoaded={isMapLoaded} />
+            <SearchBar onSearch={handleSearch} isMapLoaded={isMapReady} />
           </div>
         </div>
         
@@ -132,7 +133,12 @@ const Index = () => {
             Find the Best Margaritas Near You! 🗺️
           </h2>
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-8">
-            <MapLocator searchLocation={searchLocation} onLocationSelect={handleLocationSelect} onPlacesFound={handlePlacesFound} />
+            <MapLocator 
+              searchLocation={searchLocation} 
+              onLocationSelect={handleLocationSelect} 
+              onPlacesFound={handlePlacesFound}
+              onMapReady={() => setIsMapReady(true)}
+            />
             <PlacesList places={nearbyPlaces} onPlaceSelect={handlePlaceSelect} />
           </div>
         </div>
