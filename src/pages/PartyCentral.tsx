@@ -58,13 +58,22 @@ const PartyCentral = () => {
       const { data, error } = await supabase
         .from('party_posts')
         .select('*')
-        .order('party_date', { ascending: true })
-        .order('party_time', { ascending: true });
+        .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Fetched posts:', data);
       setPosts(data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
+      toast({
+        title: "Error loading posts",
+        description: "Could not load party posts. Please try again.",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
