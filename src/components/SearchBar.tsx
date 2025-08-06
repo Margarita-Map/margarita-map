@@ -6,9 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 
 interface SearchBarProps {
   onSearch: (location: string) => void;
+  isMapLoaded?: boolean;
 }
 
-const SearchBar = ({ onSearch }: SearchBarProps) => {
+const SearchBar = ({ onSearch, isMapLoaded = true }: SearchBarProps) => {
   const [location, setLocation] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
@@ -19,6 +20,15 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
       toast({
         title: "Enter a location",
         description: "Please enter a city, zip code, address, or bar/restaurant name to search.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!isMapLoaded) {
+      toast({
+        title: "Map loading...",
+        description: "Please wait for the map to finish loading before searching.",
         variant: "destructive"
       });
       return;
@@ -43,6 +53,15 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
   };
 
   const handleCurrentLocation = () => {
+    if (!isMapLoaded) {
+      toast({
+        title: "Map loading...",
+        description: "Please wait for the map to finish loading before using location.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (navigator.geolocation) {
       setIsSearching(true);
       navigator.geolocation.getCurrentPosition(
@@ -125,7 +144,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
           <Button 
             type="submit" 
             variant="festive" 
-            disabled={isSearching || !location.trim()}
+            disabled={isSearching || !location.trim() || !isMapLoaded}
             className="h-14 md:h-12 px-6 w-full sm:w-auto text-base font-bold"
           >
             {isSearching ? (

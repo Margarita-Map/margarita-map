@@ -15,6 +15,7 @@ import PlacesList from "@/components/PlacesList";
 import TequilaTrivia from "@/components/TequilaTrivia";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { useNearbyReviews } from "@/hooks/useNearbyReviews";
+import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-bald.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
@@ -25,6 +26,7 @@ const Index = () => {
   const [nearbyPlaces, setNearbyPlaces] = useState<PlaceDetails[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showManageForm, setShowManageForm] = useState(false);
+  const { isLoaded: isMapLoaded } = useGoogleMaps();
   const {
     reviews,
     loading: reviewsLoading,
@@ -111,7 +113,7 @@ const Index = () => {
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Discover the best margaritas near you, anywhere in the world. Rate drinks with our agave scale and find your next favorite spot! Let your favorite bartender and establishment know how much you appreciate them. If your establishment isn't listed, scroll down and add it to our list. Check for daily drink specials and tequila tasting events where ever you are. </p>
           
           <div className="max-w-2xl mx-auto px-4">
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar onSearch={handleSearch} isMapLoaded={isMapLoaded} />
           </div>
         </div>
         
