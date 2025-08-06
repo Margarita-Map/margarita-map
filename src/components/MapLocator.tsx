@@ -106,7 +106,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       onMapReady();
     }
 
-    // Get user's location
+    // Get user's location for reference but don't automatically search
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -116,27 +116,31 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
           };
           const userLatLng = new window.google.maps.LatLng(userLocation.lat, userLocation.lng);
           userLocationRef.current = userLatLng;
-          map.setCenter(userLocation);
-          map.setZoom(14); // Zoom in closer to user location
           
-          // Add user location marker
-          new window.google.maps.Marker({
-            position: userLocation,
-            map: map,
-            icon: {
-              path: window.google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              fillColor: "#4285F4",
-              fillOpacity: 1,
-              strokeColor: "#ffffff",
-              strokeWeight: 2
-            },
-            title: "Your Location"
-          });
+          // Only center on user location if no pending search exists
+          if (!pendingSearchRef.current) {
+            map.setCenter(userLocation);
+            map.setZoom(14);
+            
+            // Add user location marker
+            new window.google.maps.Marker({
+              position: userLocation,
+              map: map,
+              icon: {
+                path: window.google.maps.SymbolPath.CIRCLE,
+                scale: 8,
+                fillColor: "#4285F4",
+                fillOpacity: 1,
+                strokeColor: "#ffffff",
+                strokeWeight: 2
+              },
+              title: "Your Location"
+            });
 
-          // Now search for bars near user's actual location
-          const service = new window.google.maps.places.PlacesService(map);
-          searchNearbyBars(service, map, userLatLng);
+            // Only search near user's location if no specific search is pending
+            const service = new window.google.maps.places.PlacesService(map);
+            searchNearbyBars(service, map, userLatLng);
+          }
         },
         (error) => {
           console.log("Error getting user location:", error);
