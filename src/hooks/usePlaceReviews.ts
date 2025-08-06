@@ -40,11 +40,32 @@ export const usePlaceReviews = (place: PlaceDetails | null) => {
       // First, find the restaurant that matches this place by name and address
       console.log('Looking for place:', place.name, place.address);
       
-      const { data: restaurants, error: restaurantError } = await supabase
+      // Search for restaurants by name first, then by address if no match
+      let restaurants = null;
+      let restaurantError = null;
+
+      // Try name search first
+      const nameResult = await supabase
         .from('restaurants')
         .select('id, name, address')
-        .or(`name.ilike.%${place.name.replace(/['"]/g, '')}%,address.ilike.%${place.address.replace(/['"]/g, '')}%`)
+        .ilike('name', `%${place.name.replace(/['"]/g, '')}%`)
         .limit(5);
+
+      if (nameResult.error) {
+        restaurantError = nameResult.error;
+      } else if (nameResult.data && nameResult.data.length > 0) {
+        restaurants = nameResult.data;
+      } else {
+        // If no name match, try address search
+        const addressResult = await supabase
+          .from('restaurants')
+          .select('id, name, address')
+          .ilike('address', `%${place.address.replace(/['"]/g, '')}%`)
+          .limit(5);
+        
+        restaurants = addressResult.data;
+        restaurantError = addressResult.error;
+      }
       
       console.log('Found restaurants:', restaurants);
 
