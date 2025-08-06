@@ -16,7 +16,7 @@ import TequilaTrivia from "@/components/TequilaTrivia";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { useNearbyReviews } from "@/hooks/useNearbyReviews";
 import heroImage from "@/assets/hero-margarita.jpg";
-import partyCharacter from "@/assets/party-character.jpg";
+import partyCharacter from "@/assets/party-character-bald.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
 // Remove the sample reviews since we're using real data now
 const Index = () => {
@@ -91,7 +91,7 @@ const Index = () => {
               <img 
                 src={partyCharacter} 
                 alt="Party character holding margarita" 
-                className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
+                className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
               />
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
                 Find Your Perfect
@@ -102,7 +102,7 @@ const Index = () => {
               <img 
                 src={partyCharacter} 
                 alt="Party character holding margarita" 
-                className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
+                className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
                 style={{ animationDelay: '0.5s' }}
               />
             </div>
