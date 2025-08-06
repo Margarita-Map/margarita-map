@@ -17,7 +17,7 @@ import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { useNearbyReviews } from "@/hooks/useNearbyReviews";
 import { useGoogleMaps } from "@/hooks/useGoogleMaps";
 import heroImage from "@/assets/hero-margarita.jpg";
-import partyCharacter from "@/assets/party-character-bald.jpg";
+import partyCharacter from "@/assets/party-character-bald-full-text.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
 // Remove the sample reviews since we're using real data now
 const Index = () => {
