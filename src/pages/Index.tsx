@@ -87,10 +87,7 @@ const Index = () => {
           </p>
           <div className="animate-float mb-6 md:mb-8">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                Find Your Perfect
-                <Car className="w-8 h-8 md:w-12 md:h-12 text-blue-400 animate-pulse" />
-              </div>
+              Find Your Perfect
               <span className="block bg-gradient-sunset bg-clip-text text-transparent mt-2">
                 Margarita 🍹
               </span>
