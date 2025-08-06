@@ -91,37 +91,23 @@ const Index = () => {
           </p>
           <div className="animate-float mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-6 mb-4">
-            <div className="relative">
-              <img 
-                src={partyCharacter} 
-                alt="Party character holding margarita" 
-                className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs md:text-sm lg:text-base font-bold text-white drop-shadow-lg bg-black/30 rounded-full px-2 py-1">
-                  PARTY
-                </span>
-              </div>
-            </div>
+            <img 
+              src={partyCharacter} 
+              alt="Party character holding margarita" 
+              className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
+            />
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
               Find Your Perfect
               <span className="block bg-gradient-sunset bg-clip-text text-transparent mt-2">
                 Margarita 🍹
               </span>
             </h1>
-            <div className="relative">
-              <img 
-                src={partyCharacter} 
-                alt="Party character holding margarita" 
-                className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
-                style={{ animationDelay: '0.5s' }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-xs md:text-sm lg:text-base font-bold text-white drop-shadow-lg bg-black/30 rounded-full px-2 py-1">
-                  PARTY
-                </span>
-              </div>
-            </div>
+            <img 
+              src={partyCharacter} 
+              alt="Party character holding margarita" 
+              className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
+              style={{ animationDelay: '0.5s' }}
+            />
             </div>
           </div>
           
