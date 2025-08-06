@@ -144,7 +144,7 @@ const SearchBar = ({ onSearch, isMapLoaded = true }: SearchBarProps) => {
           <Button 
             type="submit" 
             variant="festive" 
-            disabled={isSearching || !location.trim() || !isMapLoaded}
+            disabled={isSearching || !location.trim()}
             className="h-14 md:h-12 px-6 w-full sm:w-auto text-base font-bold"
           >
             {isSearching ? (
