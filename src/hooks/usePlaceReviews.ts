@@ -38,35 +38,15 @@ export const usePlaceReviews = (place: PlaceDetails | null) => {
       setError(null);
 
       // First, find the restaurant that matches this place by name and address
-      // Try multiple matching strategies to find the restaurant
-      let restaurants = null;
-      let restaurantError = null;
+      console.log('Looking for place:', place.name, place.address);
       
-      // Strategy 1: Try exact name match first
-      const nameQuery = await supabase
+      const { data: restaurants, error: restaurantError } = await supabase
         .from('restaurants')
-        .select('id')
-        .ilike('name', `%${place.name}%`)
-        .limit(1);
+        .select('id, name, address')
+        .or(`name.ilike.%${place.name.replace(/['"]/g, '')}%,address.ilike.%${place.address.replace(/['"]/g, '')}%`)
+        .limit(5);
       
-      if (nameQuery.error) {
-        restaurantError = nameQuery.error;
-      } else if (nameQuery.data && nameQuery.data.length > 0) {
-        restaurants = nameQuery.data;
-      } else {
-        // Strategy 2: Try address matching if name doesn't work
-        const addressQuery = await supabase
-          .from('restaurants')
-          .select('id')
-          .ilike('address', `%${place.address}%`)
-          .limit(1);
-        
-        if (addressQuery.error) {
-          restaurantError = addressQuery.error;
-        } else {
-          restaurants = addressQuery.data;
-        }
-      }
+      console.log('Found restaurants:', restaurants);
 
       if (restaurantError) {
         throw restaurantError;
