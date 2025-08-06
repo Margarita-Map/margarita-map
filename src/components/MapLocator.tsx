@@ -148,18 +148,30 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
   }, [isLoaded, isMapInitialized]);
 
   const performSearch = (searchTerm: string) => {
-    if (!mapInstanceRef.current || !window.google || !isMapInitialized) return;
+    if (!mapInstanceRef.current || !window.google || !isMapInitialized) {
+      console.log("Search blocked - map not ready:", { map: !!mapInstanceRef.current, google: !!window.google, initialized: isMapInitialized });
+      return;
+    }
 
+    console.log("Performing search for:", searchTerm);
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: searchTerm }, (results, status) => {
+      console.log("Geocoding result:", { status, results: results?.length });
       if (status === "OK" && results && results[0] && mapInstanceRef.current) {
         const location = results[0].geometry.location;
-        mapInstanceRef.current.setCenter(location);
+        const lat = location.lat();
+        const lng = location.lng();
+        console.log("Setting map center to:", { lat, lng, address: results[0].formatted_address });
+        
+        // Update map center and zoom with animation
+        mapInstanceRef.current.panTo(location);
         mapInstanceRef.current.setZoom(12);
 
         // Search for bars near the new location, but also check if the search is for a specific place
         const service = new window.google.maps.places.PlacesService(mapInstanceRef.current);
         searchNearbyBars(service, mapInstanceRef.current, location, searchTerm);
+      } else {
+        console.error("Geocoding failed:", status);
       }
     });
   };
