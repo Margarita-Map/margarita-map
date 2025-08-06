@@ -16,6 +16,7 @@ import TequilaTrivia from "@/components/TequilaTrivia";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { useNearbyReviews } from "@/hooks/useNearbyReviews";
 import heroImage from "@/assets/hero-margarita.jpg";
+import partyCharacter from "@/assets/party-character.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
 // Remove the sample reviews since we're using real data now
 const Index = () => {
@@ -86,12 +87,25 @@ const Index = () => {
             The Official Drink of Fun
           </p>
           <div className="animate-float mb-6 md:mb-8">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
-              Find Your Perfect
-              <span className="block bg-gradient-sunset bg-clip-text text-transparent mt-2">
-                Margarita 🍹
-              </span>
-            </h1>
+            <div className="flex items-center justify-center gap-6 mb-4">
+              <img 
+                src={partyCharacter} 
+                alt="Party character holding margarita" 
+                className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
+              />
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
+                Find Your Perfect
+                <span className="block bg-gradient-sunset bg-clip-text text-transparent mt-2">
+                  Margarita 🍹
+                </span>
+              </h1>
+              <img 
+                src={partyCharacter} 
+                alt="Party character holding margarita" 
+                className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
+                style={{ animationDelay: '0.5s' }}
+              />
+            </div>
           </div>
           
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Discover the best margaritas near you, anywhere in the world. Rate drinks with our agave scale and find your next favorite spot! Let your favorite bartender and establishment know how much you appreciate them. If your establishment isn't listed, scroll down and add it to our list. Check for daily drink specials and tequila tasting events where ever you are. </p>
