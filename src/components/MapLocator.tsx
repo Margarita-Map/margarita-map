@@ -329,11 +329,12 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
         radius: 15000 // 9+ miles to catch places
       }, (results, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-          // Find the most relevant result (first one is usually most relevant)
-          specificPlaceFound = results[0];
-          if (specificPlaceFound && specificPlaceFound.place_id) {
-            allResults.unshift(specificPlaceFound); // Add to beginning of array for priority
-          }
+          // Add ALL matching results, not just the first one
+          results.forEach(result => {
+            if (result && result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+              allResults.push(result);
+            }
+          });
         }
         searchesCompleted++;
         if (searchesCompleted === totalSearches) {
