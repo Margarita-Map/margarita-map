@@ -318,11 +318,23 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     let allResults: google.maps.places.PlaceResult[] = [];
     let searchesCompleted = 0;
     let totalSearches = 4; // Base number of searches
-    let specificPlaceFound: google.maps.places.PlaceResult | null = null;
+    let isSpecificPlaceSearch = false;
+
+    // Check if this looks like a specific restaurant search (contains restaurant name)
+    if (originalSearchQuery) {
+      const queryLower = originalSearchQuery.toLowerCase();
+      // If query contains common restaurant indicators and location, treat as specific search
+      const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina)\b/.test(queryLower);
+      const hasLocation = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard)\b/.test(queryLower);
+      
+      if (hasRestaurantIndicators || hasLocation) {
+        isSpecificPlaceSearch = true;
+        totalSearches = 1; // Only do the text search for specific places
+      }
+    }
 
     // If search appears to be for a specific place, do a text search first
     if (originalSearchQuery) {
-      totalSearches = 5; // Add one more search for specific place
       service.textSearch({
         query: originalSearchQuery,
         location: searchLocation,
@@ -341,6 +353,11 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
           processAllResults();
         }
       });
+    }
+
+    // Skip generic searches if this is a specific place search
+    if (isSpecificPlaceSearch) {
+      return; // Don't continue with generic bar/restaurant searches
     }
 
     // First search for mexican restaurants and tequila bars (expanded radius)
@@ -518,25 +535,14 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
                 let sortedPlaces = allPlaces
                   .filter(place => !place.distance || place.distance <= 50); // Include undefined distances and places within reasonable driving distance
                   
-                // If there's a specific place found from the search query, prioritize it at the top
-                if (specificPlaceFound && specificPlaceFound.place_id) {
-                  const specificPlaceDetail = sortedPlaces.find(place => place.id === specificPlaceFound.place_id);
-                  if (specificPlaceDetail) {
-                    // Remove the specific place from its current position
-                    sortedPlaces = sortedPlaces.filter(place => place.id !== specificPlaceFound.place_id);
-                    // Add it to the beginning
-                    sortedPlaces.unshift(specificPlaceDetail);
-                  }
-                } else {
-                  // Normal sorting by distance if no specific place was found
-                  sortedPlaces.sort((a, b) => {
-                    // Sort by distance, putting undefined distances at the end
-                    if (!a.distance && !b.distance) return 0;
-                    if (!a.distance) return 1;
-                    if (!b.distance) return -1;
-                    return a.distance - b.distance;
-                  });
-                }
+                // Normal sorting by distance
+                sortedPlaces.sort((a, b) => {
+                  // Sort by distance, putting undefined distances at the end
+                  if (!a.distance && !b.distance) return 0;
+                  if (!a.distance) return 1;
+                  if (!b.distance) return -1;
+                  return a.distance - b.distance;
+                });
                   
                 console.log(`Final sorted results: ${sortedPlaces.length} places`);
                 console.log('Top 3 places:', sortedPlaces.slice(0, 3).map(p => ({ name: p.name, distance: p.distance })));
