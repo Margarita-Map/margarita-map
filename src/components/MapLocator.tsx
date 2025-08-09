@@ -330,12 +330,14 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina|tortilla|taco|burrito|kitchen|house|place|food|dining|eatery|brewery|lounge|club)\b/.test(queryLower);
       const hasLocationIndicators = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard|austin|dallas|houston|san antonio|los angeles|chicago|miami|atlanta|denver|seattle|portland|vegas|phoenix|city|downtown|north|south|east|west)\b/.test(queryLower);
       const hasSpecificPlaceName = queryLower.split(' ').length >= 2; // If multiple words, likely a specific place
+      const isZipCode = /^\d{5}(-\d{4})?$/.test(originalSearchQuery.trim()); // Detect zip codes
       
       console.log('Search query analysis:', {
         query: originalSearchQuery,
         hasRestaurantIndicators,
         hasLocationIndicators,
         hasSpecificPlaceName,
+        isZipCode,
         queryLower
       });
       
@@ -343,6 +345,11 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
         isSpecificPlaceSearch = true;
         totalSearches = 3; // Do text search + two broader searches for context
         console.log('Treating as specific place search');
+      } else if (isZipCode) {
+        // For zip codes, skip text search and just do general nearby searches
+        console.log('Detected zip code - doing general area search');
+        totalSearches = 4; // Do all the general searches
+        isSpecificPlaceSearch = false;
       } else {
         console.log('Treating as general location search');
       }
