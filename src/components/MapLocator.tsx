@@ -322,6 +322,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     let searchesCompleted = 0;
     let totalSearches = 4; // Base number of searches
     let isSpecificPlaceSearch = false;
+    let isZipCode = false;
 
     // Check if this looks like a specific restaurant search (contains restaurant name)
     if (originalSearchQuery) {
@@ -330,7 +331,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina|tortilla|taco|burrito|kitchen|house|place|food|dining|eatery|brewery|lounge|club)\b/.test(queryLower);
       const hasLocationIndicators = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard|austin|dallas|houston|san antonio|los angeles|chicago|miami|atlanta|denver|seattle|portland|vegas|phoenix|city|downtown|north|south|east|west)\b/.test(queryLower);
       const hasSpecificPlaceName = queryLower.split(' ').length >= 2; // If multiple words, likely a specific place
-      const isZipCode = /^\d{5}(-\d{4})?$/.test(originalSearchQuery.trim()); // Detect zip codes
+      isZipCode = /^\d{5}(-\d{4})?$/.test(originalSearchQuery.trim()); // Detect zip codes
       
       console.log('Search query analysis:', {
         query: originalSearchQuery,
@@ -355,8 +356,9 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       }
     }
 
-    // If search appears to be for a specific place, do a text search first
-    if (originalSearchQuery) {
+    // Always do text search if there's a search query (unless it's just a zip code)
+    if (originalSearchQuery && !isZipCode) {
+      console.log('Executing text search for:', originalSearchQuery);
       service.textSearch({
         query: originalSearchQuery,
         location: searchLocation,
@@ -375,10 +377,13 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
           console.log('Text search failed or returned no results:', status);
         }
         searchesCompleted++;
+        console.log('Search completed:', searchesCompleted, '/', totalSearches);
         if (searchesCompleted === totalSearches) {
           processAllResults();
         }
       });
+    } else if (isZipCode) {
+      console.log('Skipping text search for zip code:', originalSearchQuery);
     }
 
     // For specific searches, also do broader searches for context
