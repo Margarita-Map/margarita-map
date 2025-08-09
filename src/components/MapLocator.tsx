@@ -122,6 +122,9 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
             map.setCenter(userLocation);
             map.setZoom(14);
             
+            // Clear any saved search location since we're using current location
+            localStorage.removeItem('lastSearchLocation');
+            
             // Add user location marker
             new window.google.maps.Marker({
               position: userLocation,
