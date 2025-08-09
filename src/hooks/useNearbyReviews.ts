@@ -11,6 +11,7 @@ export interface Review {
   created_at: string;
   user_id: string;
   restaurant_id: string;
+  photo_urls?: string[] | null;
   restaurant: {
     name: string;
     address: string;
@@ -106,6 +107,7 @@ export const useNearbyReviews = (nearbyPlaces: PlaceDetails[], userLocation?: { 
           created_at: review.created_at,
           user_id: review.user_id,
           restaurant_id: review.restaurant_id,
+          photo_urls: review.photo_urls,
           restaurant: {
             name: review.restaurant?.name || '',
             address: review.restaurant?.address || '',

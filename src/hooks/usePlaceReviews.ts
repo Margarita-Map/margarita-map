@@ -11,6 +11,7 @@ export interface PlaceReview {
   created_at: string;
   user_id: string;
   restaurant_id: string;
+  photo_urls?: string[] | null;
   profile: {
     display_name: string | null;
   } | null;
@@ -123,6 +124,7 @@ export const usePlaceReviews = (place: PlaceDetails | null) => {
         created_at: review.created_at,
         user_id: review.user_id,
         restaurant_id: review.restaurant_id,
+        photo_urls: review.photo_urls,
         profile: profileMap.get(review.user_id) ? {
           display_name: profileMap.get(review.user_id)?.display_name || null
         } : null

@@ -241,6 +241,7 @@ export type Database = {
           agave_rating: number
           created_at: string
           id: string
+          photo_urls: string[] | null
           price_point: number | null
           restaurant_id: string
           taste_notes: string | null
@@ -252,6 +253,7 @@ export type Database = {
           agave_rating: number
           created_at?: string
           id?: string
+          photo_urls?: string[] | null
           price_point?: number | null
           restaurant_id: string
           taste_notes?: string | null
@@ -263,6 +265,7 @@ export type Database = {
           agave_rating?: number
           created_at?: string
           id?: string
+          photo_urls?: string[] | null
           price_point?: number | null
           restaurant_id?: string
           taste_notes?: string | null

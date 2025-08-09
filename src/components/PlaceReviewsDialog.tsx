@@ -6,6 +6,7 @@ import { Star, ThumbsUp, ThumbsDown, User, Calendar } from "lucide-react";
 import AgaveRating from "./AgaveRating";
 import { PlaceDetails } from "@/hooks/useGoogleMaps";
 import { usePlaceReviews } from "@/hooks/usePlaceReviews";
+import { PhotoGallery } from "./PhotoGallery";
 
 interface PlaceReviewsDialogProps {
   place: PlaceDetails | null;
@@ -16,6 +17,14 @@ interface PlaceReviewsDialogProps {
 
 const PlaceReviewsDialog = ({ place, open, onOpenChange, onRatePlace }: PlaceReviewsDialogProps) => {
   const { reviews, loading, error } = usePlaceReviews(place);
+  
+  // Collect all photos from reviews
+  const allPhotos = reviews.reduce((photos: string[], review) => {
+    if (review.photo_urls && Array.isArray(review.photo_urls)) {
+      return [...photos, ...review.photo_urls];
+    }
+    return photos;
+  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -74,9 +83,14 @@ const PlaceReviewsDialog = ({ place, open, onOpenChange, onRatePlace }: PlaceRev
           )}
 
           {!loading && !error && reviews.length > 0 && (
-            <div className="space-y-4">
-              {reviews.map((review) => (
-                <div key={review.id} className="p-4 border rounded-lg space-y-3">
+            <div className="space-y-6">
+              {allPhotos.length > 0 && (
+                <PhotoGallery photos={allPhotos} placeName={place?.name} />
+              )}
+              
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div key={review.id} className="p-4 border rounded-lg space-y-3">
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -122,8 +136,16 @@ const PlaceReviewsDialog = ({ place, open, onOpenChange, onRatePlace }: PlaceRev
                       "{review.taste_notes}"
                     </p>
                   )}
+                  
+                  {/* Photos for this review */}
+                  {review.photo_urls && review.photo_urls.length > 0 && (
+                    <div className="mt-3">
+                      <PhotoGallery photos={review.photo_urls} />
+                    </div>
+                  )}
                 </div>
               ))}
+              </div>
             </div>
           )}
         </ScrollArea>

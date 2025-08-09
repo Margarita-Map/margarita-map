@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Star, DollarSign, ThumbsUp, ThumbsDown, Car } from "lucide-react";
 import AgaveRating from "./AgaveRating";
+import { PhotoGallery } from "./PhotoGallery";
 import { Review } from "@/hooks/useNearbyReviews";
 
 interface ReviewCardProps {
@@ -82,6 +83,13 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             <p className="text-foreground leading-relaxed text-sm">
               "{review.taste_notes}"
             </p>
+          )}
+
+          {/* Photos */}
+          {review.photo_urls && review.photo_urls.length > 0 && (
+            <div className="mt-3">
+              <PhotoGallery photos={review.photo_urls} />
+            </div>
           )}
 
           {/* Rideshare Buttons */}

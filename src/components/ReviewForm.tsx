@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Star, DollarSign, MapPin, User, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { PhotoUpload } from "./PhotoUpload";
 
 const reviewSchema = z.object({
   restaurant_name: z.string().min(1, "Restaurant name is required"),
@@ -21,6 +22,7 @@ const reviewSchema = z.object({
   price_point: z.number().min(1).max(4).optional(),
   taste_notes: z.string().optional(),
   would_recommend: z.boolean(),
+  photo_urls: z.array(z.string()).optional(),
 });
 
 type ReviewFormValues = z.infer<typeof reviewSchema>;
@@ -39,6 +41,7 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
 
   // Get selected place from router state if available
   const routerState = location.state as { selectedPlace?: any } | null;
@@ -128,6 +131,7 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
           price_point: data.price_point,
           taste_notes: data.taste_notes,
           would_recommend: data.would_recommend,
+          photo_urls: photoUrls,
         });
 
       if (reviewError) throw reviewError;
@@ -323,6 +327,12 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
                   </FormControl>
                 </FormItem>
               )}
+            />
+
+            <PhotoUpload
+              onPhotosChange={setPhotoUrls}
+              maxPhotos={5}
+              existingPhotos={photoUrls}
             />
 
             <div className="flex gap-4">
