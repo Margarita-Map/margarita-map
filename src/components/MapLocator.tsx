@@ -326,20 +326,22 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     // Check if this looks like a specific restaurant search (contains restaurant name)
     if (originalSearchQuery) {
       const queryLower = originalSearchQuery.toLowerCase();
-      // If query contains common restaurant indicators and location, treat as specific search
-      const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina|tortilla|taco|burrito|kitchen|house|place)\b/.test(queryLower);
-      const hasLocation = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard|austin|dallas|houston|san antonio)\b/.test(queryLower);
+      // More inclusive detection - look for restaurant names, food types, or specific locations
+      const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina|tortilla|taco|burrito|kitchen|house|place|food|dining|eatery|brewery|lounge|club)\b/.test(queryLower);
+      const hasLocationIndicators = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard|austin|dallas|houston|san antonio|los angeles|chicago|miami|atlanta|denver|seattle|portland|vegas|phoenix|city|downtown|north|south|east|west)\b/.test(queryLower);
+      const hasSpecificPlaceName = queryLower.split(' ').length >= 2; // If multiple words, likely a specific place
       
       console.log('Search query analysis:', {
         query: originalSearchQuery,
         hasRestaurantIndicators,
-        hasLocation,
+        hasLocationIndicators,
+        hasSpecificPlaceName,
         queryLower
       });
       
-      if (hasRestaurantIndicators || hasLocation) {
+      if (hasRestaurantIndicators || hasLocationIndicators || hasSpecificPlaceName) {
         isSpecificPlaceSearch = true;
-        totalSearches = 2; // Do text search + one nearby search for context
+        totalSearches = 3; // Do text search + two broader searches for context
         console.log('Treating as specific place search');
       } else {
         console.log('Treating as general location search');
@@ -351,7 +353,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       service.textSearch({
         query: originalSearchQuery,
         location: searchLocation,
-        radius: 25000 // Expanded radius for better coverage
+        radius: 50000 // 50km radius for worldwide coverage
       }, (results, status) => {
         console.log('Text search results:', { status, resultsCount: results?.length, query: originalSearchQuery });
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
@@ -372,17 +374,37 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       });
     }
 
-    // For specific searches, also do one nearby search for context
+    // For specific searches, also do broader searches for context
     if (isSpecificPlaceSearch) {
-      // Do a broader nearby search to get context around the searched location
-      const contextRequest = {
+      // First context search - broader restaurant search
+      const contextRequest1 = {
         location: searchLocation,
-        radius: 8000, // 5 mile radius for context
-        type: "restaurant",
-        keyword: "mexican food margaritas tequila bar restaurant"
+        radius: 10000, // 6+ mile radius for context
+        type: "restaurant"
       };
       
-      service.nearbySearch(contextRequest, (results, status) => {
+      // Second context search - general food and drink establishments
+      const contextRequest2 = {
+        location: searchLocation,  
+        radius: 8000, // 5 mile radius
+        type: "bar"
+      };
+      
+      service.nearbySearch(contextRequest1, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+          results.forEach(result => {
+            if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+              allResults.push(result);
+            }
+          });
+        }
+        searchesCompleted++;
+        if (searchesCompleted === totalSearches) {
+          processAllResults();
+        }
+      });
+      
+      service.nearbySearch(contextRequest2, (results, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
           results.forEach(result => {
             if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
