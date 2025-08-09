@@ -329,7 +329,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       
       if (hasRestaurantIndicators || hasLocation) {
         isSpecificPlaceSearch = true;
-        totalSearches = 1; // Only do the text search for specific places
+        totalSearches = 2; // Do text search + one nearby search for context
       }
     }
 
@@ -338,7 +338,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       service.textSearch({
         query: originalSearchQuery,
         location: searchLocation,
-        radius: 15000 // 9+ miles to catch places
+        radius: 25000 // Expanded radius for better coverage
       }, (results, status) => {
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
           // Add ALL matching results, not just the first one
@@ -355,9 +355,31 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
       });
     }
 
-    // Skip generic searches if this is a specific place search
+    // For specific searches, also do one nearby search for context
     if (isSpecificPlaceSearch) {
-      return; // Don't continue with generic bar/restaurant searches
+      // Do a broader nearby search to get context around the searched location
+      const contextRequest = {
+        location: searchLocation,
+        radius: 8000, // 5 mile radius for context
+        type: "restaurant",
+        keyword: "mexican food margaritas tequila bar restaurant"
+      };
+      
+      service.nearbySearch(contextRequest, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+          results.forEach(result => {
+            if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+              allResults.push(result);
+            }
+          });
+        }
+        searchesCompleted++;
+        if (searchesCompleted === totalSearches) {
+          processAllResults();
+        }
+      });
+      
+      return; // Don't continue with other generic searches
     }
 
     // First search for mexican restaurants and tequila bars (expanded radius)
