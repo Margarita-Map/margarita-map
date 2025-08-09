@@ -19,10 +19,12 @@ export const usePlaceRatings = (places: PlaceDetails[]) => {
       
       setLoading(true);
       try {
-        // Get all restaurants that match our places (by name and address for Google Places)
+        // Get restaurants with coordinates only (we'll filter by location)
         const { data: restaurants, error: restaurantsError } = await supabase
           .from('restaurants')
-          .select('id, name, address');
+          .select('id, name, address, latitude, longitude')
+          .not('latitude', 'is', null)
+          .not('longitude', 'is', null);
 
         if (restaurantsError) {
           console.error('Error fetching restaurants:', restaurantsError);
@@ -33,12 +35,24 @@ export const usePlaceRatings = (places: PlaceDetails[]) => {
 
         // For each place, try to find matching restaurants and get their ratings
         for (const place of places) {
-          // Try to match by Google Place ID first, then by name similarity
+          // Try to match by Google Place ID first, then by location and name similarity
           let matchingRestaurant = restaurants?.find(r => r.id === place.id);
           
           if (!matchingRestaurant) {
-            // Try to match by name (improved fuzzy matching)
-            matchingRestaurant = restaurants?.find(r => {
+            // Filter restaurants by proximity first (within 0.1 miles)
+            const nearbyRestaurants = restaurants?.filter(r => {
+              if (!r.latitude || !r.longitude) return false;
+              const distance = calculateDistance(
+                Number(r.latitude),
+                Number(r.longitude),
+                place.location.lat,
+                place.location.lng
+              );
+              return distance < 0.1; // Only consider restaurants within 0.1 miles
+            });
+
+            // Then try to match by name within nearby restaurants only
+            matchingRestaurant = nearbyRestaurants?.find(r => {
               const placeName = place.name.toLowerCase().replace(/[^\w\s]/g, '').trim();
               const restaurantName = r.name.toLowerCase().replace(/[^\w\s]/g, '').trim();
               
@@ -99,6 +113,18 @@ export const usePlaceRatings = (places: PlaceDetails[]) => {
 
     fetchPlaceRatings();
   }, [places]);
+
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 3959; // Earth's radius in miles
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
 
   return { placeRatings, loading };
 };
