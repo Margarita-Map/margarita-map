@@ -324,165 +324,6 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     let isSpecificPlaceSearch = false;
     let isZipCode = false;
 
-    // Check if this looks like a specific restaurant search (contains restaurant name)
-    if (originalSearchQuery) {
-      const queryLower = originalSearchQuery.toLowerCase();
-      // More inclusive detection - look for restaurant names, food types, or specific locations
-      const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina|tortilla|taco|burrito|kitchen|house|place|food|dining|eatery|brewery|lounge|club)\b/.test(queryLower);
-      const hasLocationIndicators = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard|austin|dallas|houston|san antonio|los angeles|chicago|miami|atlanta|denver|seattle|portland|vegas|phoenix|city|downtown|north|south|east|west)\b/.test(queryLower);
-      const hasSpecificPlaceName = queryLower.split(' ').length >= 2; // If multiple words, likely a specific place
-      isZipCode = /^\d{5}(-\d{4})?$/.test(originalSearchQuery.trim()); // Detect zip codes
-      
-      console.log('Search query analysis:', {
-        query: originalSearchQuery,
-        hasRestaurantIndicators,
-        hasLocationIndicators,
-        hasSpecificPlaceName,
-        isZipCode,
-        queryLower
-      });
-      
-      if (hasRestaurantIndicators || hasLocationIndicators || hasSpecificPlaceName) {
-        isSpecificPlaceSearch = true;
-        totalSearches = 3; // Do text search + two broader searches for context
-        console.log('Treating as specific place search');
-      } else if (isZipCode) {
-        // For zip codes, skip text search and just do general nearby searches
-        console.log('Detected zip code - doing general area search');
-        totalSearches = 4; // Do all the general searches
-        isSpecificPlaceSearch = false;
-      } else {
-        console.log('Treating as general location search');
-      }
-    }
-
-    // Always do text search if there's a search query (unless it's just a zip code)
-    if (originalSearchQuery && !isZipCode) {
-      console.log('Executing text search for:', originalSearchQuery);
-      service.textSearch({
-        query: originalSearchQuery,
-        location: searchLocation,
-        radius: 50000 // 50km radius for worldwide coverage
-      }, (results, status) => {
-        console.log('Text search results:', { status, resultsCount: results?.length, query: originalSearchQuery });
-        if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-          console.log('Text search found places:', results.map(r => ({ name: r.name, place_id: r.place_id })));
-          // Add ALL matching results, not just the first one
-          results.forEach(result => {
-            if (result && result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
-              allResults.push(result);
-            }
-          });
-        } else {
-          console.log('Text search failed or returned no results:', status);
-        }
-        searchesCompleted++;
-        console.log('Search completed:', searchesCompleted, '/', totalSearches);
-        if (searchesCompleted === totalSearches) {
-          processAllResults();
-        }
-      });
-    } else if (isZipCode) {
-      console.log('Skipping text search for zip code:', originalSearchQuery);
-    }
-
-    // For specific searches, also do broader searches for context
-    if (isSpecificPlaceSearch) {
-      // First context search - broader restaurant search
-      const contextRequest1 = {
-        location: searchLocation,
-        radius: 10000, // 6+ mile radius for context
-        type: "restaurant"
-      };
-      
-      // Second context search - general food and drink establishments
-      const contextRequest2 = {
-        location: searchLocation,  
-        radius: 8000, // 5 mile radius
-        type: "bar"
-      };
-      
-      service.nearbySearch(contextRequest1, (results, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-          results.forEach(result => {
-            if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
-              allResults.push(result);
-            }
-          });
-        }
-        searchesCompleted++;
-        if (searchesCompleted === totalSearches) {
-          processAllResults();
-        }
-      });
-      
-      service.nearbySearch(contextRequest2, (results, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-          results.forEach(result => {
-            if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
-              allResults.push(result);
-            }
-          });
-        }
-        searchesCompleted++;
-        if (searchesCompleted === totalSearches) {
-          processAllResults();
-        }
-      });
-      
-      return; // Don't continue with other generic searches
-    }
-
-    // First search for mexican restaurants and tequila bars (expanded radius)
-    const mexicanRestaurantRequest = {
-      location: searchLocation,
-      radius: 8000, // ~5 miles radius for more results
-      type: "restaurant",
-      keyword: "mexican food margaritas tequila cantina mexican restaurant tex mex tequileria"
-    };
-
-    // Second search specifically for cocktail bars and lounges
-    const cocktailBarRequest = {
-      location: searchLocation,
-      radius: 8000, // ~5 miles radius
-      type: "bar",
-      keyword: "cocktail bar tequila bar margaritas mezcal agave cocktail lounge"
-    };
-
-    // Third search for more Mexican restaurant variations
-    const mexicanVariationsRequest = {
-      location: searchLocation,
-      radius: 7000, // Expanded for more results
-      type: "restaurant", 
-      keyword: "authentic mexican tacos burritos quesadillas mexican grill mexican cuisine"
-    };
-
-    // Fourth search for casual dining and chains that serve margaritas
-    const casualDiningRequest = {
-      location: searchLocation,
-      radius: 10000, // Larger to catch chain restaurants
-      type: "restaurant",
-      keyword: "chilis applebees tgi fridays olive garden red lobster margaritas happy hour"
-    };
-
-    const handleSearchResults = (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus, searchType: string) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-        // Add results to allResults, avoiding duplicates
-        results.forEach(result => {
-          if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
-            allResults.push(result);
-          }
-        });
-      }
-      
-      searchesCompleted++;
-      console.log(`${searchType} search completed. Found ${results?.length || 0} results.`);
-      
-      if (searchesCompleted === totalSearches) {
-        processAllResults();
-      }
-    };
-
     const processAllResults = () => {
       const placeDetails: PlaceDetails[] = [...supabaseRestaurants];
       const processedPlaces: PlaceDetails[] = [];
@@ -640,6 +481,171 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
         onPlacesFound(sortedPlaces);
       }
     };
+
+    // Check if this looks like a specific restaurant search (contains restaurant name)
+    if (originalSearchQuery) {
+      const queryLower = originalSearchQuery.toLowerCase();
+      // More inclusive detection - look for restaurant names, food types, or specific locations
+      const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina|tortilla|taco|burrito|kitchen|house|place|food|dining|eatery|brewery|lounge|club)\b/.test(queryLower);
+      const hasLocationIndicators = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard|austin|dallas|houston|san antonio|los angeles|chicago|miami|atlanta|denver|seattle|portland|vegas|phoenix|city|downtown|north|south|east|west)\b/.test(queryLower);
+      const hasSpecificPlaceName = queryLower.split(' ').length >= 2; // If multiple words, likely a specific place
+      isZipCode = /^\d{5}(-\d{4})?$/.test(originalSearchQuery.trim()); // Detect zip codes
+      
+      console.log('Search query analysis:', {
+        query: originalSearchQuery,
+        hasRestaurantIndicators,
+        hasLocationIndicators,
+        hasSpecificPlaceName,
+        isZipCode,
+        queryLower
+      });
+      
+      if (hasRestaurantIndicators || hasLocationIndicators || hasSpecificPlaceName) {
+        isSpecificPlaceSearch = true;
+        totalSearches = 3; // Do text search + two broader searches for context
+        console.log('Treating as specific place search');
+      } else if (isZipCode) {
+        // For zip codes, skip text search and just do general nearby searches
+        console.log('Detected zip code - doing general area search');
+        totalSearches = 4; // Do all the general searches
+        isSpecificPlaceSearch = false;
+      } else {
+        console.log('Treating as general location search');
+      }
+    }
+
+    // Always do text search if there's a search query (unless it's just a zip code)
+    if (originalSearchQuery && !isZipCode) {
+      console.log('Executing text search for:', originalSearchQuery);
+      service.textSearch({
+        query: originalSearchQuery,
+        location: searchLocation,
+        radius: 50000 // 50km radius for worldwide coverage
+      }, (results, status) => {
+        console.log('Text search results:', { status, resultsCount: results?.length, query: originalSearchQuery });
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          console.log('Text search found places:', results.map(r => ({ name: r.name, place_id: r.place_id })));
+          // Add ALL matching results, not just the first one
+          results.forEach(result => {
+            if (result && result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+              allResults.push(result);
+            }
+          });
+        } else {
+          console.log('Text search failed or returned no results:', status);
+        }
+        searchesCompleted++;
+        console.log('Search completed:', searchesCompleted, '/', totalSearches);
+        if (searchesCompleted === totalSearches) {
+          processAllResults();
+        }
+      });
+    } else {
+      // If no text search, increment the counter
+      searchesCompleted++;
+      console.log('Skipping text search, search completed:', searchesCompleted, '/', totalSearches);
+      if (searchesCompleted === totalSearches) {
+        processAllResults();
+      }
+    }
+
+    // For specific searches, also do broader searches for context
+    if (isSpecificPlaceSearch) {
+      // First context search - broader restaurant search
+      const contextRequest1 = {
+        location: searchLocation,
+        radius: 10000, // 6+ mile radius for context
+        type: "restaurant"
+      };
+      
+      // Second context search - general food and drink establishments
+      const contextRequest2 = {
+        location: searchLocation,  
+        radius: 8000, // 5 mile radius
+        type: "bar"
+      };
+      
+      service.nearbySearch(contextRequest1, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+          results.forEach(result => {
+            if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+              allResults.push(result);
+            }
+          });
+        }
+        searchesCompleted++;
+        if (searchesCompleted === totalSearches) {
+          processAllResults();
+        }
+      });
+      
+      service.nearbySearch(contextRequest2, (results, status) => {
+        if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+          results.forEach(result => {
+            if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+              allResults.push(result);
+            }
+          });
+        }
+        searchesCompleted++;
+        if (searchesCompleted === totalSearches) {
+          processAllResults();
+        }
+      });
+      
+      return; // Don't continue with other generic searches
+    }
+
+    // First search for mexican restaurants and tequila bars (expanded radius)
+    const mexicanRestaurantRequest = {
+      location: searchLocation,
+      radius: 8000, // ~5 miles radius for more results
+      type: "restaurant",
+      keyword: "mexican food margaritas tequila cantina mexican restaurant tex mex tequileria"
+    };
+
+    // Second search specifically for cocktail bars and lounges
+    const cocktailBarRequest = {
+      location: searchLocation,
+      radius: 8000, // ~5 miles radius
+      type: "bar",
+      keyword: "cocktail bar tequila bar margaritas mezcal agave cocktail lounge"
+    };
+
+    // Third search for more Mexican restaurant variations
+    const mexicanVariationsRequest = {
+      location: searchLocation,
+      radius: 7000, // Expanded for more results
+      type: "restaurant", 
+      keyword: "authentic mexican tacos burritos quesadillas mexican grill mexican cuisine"
+    };
+
+    // Fourth search for casual dining and chains that serve margaritas
+    const casualDiningRequest = {
+      location: searchLocation,
+      radius: 10000, // Larger to catch chain restaurants
+      type: "restaurant",
+      keyword: "chilis applebees tgi fridays olive garden red lobster margaritas happy hour"
+    };
+
+    const handleSearchResults = (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus, searchType: string) => {
+      if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+        // Add results to allResults, avoiding duplicates
+        results.forEach(result => {
+          if (result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+            allResults.push(result);
+          }
+        });
+      }
+      
+      searchesCompleted++;
+      console.log(`${searchType} search completed. Found ${results?.length || 0} results.`);
+      
+      if (searchesCompleted === totalSearches) {
+        processAllResults();
+      }
+    };
+
 
     // Execute all four searches
     service.nearbySearch(mexicanRestaurantRequest, (results, status) => {
