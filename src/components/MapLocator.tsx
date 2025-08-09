@@ -327,12 +327,22 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     if (originalSearchQuery) {
       const queryLower = originalSearchQuery.toLowerCase();
       // If query contains common restaurant indicators and location, treat as specific search
-      const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina)\b/.test(queryLower);
-      const hasLocation = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard)\b/.test(queryLower);
+      const hasRestaurantIndicators = /\b(restaurant|bar|grill|cafe|pizza|mexican|italian|chinese|thai|sushi|bbq|steakhouse|diner|bistro|pub|tavern|cantina|tortilla|taco|burrito|kitchen|house|place)\b/.test(queryLower);
+      const hasLocation = /\b(tx|texas|ca|california|ny|new york|fl|florida|street|st|avenue|ave|road|rd|drive|dr|blvd|boulevard|austin|dallas|houston|san antonio)\b/.test(queryLower);
+      
+      console.log('Search query analysis:', {
+        query: originalSearchQuery,
+        hasRestaurantIndicators,
+        hasLocation,
+        queryLower
+      });
       
       if (hasRestaurantIndicators || hasLocation) {
         isSpecificPlaceSearch = true;
         totalSearches = 2; // Do text search + one nearby search for context
+        console.log('Treating as specific place search');
+      } else {
+        console.log('Treating as general location search');
       }
     }
 
@@ -343,13 +353,17 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
         location: searchLocation,
         radius: 25000 // Expanded radius for better coverage
       }, (results, status) => {
+        console.log('Text search results:', { status, resultsCount: results?.length, query: originalSearchQuery });
         if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+          console.log('Text search found places:', results.map(r => ({ name: r.name, place_id: r.place_id })));
           // Add ALL matching results, not just the first one
           results.forEach(result => {
             if (result && result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
               allResults.push(result);
             }
           });
+        } else {
+          console.log('Text search failed or returned no results:', status);
         }
         searchesCompleted++;
         if (searchesCompleted === totalSearches) {
