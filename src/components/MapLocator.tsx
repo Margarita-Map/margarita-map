@@ -140,7 +140,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
               title: "Your Location"
             });
 
-            // Only search near user's location if no specific search is pending
+            // Always search near user's location on fresh page load
             const service = new window.google.maps.places.PlacesService(map);
             searchNearbyBars(service, map, userLatLng);
           }
