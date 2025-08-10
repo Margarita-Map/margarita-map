@@ -13,18 +13,15 @@ import LocationSearch from "@/components/LocationSearch";
 import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
-
 const Index = () => {
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showManageForm, setShowManageForm] = useState(false);
-
   useSEO({
     title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
     description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
-
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
       
@@ -42,27 +39,20 @@ const Index = () => {
           </p>
           <div className="animate-float mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-6 mb-4">
-            <img 
-              src={partyCharacter} 
-              alt="Party character holding margarita" 
-              className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
-            />
+            <img src={partyCharacter} alt="Party character holding margarita" className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" />
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
               Find Your Perfect
               <span className="block bg-gradient-sunset bg-clip-text text-transparent mt-2">
                 Margarita 🍹
               </span>
             </h1>
-            <img 
-              src={partyCharacter} 
-              alt="Party character holding margarita" 
-              className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" 
-              style={{ animationDelay: '0.5s' }}
-            />
+            <img src={partyCharacter} alt="Party character holding margarita" className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" style={{
+              animationDelay: '0.5s'
+            }} />
             </div>
           </div>
           
-          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Discover the best margaritas anywhere in the world. Rate drinks with our agave scale and find your next favorite spot! Let your favorite bartender and establishment know how much you appreciate them.</p>
+          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Wherever has the Best margaritas usually has the best food and fun too! Find, rate, review, post pics, post Tequila Tasting Events and more. Let the World know where to go!!!</p>
           
           <div className="max-w-2xl mx-auto px-4">
             <Button variant="lime" size="lg" className="font-bold w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
@@ -240,5 +230,4 @@ const Index = () => {
       </section>
     </div>;
 };
-
 export default Index;
