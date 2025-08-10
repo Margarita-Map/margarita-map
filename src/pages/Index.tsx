@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Utensils, Car, AlertTriangle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import ReviewCard from "@/components/ReviewCard";
+import RecentReviews from "@/components/RecentReviews";
 import AddEstablishmentForm from "@/components/AddEstablishmentForm";
 import DrinkSpecialsList from "@/components/DrinkSpecialsList";
 import ManageEstablishment from "@/components/ManageEstablishment";
@@ -124,9 +125,7 @@ const Index = () => {
             </Button>
           </div>
           
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">Check out our amazing review system - rate margaritas and help others find the best spots!</p>
-          </div>
+          <RecentReviews maxItems={6} />
         </div>
       </section>
 

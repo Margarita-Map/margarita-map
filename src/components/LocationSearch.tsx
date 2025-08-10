@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import PlaceMapDialog from './PlaceMapDialog';
 import AllPlacesMap from './AllPlacesMap';
+import AgaveRating from './AgaveRating';
+import { usePlaceRatings } from '@/hooks/usePlaceRatings';
 
 interface PlaceResult {
   id: string;
@@ -57,6 +59,19 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [showAllPlacesMap, setShowAllPlacesMap] = useState(false);
   const [searchLocation, setSearchLocation] = useState<{ lat: number; lng: number } | null>(null);
+  
+  // Convert places to PlaceDetails format for rating lookup
+  const placeDetails = places.map(place => ({
+    id: place.id,
+    name: place.name,
+    address: place.address,
+    location: place.location,
+    rating: place.rating,
+    priceLevel: place.priceLevel,
+    photos: place.photos || []
+  }));
+  
+  const { placeRatings, loading: ratingsLoading } = usePlaceRatings(placeDetails);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -490,14 +505,26 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
                     </Badge>
                   )}
                 </div>
-                <div className="flex items-center gap-1">
-                  {place.rating && (
-                    <>
+                <div className="flex items-center gap-2">
+                  {placeRatings[place.id]?.hasRatings ? (
+                    <div className="flex items-center gap-2">
+                      <AgaveRating rating={Math.round(placeRatings[place.id].averageRating)} size="sm" />
+                      <span className="text-sm font-medium text-green-600">
+                        {placeRatings[place.id].averageRating.toFixed(1)}/5 Agaves
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        ({placeRatings[place.id].totalReviews} review{placeRatings[place.id].totalReviews !== 1 ? 's' : ''})
+                      </span>
+                    </div>
+                  ) : place.rating ? (
+                    <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
                         {renderStars(place.rating)}
                       </div>
-                      <span className="text-sm font-medium ml-1">{place.rating.toFixed(1)}</span>
-                    </>
+                      <span className="text-sm font-medium ml-1">{place.rating.toFixed(1)} Google</span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">No rating yet</span>
                   )}
                 </div>
               </CardHeader>
