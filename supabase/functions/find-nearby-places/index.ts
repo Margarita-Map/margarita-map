@@ -11,9 +11,9 @@ serve(async (req) => {
   }
 
   try {
-    const { latitude, longitude, radius = 8000 } = await req.json()
+    const { latitude, longitude, radius = 8000, restaurantName } = await req.json()
     
-    console.log(`Searching for places near ${latitude}, ${longitude} within ${radius}m`)
+    console.log(`Searching for ${restaurantName ? `"${restaurantName}" restaurants` : 'Mexican restaurants'} near ${latitude}, ${longitude} within ${radius}m`)
     
     const apiKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
     console.log('=== API KEY DEBUGGING ===')
@@ -61,15 +61,27 @@ serve(async (req) => {
       return getFallbackPlaces(latitude, longitude)
     }
 
-    // Search for Mexican restaurants, margarita bars, and tequila bars
-    const searchQueries = [
-      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=mexican+restaurant&key=${apiKey}`,
-      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=margarita+bar&key=${apiKey}`,
-      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=tequila+bar&key=${apiKey}`,
-      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=mexican&key=${apiKey}`
-    ]
+    // Build search queries based on whether we're searching for a specific restaurant
+    let searchQueries: string[]
     
-    console.log('Searching for Mexican restaurants, margarita bars, and tequila bars...')
+    if (restaurantName) {
+      // Search for specific restaurant name
+      searchQueries = [
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&name=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`
+      ]
+      console.log(`Searching specifically for "${restaurantName}" locations...`)
+    } else {
+      // Search for Mexican restaurants, margarita bars, and tequila bars
+      searchQueries = [
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=mexican+restaurant&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=margarita+bar&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=tequila+bar&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=mexican&key=${apiKey}`
+      ]
+      console.log('Searching for Mexican restaurants, margarita bars, and tequila bars...')
+    }
     
     try {
       // Execute all search queries in parallel

@@ -50,6 +50,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [restaurantName, setRestaurantName] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
 
   const getCurrentLocation = () => {
@@ -82,7 +83,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     );
   };
 
-  const searchNearbyPlaces = async (location: { lat: number; lng: number }) => {
+  const searchNearbyPlaces = async (location: { lat: number; lng: number }, restaurantName?: string) => {
     setLoading(true);
     
     try {
@@ -91,7 +92,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
         body: { 
           latitude: location.lat, 
           longitude: location.lng,
-          radius: 8000 // 5 miles in meters
+          radius: 16000, // Increased radius for restaurant searches
+          restaurantName: restaurantName || undefined
         }
       });
 
@@ -103,9 +105,17 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
 
       if (data?.places && data.places.length > 0) {
         setPlaces(data.places);
-        toast.success(`Found ${data.places.length} real Mexican restaurants and tequila bars nearby!`);
+        if (restaurantName) {
+          toast.success(`Found ${data.places.length} ${restaurantName} locations nearby!`);
+        } else {
+          toast.success(`Found ${data.places.length} Mexican restaurants and tequila bars nearby!`);
+        }
       } else {
-        toast.info('No Mexican restaurants or tequila bars found in your area.');
+        if (restaurantName) {
+          toast.info(`No ${restaurantName} locations found in your area.`);
+        } else {
+          toast.info('No Mexican restaurants or tequila bars found in your area.');
+        }
         setPlaces([]);
       }
       
@@ -165,6 +175,73 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     searchByLocation(searchQuery);
+  };
+
+  const searchForRestaurant = async () => {
+    if (!restaurantName.trim()) {
+      toast.error('Please enter a restaurant name to search');
+      return;
+    }
+
+    if (!userLocation) {
+      toast.error('Please get your current location first or search by city');
+      return;
+    }
+
+    await searchNearbyPlaces(userLocation, restaurantName.trim());
+  };
+
+  const searchRestaurantInLocation = async (locationQuery: string, restaurantName: string) => {
+    if (!locationQuery.trim() || !restaurantName.trim()) {
+      toast.error('Please enter both location and restaurant name');
+      return;
+    }
+
+    setSearchLoading(true);
+    
+    try {
+      // Use Google's Geocoding API to convert location name to coordinates
+      const { data: geoData, error: geoError } = await supabase.functions.invoke('get-secret', {
+        body: { name: 'GOOGLE_MAPS_API_KEY' }
+      });
+
+      if (geoError || !geoData?.value) {
+        toast.error('Unable to search locations. Please try again.');
+        return;
+      }
+
+      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(locationQuery)}&key=${geoData.value}`;
+      
+      const response = await fetch(geocodeUrl);
+      const geocodeResult = await response.json();
+
+      if (geocodeResult.status !== 'OK' || !geocodeResult.results.length) {
+        toast.error('Location not found. Please try a different search term.');
+        return;
+      }
+
+      const location = geocodeResult.results[0].geometry.location;
+      const coordinates = { lat: location.lat, lng: location.lng };
+      
+      // Search for specific restaurant at this location
+      await searchNearbyPlaces(coordinates, restaurantName);
+      
+    } catch (error) {
+      console.error('Error searching location:', error);
+      toast.error('Error searching location. Please try again.');
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleRestaurantSearch = () => {
+    if (searchQuery.trim()) {
+      // Search for restaurant in specified location
+      searchRestaurantInLocation(searchQuery, restaurantName);
+    } else {
+      // Search for restaurant near current location
+      searchForRestaurant();
+    }
   };
 
 
@@ -229,10 +306,50 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
           </form>
         </div>
 
+        {/* Restaurant Name Search */}
+        <div className="max-w-md mx-auto mb-6">
+          <div className="space-y-3">
+            <Input
+              type="text"
+              placeholder="Search for specific restaurant (e.g., Lupe Tortilla)"
+              value={restaurantName}
+              onChange={(e) => setRestaurantName(e.target.value)}
+              className="w-full"
+              disabled={searchLoading || loading}
+            />
+            <Button 
+              onClick={handleRestaurantSearch}
+              disabled={searchLoading || loading || !restaurantName.trim()}
+              variant="default"
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+            >
+              {searchLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Search className="w-5 h-5 mr-2" />
+                  Find All Locations
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              {searchQuery.trim() 
+                ? `Will search for "${restaurantName}" in ${searchQuery}` 
+                : userLocation
+                  ? `Will search for "${restaurantName}" near your current location`
+                  : 'Enter a location above or get your current location first'
+              }
+            </p>
+          </div>
+        </div>
+
         {/* Divider */}
         <div className="flex items-center gap-4 mb-6">
           <div className="flex-1 h-px bg-border"></div>
-          <span className="text-sm text-muted-foreground">OR</span>
+          <span className="text-sm text-muted-foreground">OR BROWSE ALL</span>
           <div className="flex-1 h-px bg-border"></div>
         </div>
         
@@ -251,7 +368,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
           ) : (
             <>
               <Navigation className="w-5 h-5 mr-2" />
-              Find Places Near Me
+              Find All Mexican Places Near Me
             </>
           )}
         </Button>
