@@ -11,8 +11,8 @@ const MariachiBand = () => {
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Use TunePocket Retro Mariachi music
-    audioRef.current.src = "/audio/Tunepocket-Retro-Mariachi.mp3";
+    // Use Free Music Archive mariachi song (Jarabe Tapatío)
+    audioRef.current.src = "/audio/mariachi-jarabe-tapatio.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.4;
     
