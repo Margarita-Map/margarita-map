@@ -11,8 +11,8 @@ const MariachiBand = () => {
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Use the existing mariachi music file in the project
-    audioRef.current.src = "/audio/mariachi.mp3";
+    // Use TunePocket Retro Mariachi music
+    audioRef.current.src = "/audio/Tunepocket-Retro-Mariachi.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.4;
     
