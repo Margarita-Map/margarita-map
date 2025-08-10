@@ -163,7 +163,8 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     console.log("Performing search for:", searchTerm);
     const geocoder = new window.google.maps.Geocoder();
     geocoder.geocode({ address: searchTerm }, (results, status) => {
-      console.log("Geocoding result:", { status, results: results?.length });
+      console.log("Geocoding result:", { status, results: results?.length, searchTerm });
+      console.log("Geocoding status details:", status);
       if (status === "OK" && results && results[0] && mapInstanceRef.current) {
         const location = results[0].geometry.location;
         const lat = location.lat();
@@ -185,6 +186,12 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
         // Use current map center or user's location as fallback
         const service = new window.google.maps.places.PlacesService(mapInstanceRef.current);
         const currentCenter = mapInstanceRef.current.getCenter() || userLocationRef.current;
+        
+        console.log("Available locations for fallback:", {
+          mapCenter: mapInstanceRef.current.getCenter()?.toJSON(),
+          userLocation: userLocationRef.current?.toJSON(),
+          finalLocation: currentCenter?.toJSON()
+        });
         
         if (currentCenter) {
           console.log("Using current map center for restaurant search:", currentCenter.toJSON());
@@ -484,6 +491,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
                 console.log(`Final sorted results: ${sortedPlaces.length} places`);
                 console.log('Top 3 places:', sortedPlaces.slice(0, 3).map(p => ({ name: p.name, distance: p.distance })));
                 
+                console.log("Final sorted results being sent to onPlacesFound:", sortedPlaces.length, "places");
                 if (onPlacesFound) {
                   onPlacesFound(sortedPlaces);
                 }
@@ -540,28 +548,48 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     // Always do text search if there's a search query (unless it's just a zip code)
     if (originalSearchQuery && !isZipCode) {
       console.log('Executing text search for:', originalSearchQuery);
-      service.textSearch({
-        query: originalSearchQuery,
-        location: searchLocation,
-        radius: 50000 // 50km radius for worldwide coverage
-      }, (results, status) => {
-        console.log('Text search results:', { status, resultsCount: results?.length, query: originalSearchQuery });
-        if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
-          console.log('Text search found places:', results.map(r => ({ name: r.name, place_id: r.place_id })));
-          // Add ALL matching results, not just the first one
-          results.forEach(result => {
-            if (result && result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
-              allResults.push(result);
+      
+      // Do a broader text search with multiple queries to catch restaurant names
+      const searchQueries = [
+        originalSearchQuery,
+        `${originalSearchQuery} restaurant`,
+        `${originalSearchQuery} bar`,
+        `${originalSearchQuery} mexican food`
+      ];
+      
+      let textSearchesCompleted = 0;
+      const totalTextSearches = searchQueries.length;
+      
+      searchQueries.forEach((searchQuery, index) => {
+        console.log(`Executing text search ${index + 1}/${totalTextSearches} for:`, searchQuery);
+        
+        service.textSearch({
+          query: searchQuery,
+          location: searchLocation,
+          radius: 100000 // 100km radius for worldwide coverage
+        }, (results, status) => {
+          console.log(`Text search ${index + 1} results:`, { status, resultsCount: results?.length, query: searchQuery });
+          if (status === window.google.maps.places.PlacesServiceStatus.OK && results && results.length > 0) {
+            console.log(`Text search ${index + 1} found places:`, results.map(r => ({ name: r.name, place_id: r.place_id })));
+            // Add ALL matching results, not just the first one
+            results.forEach(result => {
+              if (result && result.place_id && !allResults.some(existing => existing.place_id === result.place_id)) {
+                allResults.push(result);
+              }
+            });
+          } else {
+            console.log(`Text search ${index + 1} failed or returned no results:`, status);
+          }
+          
+          textSearchesCompleted++;
+          if (textSearchesCompleted === totalTextSearches) {
+            searchesCompleted++;
+            console.log('All text searches completed, search completed:', searchesCompleted, '/', totalSearches);
+            if (searchesCompleted === totalSearches) {
+              processAllResults();
             }
-          });
-        } else {
-          console.log('Text search failed or returned no results:', status);
-        }
-        searchesCompleted++;
-        console.log('Search completed:', searchesCompleted, '/', totalSearches);
-        if (searchesCompleted === totalSearches) {
-          processAllResults();
-        }
+          }
+        });
       });
     } else {
       // If no text search, increment the counter
