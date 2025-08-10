@@ -5,35 +5,70 @@ import { Button } from "@/components/ui/button";
 const MariachiBand = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [audioStatus, setAudioStatus] = useState('loading');
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Create audio element with mariachi music
-    audioRef.current = new Audio();
-    // Using a working mariachi music URL as fallback
-    audioRef.current.src = "https://archive.org/download/78_viva-mexico-viva-america_pedro-galindo-el-mariachi-tapatio-marmolejo_gbia0064106b/Viva%20Mexico%20-%20Viva%20America%20-%20Pedro%20Galindo.mp3";
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.3;
-    
-    // Add error handling to debug audio issues
-    audioRef.current.addEventListener('error', (e) => {
-      console.log('Audio error:', e);
-    });
-    
-    audioRef.current.addEventListener('canplaythrough', () => {
-      console.log('Audio loaded successfully');
-    });
+    const initAudio = () => {
+      // Create audio element
+      audioRef.current = new Audio();
+      audioRef.current.loop = true;
+      audioRef.current.volume = 0.3;
+      audioRef.current.preload = 'auto';
+      
+      // Primary source - local file first
+      const primarySrc = "/audio/mariachi.mp3";
+      // Backup source - external URL
+      const backupSrc = "https://archive.org/download/78_viva-mexico-viva-america_pedro-galindo-el-mariachi-tapatio-marmolejo_gbia0064106b/Viva%20Mexico%20-%20Viva%20America%20-%20Pedro%20Galindo.mp3";
+      
+      audioRef.current.src = primarySrc;
+      
+      // Handle successful loading
+      audioRef.current.addEventListener('canplaythrough', () => {
+        console.log('Audio loaded successfully');
+        setAudioStatus('ready');
+      });
+      
+      audioRef.current.addEventListener('loadstart', () => {
+        console.log('Audio loading started');
+        setAudioStatus('loading');
+      });
+      
+      // Handle errors and try backup
+      audioRef.current.addEventListener('error', (e) => {
+        console.log('Primary audio failed, trying backup source:', e);
+        setAudioStatus('trying-backup');
+        if (audioRef.current && audioRef.current.src !== backupSrc) {
+          audioRef.current.src = backupSrc;
+          audioRef.current.load();
+        } else {
+          console.log('Both audio sources failed');
+          setAudioStatus('failed');
+        }
+      });
+      
+      // Try to load the audio
+      audioRef.current.load();
+    };
+
+    initAudio();
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.removeEventListener('canplaythrough', () => {});
+        audioRef.current.removeEventListener('error', () => {});
+        audioRef.current.removeEventListener('loadstart', () => {});
         audioRef.current = null;
       }
     };
   }, []);
 
   const toggleMusic = async () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || audioStatus === 'failed') {
+      console.log('Audio not available');
+      return;
+    }
 
     setHasUserInteracted(true);
 
@@ -41,12 +76,16 @@ const MariachiBand = () => {
       if (isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
+        console.log('Audio paused');
       } else {
+        console.log('Attempting to play audio...');
         await audioRef.current.play();
         setIsPlaying(true);
+        console.log('Audio playing');
       }
     } catch (error) {
-      console.log("Audio playback failed - you may need to add your own mariachi music file:", error);
+      console.log("Audio playback failed:", error);
+      setAudioStatus('failed');
     }
   };
 
