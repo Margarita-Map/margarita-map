@@ -141,8 +141,11 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
             });
 
             // Always search near user's location on fresh page load
+            console.log("=== INITIAL LOCATION SEARCH ===");
+            console.log("Performing initial search near user location:", userLatLng.toJSON());
             const service = new window.google.maps.places.PlacesService(map);
             searchNearbyBars(service, map, userLatLng);
+            console.log("=== END INITIAL LOCATION SEARCH ===");
           }
         },
         (error) => {

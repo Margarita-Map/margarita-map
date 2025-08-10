@@ -60,9 +60,11 @@ const Index = () => {
     // or add it to a favorites list
   };
   const handlePlacesFound = (places: PlaceDetails[]) => {
+    console.log("=== INDEX.TSX handlePlacesFound CALLED ===");
     console.log("handlePlacesFound called with places:", places?.length || 0, places);
     console.log("Current nearbyPlaces state before update:", nearbyPlaces?.length || 0);
     console.log("Setting nearbyPlaces state to:", places);
+    console.log("=== END handlePlacesFound ===");
     setNearbyPlaces(places);
     // Force a re-render check
     setTimeout(() => {
