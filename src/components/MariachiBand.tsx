@@ -28,14 +28,17 @@ const MariachiBand = () => {
         console.log('Audio loaded successfully');
         setAudioStatus('ready');
         
-        // Try to auto-play when ready
-        try {
-          await audioRef.current?.play();
-          setIsPlaying(true);
-          console.log('Auto-play started');
-        } catch (error) {
-          console.log('Auto-play blocked by browser, user interaction required:', error);
-          setIsPlaying(false);
+        // Auto-play immediately when audio is ready
+        if (audioRef.current) {
+          try {
+            audioRef.current.currentTime = 0;
+            await audioRef.current.play();
+            setIsPlaying(true);
+            console.log('Auto-play started successfully');
+          } catch (error) {
+            console.log('Auto-play failed:', error);
+            setIsPlaying(false);
+          }
         }
       });
       
