@@ -134,6 +134,45 @@ export type Database = {
           },
         ]
       }
+      party_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          latitude: number | null
+          location_address: string | null
+          location_name: string
+          longitude: number | null
+          photo_url: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          location_address?: string | null
+          location_name: string
+          longitude?: number | null
+          photo_url: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number | null
+          location_address?: string | null
+          location_name?: string
+          longitude?: number | null
+          photo_url?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       party_posts: {
         Row: {
           created_at: string

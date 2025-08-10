@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MapPin, BookOpen, Star, Menu, PartyPopper, Trophy, Calendar, Facebook } from "lucide-react";
+import { MapPin, BookOpen, Star, Menu, PartyPopper, Trophy, Calendar, Facebook, Camera } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 const Navbar = () => {
   const location = useLocation();
@@ -41,6 +41,19 @@ const Navbar = () => {
       >
         <PartyPopper className="w-5 h-5" />
         <span>PARTY Central</span>
+      </Link>
+
+      <Link 
+        to="/photo-gallery" 
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium whitespace-nowrap ${
+          location.pathname === '/photo-gallery' 
+            ? 'bg-primary text-primary-foreground' 
+            : 'hover:bg-accent hover:text-accent-foreground'
+        }`}
+      >
+        <Camera className="w-5 h-5" />
+        <span className="hidden lg:inline">Photo Gallery</span>
+        <span className="lg:hidden">Photos</span>
       </Link>
 
       <Link 
