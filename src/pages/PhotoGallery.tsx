@@ -55,7 +55,7 @@ const PhotoGallery = () => {
         .from('party_photos')
         .select(`
           *,
-          profiles (display_name)
+          profiles!party_photos_user_id_fkey (display_name)
         `)
         .order('created_at', { ascending: false });
 
