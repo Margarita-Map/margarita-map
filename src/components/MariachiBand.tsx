@@ -202,9 +202,9 @@ const MariachiBand = () => {
         title={isPlaying ? "Pause Mariachi Music" : "Play Mariachi Music"}
       >
         {isPlaying ? (
-          <VolumeX className="w-4 h-4" />
-        ) : (
           <Volume2 className="w-4 h-4" />
+        ) : (
+          <VolumeX className="w-4 h-4" />
         )}
       </Button>
 
