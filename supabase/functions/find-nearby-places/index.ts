@@ -86,14 +86,23 @@ serve(async (req) => {
       searchQueries = [...baseSearches, ...chainSearches]
       console.log(`Searching for "${restaurantName}" restaurants including chain locations with expanded radius...`)
     } else {
-      // Search for Mexican restaurants, margarita bars, and tequila bars
+      // Comprehensive search for all types of restaurants that might serve Mexican food
       searchQueries = [
+        // Primary Mexican restaurant searches
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=mexican+restaurant&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=mexican&key=${apiKey}`,
+        
+        // Bar searches
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=margarita+bar&key=${apiKey}`,
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=tequila+bar&key=${apiKey}`,
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=mexican&key=${apiKey}`
+        
+        // Broader restaurant searches to catch local places
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=tex+mex&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=tacos&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=cantina&key=${apiKey}`
       ]
-      console.log('Searching for Mexican restaurants, margarita bars, and tequila bars...')
+      console.log('Searching for Mexican restaurants, bars, and any local restaurants that might serve Mexican food...')
     }
     
     try {
