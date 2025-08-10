@@ -11,6 +11,7 @@ import DrinkSpecialsList from "@/components/DrinkSpecialsList";
 import ManageEstablishment from "@/components/ManageEstablishment";
 import TequilaTrivia from "@/components/TequilaTrivia";
 import LocationSearch from "@/components/LocationSearch";
+import MariachiBand from "@/components/MariachiBand";
 import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
@@ -25,6 +26,7 @@ const Index = () => {
   });
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
+      <MariachiBand />
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20 md:py-0">
