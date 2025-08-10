@@ -10,26 +10,55 @@ const SimpleMariachiBand = () => {
     // Create and setup audio on component mount
     audioRef.current = new Audio("https://archive.org/download/78_viva-mexico-viva-america_pedro-galindo-el-mariachi-tapatio-marmolejo_gbia0064106b/Viva%20Mexico%20-%20Viva%20America%20-%20Pedro%20Galindo.mp3");
     audioRef.current.loop = true;
-    audioRef.current.volume = 0.5;
+    audioRef.current.volume = 0.3;
+    audioRef.current.preload = "auto";
     
-    // Try to auto-play
+    // Aggressive auto-play attempt
     const playAudio = async () => {
       try {
+        // Try multiple times to start playing
         await audioRef.current?.play();
         setIsPlaying(true);
       } catch (error) {
-        // Auto-play failed (browser policy), user will need to click
-        setIsPlaying(false);
+        // If auto-play fails, try again after a short delay
+        setTimeout(async () => {
+          try {
+            await audioRef.current?.play();
+            setIsPlaying(true);
+          } catch (e) {
+            // Still failed, user will need to interact
+            setIsPlaying(false);
+          }
+        }, 100);
       }
     };
     
+    // Try to play immediately
     playAudio();
+    
+    // Also try on first user interaction
+    const handleFirstInteraction = async () => {
+      if (!isPlaying && audioRef.current) {
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch (e) {
+          // Still can't play
+        }
+      }
+    };
+    
+    // Add listeners for first user interaction
+    document.addEventListener('click', handleFirstInteraction, { once: true });
+    document.addEventListener('touchstart', handleFirstInteraction, { once: true });
     
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
     };
   }, []);
 
