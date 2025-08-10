@@ -160,25 +160,24 @@ const SimpleMariachiBand = () => {
       </div>
 
       {/* Music Control Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={toggleMusic}
-        className="bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:scale-110 transition-transform text-white hover:bg-white/30"
-        title={isPlaying ? "Pause Mariachi Music" : "Play Mariachi Music"}
-      >
-        {isPlaying ? (
-          <Volume2 className="w-4 h-4" />
-        ) : (
-          <VolumeX className="w-4 h-4" />
-        )}
-      </Button>
-
-      {!isPlaying && (
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white/80 animate-pulse text-center">
-          Click to play mariachi music! 🎵
-        </div>
-      )}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleMusic}
+          className="bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:scale-110 transition-transform text-white hover:bg-white/30"
+          title={isPlaying ? "Pause Mariachi Music" : "Play Mariachi Music"}
+        >
+          {isPlaying ? (
+            <Volume2 className="w-4 h-4" />
+          ) : (
+            <VolumeX className="w-4 h-4" />
+          )}
+        </Button>
+        <span className="text-sm text-white/90 font-medium">
+          Click for mariachi music
+        </span>
+      </div>
     </div>
   );
 };
