@@ -10,8 +10,9 @@ const MariachiBand = () => {
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Using a working mariachi music URL as fallback
-    audioRef.current.src = "https://archive.org/download/LaCucaracha-tradinionalMexicanSong/La%20Cucaracha%20-%20tradinional%20Mexican%20song.mp3";
+    // Use a reliable audio source that works with CORS
+    audioRef.current.src = "https://www.bensound.com/bensound-music/bensound-mariachi.mp3";
+    audioRef.current.crossOrigin = "anonymous";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
     
