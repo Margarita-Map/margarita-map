@@ -61,80 +61,93 @@ serve(async (req) => {
       return getFallbackPlaces(latitude, longitude)
     }
 
-    // Test a simple nearby search first
-    const testUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&key=${apiKey}`
+    // Search for Mexican restaurants, margarita bars, and tequila bars
+    const searchQueries = [
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=mexican+restaurant&key=${apiKey}`,
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=margarita+bar&key=${apiKey}`,
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=tequila+bar&key=${apiKey}`,
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=mexican&key=${apiKey}`
+    ]
     
-    console.log('Testing Google Places API with basic restaurant search...')
+    console.log('Searching for Mexican restaurants, margarita bars, and tequila bars...')
     
     try {
-      const testResponse = await fetch(testUrl)
-      const testData = await testResponse.json()
+      // Execute all search queries in parallel
+      const searchPromises = searchQueries.map(url => fetch(url).then(res => res.json()))
+      const searchResults = await Promise.all(searchPromises)
       
-      console.log('Google API Test Response:')
-      console.log('- Status:', testData.status)
-      console.log('- Error message:', testData.error_message || 'None')
-      console.log('- Results count:', testData.results?.length || 0)
+      console.log('Executed', searchQueries.length, 'search queries')
       
-      if (testData.status === 'REQUEST_DENIED') {
-        console.error('Google Places API request denied - check API key and billing')
-        return getFallbackPlaces(latitude, longitude)
-      }
+      // Combine all results
+      let allPlaces: any[] = []
       
-      if (testData.status === 'ZERO_RESULTS') {
-        console.log('No restaurants found in area - using fallback')
-        return getFallbackPlaces(latitude, longitude)
-      }
-      
-      if (testData.status === 'OK' && testData.results && testData.results.length > 0) {
-        console.log('Google Places API working! Processing results...')
+      searchResults.forEach((data, index) => {
+        console.log(`Search ${index + 1} status:`, data.status, 'Results:', data.results?.length || 0)
         
-        const places = testData.results.slice(0, 12).map((place: any) => ({
-          id: place.place_id,
-          name: place.name,
-          address: place.vicinity || place.formatted_address || 'Address not available',
-          location: {
-            lat: place.geometry.location.lat,
-            lng: place.geometry.location.lng
-          },
-          rating: place.rating || 4.0,
-          priceLevel: place.price_level || 2,
-          photos: place.photos ? place.photos.slice(0, 1).map((photo: any) => 
-            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`
-          ) : [],
-          placeTypes: place.types || ['restaurant'],
-          businessStatus: place.business_status || 'OPERATIONAL'
-        }))
+        if (data.status === 'OK' && data.results) {
+          allPlaces = allPlaces.concat(data.results)
+        }
+      })
+      
+      // Remove duplicates based on place_id
+      const uniquePlaces = allPlaces.filter((place, index, self) => 
+        index === self.findIndex(p => p.place_id === place.place_id)
+      )
+      
+      console.log(`Found ${allPlaces.length} total results, ${uniquePlaces.length} unique places`)
+      
+      if (uniquePlaces.length === 0) {
+        console.log('No Mexican restaurants, margarita bars, or tequila bars found - using fallback')
+        return getFallbackPlaces(latitude, longitude)
+      }
+      
+      // Process the unique places
+      const places = uniquePlaces.slice(0, 15).map((place: any) => ({
+        id: place.place_id,
+        name: place.name,
+        address: place.vicinity || place.formatted_address || 'Address not available',
+        location: {
+          lat: place.geometry.location.lat,
+          lng: place.geometry.location.lng
+        },
+        rating: place.rating || 4.0,
+        priceLevel: place.price_level || 2,
+        photos: place.photos ? place.photos.slice(0, 1).map((photo: any) => 
+          `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`
+        ) : [],
+        placeTypes: place.types || ['restaurant'],
+        businessStatus: place.business_status || 'OPERATIONAL'
+      }))
 
-        // Calculate distances
-        const placesWithDistance = places.map(place => {
-          const distance = calculateDistance(
-            latitude,
-            longitude,
-            place.location.lat,
-            place.location.lng
-          )
-          return { ...place, distance }
+      // Calculate distances
+      const placesWithDistance = places.map(place => {
+        const distance = calculateDistance(
+          latitude,
+          longitude,
+          place.location.lat,
+          place.location.lng
+        )
+        return { ...place, distance }
+      })
+
+      // Sort by rating and distance
+      const sortedPlaces = placesWithDistance
+        .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY')
+        .sort((a, b) => {
+          const ratingDiff = (b.rating || 0) - (a.rating || 0)
+          if (Math.abs(ratingDiff) > 0.3) return ratingDiff
+          return (a.distance || 0) - (b.distance || 0)
         })
 
-        // Sort by rating and distance
-        const sortedPlaces = placesWithDistance
-          .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY')
-          .sort((a, b) => {
-            const ratingDiff = (b.rating || 0) - (a.rating || 0)
-            if (Math.abs(ratingDiff) > 0.3) return ratingDiff
-            return (a.distance || 0) - (b.distance || 0)
-          })
-
-        console.log(`Returning ${sortedPlaces.length} real places from Google`)
-        
-        return new Response(
-          JSON.stringify({ places: sortedPlaces, source: 'google' }),
-          {
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 200,
-          },
-        )
-      }
+      console.log(`Returning ${sortedPlaces.length} Mexican restaurants, margarita bars, and tequila bars from Google`)
+      
+      return new Response(
+        JSON.stringify({ places: sortedPlaces, source: 'google' }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200,
+        },
+      )
       
     } catch (apiError) {
       console.error('Google Places API call failed:', apiError)
