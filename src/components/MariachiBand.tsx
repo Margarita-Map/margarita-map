@@ -11,8 +11,8 @@ const MariachiBand = () => {
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Use a reliable mariachi music source
-    audioRef.current.src = "https://www.soundjay.com/misc/sounds/mariachi.mp3";
+    // Use the existing mariachi music file in the project
+    audioRef.current.src = "/audio/mariachi.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.4;
     
