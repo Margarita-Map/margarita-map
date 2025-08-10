@@ -65,13 +65,14 @@ serve(async (req) => {
     let searchQueries: string[]
     
     if (restaurantName) {
-      // Search for specific restaurant name
+      // Search for specific restaurant name with restaurant-focused queries
       searchQueries = [
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&name=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
-        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=food&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=meal_takeaway&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=${encodeURIComponent(restaurantName + ' restaurant')}&key=${apiKey}`
       ]
-      console.log(`Searching specifically for "${restaurantName}" locations...`)
+      console.log(`Searching specifically for "${restaurantName}" restaurants only...`)
     } else {
       // Search for Mexican restaurants, margarita bars, and tequila bars
       searchQueries = [
@@ -113,8 +114,32 @@ serve(async (req) => {
         return getFallbackPlaces(latitude, longitude)
       }
       
-      // Process the unique places
-      const places = uniquePlaces.slice(0, 15).map((place: any) => ({
+      // Filter out non-food businesses when searching for specific restaurants
+      let filteredPlaces = uniquePlaces
+      if (restaurantName) {
+        filteredPlaces = uniquePlaces.filter((place: any) => {
+          const types = place.types || []
+          const isFood = types.some((type: string) => 
+            ['restaurant', 'food', 'meal_takeaway', 'meal_delivery', 'cafe'].includes(type)
+          )
+          const isNotLawyer = !types.includes('lawyer')
+          const isNotContractor = !types.includes('general_contractor') && !types.includes('roofing_contractor')
+          const isNotRealEstate = !types.includes('real_estate_agency')
+          
+          console.log(`Place: ${place.name}, Types: ${types.join(', ')}, IsFood: ${isFood}, Keeping: ${isFood && isNotLawyer && isNotContractor && isNotRealEstate}`)
+          
+          return isFood && isNotLawyer && isNotContractor && isNotRealEstate
+        })
+        console.log(`Filtered from ${uniquePlaces.length} to ${filteredPlaces.length} food-related businesses`)
+      }
+      
+      if (filteredPlaces.length === 0) {
+        console.log('No restaurants found after filtering - using fallback')
+        return getFallbackPlaces(latitude, longitude)
+      }
+
+      // Process the filtered places
+      const places = filteredPlaces.slice(0, 15).map((place: any) => ({
         id: place.place_id,
         name: place.name,
         address: place.vicinity || place.formatted_address || 'Address not available',
@@ -142,13 +167,26 @@ serve(async (req) => {
         return { ...place, distance }
       })
 
-      // Sort by rating and distance
+      // Enhanced sorting for restaurant searches
       const sortedPlaces = placesWithDistance
         .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY')
         .sort((a, b) => {
-          const ratingDiff = (b.rating || 0) - (a.rating || 0)
-          if (Math.abs(ratingDiff) > 0.3) return ratingDiff
-          return (a.distance || 0) - (b.distance || 0)
+          if (restaurantName) {
+            // When searching for specific restaurant, prioritize exact name matches
+            const aNameMatch = a.name.toLowerCase().includes(restaurantName.toLowerCase())
+            const bNameMatch = b.name.toLowerCase().includes(restaurantName.toLowerCase())
+            
+            if (aNameMatch && !bNameMatch) return -1
+            if (!aNameMatch && bNameMatch) return 1
+            
+            // Then sort by distance for same-name restaurants
+            return (a.distance || 0) - (b.distance || 0)
+          } else {
+            // For general searches, sort by rating then distance
+            const ratingDiff = (b.rating || 0) - (a.rating || 0)
+            if (Math.abs(ratingDiff) > 0.3) return ratingDiff
+            return (a.distance || 0) - (b.distance || 0)
+          }
         })
 
       console.log(`Returning ${sortedPlaces.length} Mexican restaurants, margarita bars, and tequila bars from Google`)
