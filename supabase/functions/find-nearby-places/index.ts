@@ -199,7 +199,12 @@ function getFallbackPlaces(latitude: number, longitude: number) {
     JSON.stringify({ 
       places: sortedFallback, 
       source: 'fallback',
-      message: 'Showing sample Mexican restaurants - Google Places API may need configuration'
+      message: 'Showing sample Mexican restaurants - Google Places API may need configuration',
+      debug: {
+        apiKeyFound: !!Deno.env.get('GOOGLE_MAPS_API_KEY'),
+        apiKeyLength: Deno.env.get('GOOGLE_MAPS_API_KEY')?.length || 0,
+        timestamp: new Date().toISOString()
+      }
     }),
     {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
