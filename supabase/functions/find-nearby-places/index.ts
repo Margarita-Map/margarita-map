@@ -18,8 +18,11 @@ serve(async (req) => {
     const apiKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
     console.log('API Key status:', apiKey ? 'Found' : 'Missing')
     console.log('API Key length:', apiKey?.length || 0)
-    console.log('API Key starts with:', apiKey ? apiKey.substring(0, 10) + '...' : 'None')
-    console.log('Full API Key for debugging:', apiKey)
+    
+    if (!apiKey) {
+      console.error('GOOGLE_MAPS_API_KEY not found in environment variables')
+      return getFallbackPlaces(latitude, longitude)
+    }
     
     // Test a simple geocoding API call first to verify the key works
     if (apiKey) {
