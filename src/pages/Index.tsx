@@ -11,7 +11,7 @@ import DrinkSpecialsList from "@/components/DrinkSpecialsList";
 import ManageEstablishment from "@/components/ManageEstablishment";
 import TequilaTrivia from "@/components/TequilaTrivia";
 import LocationSearch from "@/components/LocationSearch";
-import MariachiBand from "@/components/MariachiBand";
+import SimpleMariachiBand from "@/components/SimpleMariachiBand";
 import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
@@ -36,7 +36,7 @@ const Index = () => {
         </div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto">
-          <MariachiBand />
+          <SimpleMariachiBand />
           <div className="animate-float mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-6 mb-4">
             <img src={partyCharacter} alt="Party character holding margarita" className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" />
