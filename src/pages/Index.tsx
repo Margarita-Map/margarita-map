@@ -26,7 +26,6 @@ const Index = () => {
   });
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
-      <MariachiBand />
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20 md:py-0">
@@ -37,6 +36,7 @@ const Index = () => {
         </div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto">
+          <MariachiBand />
           <div className="animate-float mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-6 mb-4">
             <img src={partyCharacter} alt="Party character holding margarita" className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" />

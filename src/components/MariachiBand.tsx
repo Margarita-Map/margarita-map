@@ -41,55 +41,70 @@ const MariachiBand = () => {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50 flex items-center gap-4">
+    <div className="flex items-center justify-center gap-4 mb-8">
       {/* Mariachi Band Animation */}
-      <div className="flex items-end gap-1">
-        {/* Guitarist 1 */}
+      <div className="flex items-end gap-2">
+        {/* Mariachi Guitarist 1 */}
         <div className="relative">
-          <div className="text-4xl animate-bounce" style={{ animationDelay: '0s' }}>
+          <div className="text-5xl animate-bounce" style={{ animationDelay: '0s' }}>
+            🧑‍🎤
+          </div>
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.1s' }}>
             🎸
           </div>
-          <div className="absolute -top-2 -right-1 text-lg animate-pulse">
+          <div className="absolute -top-2 -right-1 text-lg animate-pulse text-yellow-400">
             ♪
           </div>
         </div>
 
-        {/* Trumpeter */}
+        {/* Mariachi Trumpeter */}
         <div className="relative">
-          <div className="text-4xl animate-bounce" style={{ animationDelay: '0.2s' }}>
+          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.2s' }}>
+            👨‍🎤
+          </div>
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.3s' }}>
             🎺
           </div>
-          <div className="absolute -top-2 -left-1 text-lg animate-pulse" style={{ animationDelay: '0.5s' }}>
+          <div className="absolute -top-2 -left-1 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '0.5s' }}>
             ♫
           </div>
         </div>
 
-        {/* Violinist */}
+        {/* Mariachi Violinist */}
         <div className="relative">
-          <div className="text-4xl animate-bounce" style={{ animationDelay: '0.4s' }}>
+          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.4s' }}>
+            🧑‍🎤
+          </div>
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.5s' }}>
             🎻
           </div>
-          <div className="absolute -top-2 -right-1 text-lg animate-pulse" style={{ animationDelay: '1s' }}>
+          <div className="absolute -top-2 -right-1 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1s' }}>
             ♪
           </div>
         </div>
 
-        {/* Guitarist 2 */}
+        {/* Mariachi Singer with Maracas */}
         <div className="relative">
-          <div className="text-4xl animate-bounce" style={{ animationDelay: '0.6s' }}>
-            🎸
+          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.6s' }}>
+            👨‍🎤
           </div>
-          <div className="absolute -top-2 -left-1 text-lg animate-pulse" style={{ animationDelay: '1.5s' }}>
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.7s' }}>
+            🪇
+          </div>
+          <div className="absolute -top-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1.5s' }}>
             ♫
           </div>
         </div>
 
-        {/* Singer/Maracas */}
+        {/* Mariachi Accordionist */}
         <div className="relative">
-          <div className="text-4xl animate-bounce" style={{ animationDelay: '0.8s' }}>
-            🪇
+          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.8s' }}>
+            🧑‍🎤
           </div>
-          <div className="absolute -top-2 text-lg animate-pulse" style={{ animationDelay: '2s' }}>
+          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.9s' }}>
+            🪗
+          </div>
+          <div className="absolute -top-2 -left-1 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '2s' }}>
             ♪
           </div>
         </div>
@@ -100,7 +115,7 @@ const MariachiBand = () => {
         variant="outline"
         size="sm"
         onClick={toggleMusic}
-        className="bg-background/80 backdrop-blur-sm border-2 hover:scale-110 transition-transform"
+        className="bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:scale-110 transition-transform text-white hover:bg-white/30"
         title={isPlaying ? "Pause Mariachi Music" : "Play Mariachi Music"}
       >
         {isPlaying ? (
@@ -111,8 +126,8 @@ const MariachiBand = () => {
       </Button>
 
       {!hasUserInteracted && (
-        <div className="absolute -bottom-8 right-0 text-xs text-muted-foreground animate-pulse">
-          Click to play music! 🎵
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white/80 animate-pulse text-center">
+          Click to play mariachi music! 🎵
         </div>
       )}
     </div>
