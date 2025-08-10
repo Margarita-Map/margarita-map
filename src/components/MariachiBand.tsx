@@ -5,24 +5,42 @@ import { Button } from "@/components/ui/button";
 const MariachiBand = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [canAutoPlay, setCanAutoPlay] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Use a reliable audio source that works with CORS
-    audioRef.current.src = "https://www.bensound.com/bensound-music/bensound-mariachi.mp3";
-    audioRef.current.crossOrigin = "anonymous";
+    // Use a reliable mariachi music source
+    audioRef.current.src = "https://www.soundjay.com/misc/sounds/mariachi.mp3";
     audioRef.current.loop = true;
-    audioRef.current.volume = 0.3;
+    audioRef.current.volume = 0.4;
     
-    // Add error handling to debug audio issues
+    // Add error handling
     audioRef.current.addEventListener('error', (e) => {
-      console.log('Audio error:', e);
+      console.log('Primary audio failed, trying backup source:', e);
+      // Fallback to a different source
+      if (audioRef.current) {
+        audioRef.current.src = "https://archive.org/download/mariachi_music_sample/mariachi_sample.mp3";
+      }
     });
     
     audioRef.current.addEventListener('canplaythrough', () => {
       console.log('Audio loaded successfully');
+      // Try auto-play after a brief delay to let page settle
+      setTimeout(async () => {
+        try {
+          if (audioRef.current && !hasUserInteracted) {
+            await audioRef.current.play();
+            setIsPlaying(true);
+            setCanAutoPlay(true);
+            console.log('Auto-play started successfully');
+          }
+        } catch (error) {
+          console.log('Auto-play blocked by browser - user interaction required:', error);
+          setCanAutoPlay(false);
+        }
+      }, 1000);
     });
 
     return () => {
@@ -31,7 +49,7 @@ const MariachiBand = () => {
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [hasUserInteracted]);
 
   const toggleMusic = async () => {
     if (!audioRef.current) return;
@@ -142,7 +160,7 @@ const MariachiBand = () => {
         size="sm"
         onClick={toggleMusic}
         className="bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:scale-110 transition-transform text-white hover:bg-white/30"
-        title={isPlaying ? "Pause Mariachi Music" : "Play Mariachi Music"}
+        title={isPlaying ? "Stop Mariachi Music" : "Play Mariachi Music"}
       >
         {isPlaying ? (
           <VolumeX className="w-4 h-4" />
@@ -151,9 +169,15 @@ const MariachiBand = () => {
         )}
       </Button>
 
-      {!hasUserInteracted && (
+      {!hasUserInteracted && !canAutoPlay && (
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm text-white/80 animate-pulse text-center">
           Click to play mariachi music! 🎵
+        </div>
+      )}
+      
+      {isPlaying && (
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-white/60 text-center">
+          🎵 Mariachi music playing 🎵
         </div>
       )}
     </div>
