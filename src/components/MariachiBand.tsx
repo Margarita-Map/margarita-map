@@ -26,15 +26,21 @@ const MariachiBand = () => {
       // Handle successful loading and auto-play
       audioRef.current.addEventListener('canplaythrough', async () => {
         console.log('Audio loaded successfully');
+        console.log('Audio duration:', audioRef.current?.duration);
+        console.log('Audio volume:', audioRef.current?.volume);
+        console.log('Audio muted:', audioRef.current?.muted);
         setAudioStatus('ready');
         
         // Auto-play immediately when audio is ready
         if (audioRef.current) {
           try {
             audioRef.current.currentTime = 0;
+            audioRef.current.volume = 0.5; // Increase volume
             await audioRef.current.play();
             setIsPlaying(true);
             console.log('Auto-play started successfully');
+            console.log('Audio is playing:', !audioRef.current.paused);
+            console.log('Audio current time:', audioRef.current.currentTime);
           } catch (error) {
             console.log('Auto-play failed:', error);
             setIsPlaying(false);
