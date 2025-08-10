@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Star, ExternalLink, Navigation, Loader2 } from 'lucide-react';
+import { MapPin, Star, Map, Navigation, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import PlaceMapDialog from './PlaceMapDialog';
 
 interface PlaceResult {
   id: string;
@@ -70,6 +71,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const [places, setPlaces] = useState<PlaceResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [locationLoading, setLocationLoading] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -153,13 +156,14 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     return R * c;
   };
 
-  const openInMaps = (place: PlaceResult) => {
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const mapsUrl = isIOS 
-      ? `maps://maps.google.com/maps?daddr=${place.location.lat},${place.location.lng}&amp;ll=`
-      : `https://www.google.com/maps/dir/?api=1&destination=${place.location.lat},${place.location.lng}`;
-    
-    window.open(mapsUrl, '_blank');
+  const openPlaceMap = (place: PlaceResult) => {
+    setSelectedPlace(place);
+    setIsMapOpen(true);
+  };
+
+  const closeMap = () => {
+    setIsMapOpen(false);
+    setSelectedPlace(null);
   };
 
   const renderStars = (rating: number) => {
@@ -255,13 +259,13 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
                   )}
 
                   <Button 
-                    onClick={() => openInMaps(place)}
+                    onClick={() => openPlaceMap(place)}
                     variant="outline" 
                     size="sm"
                     className="w-full"
                   >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Open in Maps
+                    <Map className="w-4 h-4 mr-2" />
+                    View on Map
                   </Button>
                 </div>
               </CardContent>
@@ -278,6 +282,14 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
             Click the button above to find Mexican restaurants and tequila bars near you.
           </p>
         </div>
+      )}
+
+      {selectedPlace && (
+        <PlaceMapDialog
+          isOpen={isMapOpen}
+          onClose={closeMap}
+          place={selectedPlace}
+        />
       )}
     </div>
   );
