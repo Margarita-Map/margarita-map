@@ -184,6 +184,27 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Establishment Info Display */}
+            {(placeInfo?.name || form.watch('restaurant_name')) && (
+              <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
+                <CardContent className="pt-4">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-primary mt-0.5" />
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-primary">
+                        {form.watch('restaurant_name') || placeInfo?.name}
+                      </h3>
+                      {(form.watch('restaurant_address') || placeInfo?.address) && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          📍 {form.watch('restaurant_address') || placeInfo?.address}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <div className="grid gap-4">
               <FormField
                 control={form.control}
@@ -208,12 +229,15 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
                 name="restaurant_address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address</FormLabel>
+                    <FormLabel className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      Address
+                    </FormLabel>
                     <FormControl>
                       <input
                         {...field}
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        placeholder="Enter address"
+                        placeholder="Enter full address (street, city, state)"
                       />
                     </FormControl>
                     <FormMessage />
