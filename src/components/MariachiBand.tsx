@@ -90,6 +90,7 @@ const MariachiBand = () => {
     }
 
     setHasUserInteracted(true);
+    console.log('Toggle clicked. Current state - isPlaying:', isPlaying, 'paused:', audioRef.current.paused);
 
     try {
       if (isPlaying) {
@@ -98,9 +99,12 @@ const MariachiBand = () => {
         console.log('Audio paused');
       } else {
         console.log('Attempting to play audio...');
+        console.log('Audio volume before play:', audioRef.current.volume);
+        console.log('Audio muted before play:', audioRef.current.muted);
         await audioRef.current.play();
         setIsPlaying(true);
         console.log('Audio playing');
+        console.log('Audio current time after play:', audioRef.current.currentTime);
       }
     } catch (error) {
       console.log("Audio playback failed:", error);
