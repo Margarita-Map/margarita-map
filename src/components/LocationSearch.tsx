@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Star, Map, Navigation, Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { MapPin, Star, Map, Navigation, Loader2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import PlaceMapDialog from './PlaceMapDialog';
@@ -48,6 +49,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const [locationLoading, setLocationLoading] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<PlaceResult | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -114,6 +117,56 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     }
   };
 
+  const searchByLocation = async (locationQuery: string) => {
+    if (!locationQuery.trim()) {
+      toast.error('Please enter a location to search');
+      return;
+    }
+
+    setSearchLoading(true);
+    
+    try {
+      // Use Google's Geocoding API to convert location name to coordinates
+      const { data: geoData, error: geoError } = await supabase.functions.invoke('get-secret', {
+        body: { name: 'GOOGLE_MAPS_API_KEY' }
+      });
+
+      if (geoError || !geoData?.value) {
+        toast.error('Unable to search locations. Please try again.');
+        return;
+      }
+
+      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(locationQuery)}&key=${geoData.value}`;
+      
+      const response = await fetch(geocodeUrl);
+      const geocodeResult = await response.json();
+
+      if (geocodeResult.status !== 'OK' || !geocodeResult.results.length) {
+        toast.error('Location not found. Please try a different search term.');
+        return;
+      }
+
+      const location = geocodeResult.results[0].geometry.location;
+      const coordinates = { lat: location.lat, lng: location.lng };
+      
+      // Search for places at this location
+      await searchNearbyPlaces(coordinates);
+      
+      toast.success(`Searching in ${geocodeResult.results[0].formatted_address}`);
+      
+    } catch (error) {
+      console.error('Error searching location:', error);
+      toast.error('Error searching location. Please try again.');
+    } finally {
+      setSearchLoading(false);
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    searchByLocation(searchQuery);
+  };
+
 
   const openPlaceMap = (place: PlaceResult) => {
     setSelectedPlace(place);
@@ -144,11 +197,45 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     <div className={className}>
       <div className="text-center mb-8">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Find Mexican Restaurants & Tequila Bars Near You 🌮
+          Find Mexican Restaurants & Tequila Bars Anywhere 🌮
         </h2>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
-          Discover authentic Mexican restaurants, tequila bars, and margarita spots based on your location.
+          Discover authentic Mexican restaurants, tequila bars, and margarita spots anywhere in the world.
         </p>
+        
+        {/* Location Search Bar */}
+        <div className="max-w-md mx-auto mb-6">
+          <form onSubmit={handleSearchSubmit} className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Enter city, address, or location..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1"
+              disabled={searchLoading || loading}
+            />
+            <Button 
+              type="submit"
+              disabled={searchLoading || loading || !searchQuery.trim()}
+              variant="default"
+              className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white"
+            >
+              {searchLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Search className="w-5 h-5" />
+              )}
+            </Button>
+          </form>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="flex-1 h-px bg-border"></div>
+          <span className="text-sm text-muted-foreground">OR</span>
+          <div className="flex-1 h-px bg-border"></div>
+        </div>
+        
         <Button 
           onClick={getCurrentLocation} 
           disabled={locationLoading || loading}
