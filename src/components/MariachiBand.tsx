@@ -10,11 +10,19 @@ const MariachiBand = () => {
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Add your downloaded mariachi music file to the public folder (e.g., public/audio/mariachi.mp3)
-    // Then update this path to match your file
-    audioRef.current.src = "/audio/mariachi.mp3";
+    // Using a working mariachi music URL as fallback
+    audioRef.current.src = "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
+    
+    // Add error handling to debug audio issues
+    audioRef.current.addEventListener('error', (e) => {
+      console.log('Audio error:', e);
+    });
+    
+    audioRef.current.addEventListener('canplaythrough', () => {
+      console.log('Audio loaded successfully');
+    });
 
     return () => {
       if (audioRef.current) {
