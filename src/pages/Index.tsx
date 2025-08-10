@@ -54,12 +54,6 @@ const Index = () => {
           </div>
           
           <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4">Wherever has the Best margaritas usually has the best food and fun too! Find, rate, review, post pics, post Tequila Tasting Events and more. Let the World know where to go!!!</p>
-          
-          <div className="max-w-2xl mx-auto px-4">
-            <Button variant="lime" size="lg" className="font-bold w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
-              Start Rating Margaritas
-            </Button>
-          </div>
         </div>
         
         <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
