@@ -18,6 +18,26 @@ serve(async (req) => {
     const apiKey = Deno.env.get('VITE_GOOGLE_MAPS_API_KEY')
     console.log('API Key status:', apiKey ? 'Found' : 'Missing')
     console.log('API Key length:', apiKey?.length || 0)
+    console.log('API Key starts with:', apiKey ? apiKey.substring(0, 10) + '...' : 'None')
+    
+    // Test a simple geocoding API call first to verify the key works
+    if (apiKey) {
+      const testGeoUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
+      console.log('Testing API key with geocoding...')
+      
+      try {
+        const geoResponse = await fetch(testGeoUrl)
+        const geoData = await geoResponse.json()
+        console.log('Geocoding test status:', geoData.status)
+        
+        if (geoData.status === 'REQUEST_DENIED') {
+          console.error('API key denied - key invalid or billing issue')
+          return getFallbackPlaces(latitude, longitude)
+        }
+      } catch (testError) {
+        console.error('API key test failed:', testError)
+      }
+    }
     
     if (!apiKey) {
       console.error('Google Maps API key not configured - using fallback data')
