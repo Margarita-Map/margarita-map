@@ -291,11 +291,11 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
         
         {/* Location Search Bar */}
         <div className="max-w-md mx-auto mb-6">
-          <form onSubmit={handleSearchSubmit} className="flex gap-2">
-            <div className="flex-1 relative">
-              <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
-                1
-              </div>
+          <div className="relative">
+            <div className="absolute -left-10 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold z-10">
+              1
+            </div>
+            <form onSubmit={handleSearchSubmit} className="flex gap-2">
               <Input
                 type="text"
                 placeholder="Enter city, address, or location..."
@@ -304,27 +304,27 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
                 className="w-full"
                 disabled={searchLoading || loading}
               />
-            </div>
-            <Button 
-              type="submit"
-              disabled={searchLoading || loading || !searchQuery.trim()}
-              variant="default"
-              className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white"
-            >
-              {searchLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <Search className="w-5 h-5" />
-              )}
-            </Button>
-          </form>
+              <Button 
+                type="submit"
+                disabled={searchLoading || loading || !searchQuery.trim()}
+                variant="default"
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white"
+              >
+                {searchLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Search className="w-5 h-5" />
+                )}
+              </Button>
+            </form>
+          </div>
         </div>
 
         {/* Restaurant Name Search */}
         <div className="max-w-md mx-auto mb-6">
           <div className="space-y-3">
             <div className="relative">
-              <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center text-sm font-bold">
+              <div className="absolute -left-10 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center text-sm font-bold z-10">
                 2
               </div>
               <Input
