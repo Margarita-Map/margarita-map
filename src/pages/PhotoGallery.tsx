@@ -71,7 +71,7 @@ const PhotoGallery = () => {
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !user) return;
+    if (!file) return;
 
     if (!formData.locationName.trim()) {
       toast.error('Please enter a location name first');
@@ -98,7 +98,7 @@ const PhotoGallery = () => {
       const { error: insertError } = await supabase
         .from('party_photos')
         .insert({
-          user_id: user.id,
+          user_id: user?.id || null,
           photo_url: publicUrl,
           caption: formData.caption.trim() || null,
           location_name: formData.locationName.trim(),
@@ -144,25 +144,19 @@ const PhotoGallery = () => {
           <p className="text-lg text-muted-foreground mb-6">
             Share your margarita moments from around the world
           </p>
-          {user ? (
-            <Button 
-              onClick={() => setShowUploadForm(!showUploadForm)}
-              className="bg-primary hover:bg-primary/90"
-            >
-              <Camera className="h-4 w-4 mr-2" />
-              Share Your Photo
-            </Button>
-          ) : (
-            <Button onClick={() => window.location.href = '/auth'}>
-              Sign In to Share Photos
-            </Button>
-          )}
+          <Button 
+            onClick={() => setShowUploadForm(!showUploadForm)}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Camera className="h-4 w-4 mr-2" />
+            Share Your Photo
+          </Button>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
         {/* Upload Form */}
-        {showUploadForm && user && (
+        {showUploadForm && (
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -284,12 +278,10 @@ const PhotoGallery = () => {
             <p className="text-muted-foreground mb-4">
               Be the first to share your party photos!
             </p>
-            {user && (
-              <Button onClick={() => setShowUploadForm(true)}>
-                <Camera className="h-4 w-4 mr-2" />
-                Upload Your First Photo
-              </Button>
-            )}
+            <Button onClick={() => setShowUploadForm(true)}>
+              <Camera className="h-4 w-4 mr-2" />
+              Upload Your First Photo
+            </Button>
           </div>
         )}
       </div>
