@@ -9,6 +9,7 @@ import AddEstablishmentForm from "@/components/AddEstablishmentForm";
 import DrinkSpecialsList from "@/components/DrinkSpecialsList";
 import ManageEstablishment from "@/components/ManageEstablishment";
 import TequilaTrivia from "@/components/TequilaTrivia";
+import LocationSearch from "@/components/LocationSearch";
 import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
@@ -75,8 +76,15 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Location Search Section */}
+      <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <LocationSearch />
+        </div>
+      </section>
+
       {/* Drink Specials Section */}
-      <section data-section="drink-specials" className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
+      <section data-section="drink-specials" className="py-12 md:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 md:mb-12">
             <div className="text-center sm:text-left">
