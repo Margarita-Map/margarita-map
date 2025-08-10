@@ -87,12 +87,15 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     setLoading(true);
     
     try {
+      // Use larger radius for zip code searches to ensure we don't miss nearby places
+      const searchRadius = restaurantName ? 32000 : 16000; // 20 miles for restaurant search, 10 miles for general
+      
       // Call the Supabase edge function to get real places
       const { data, error } = await supabase.functions.invoke('find-nearby-places', {
         body: { 
           latitude: location.lat, 
           longitude: location.lng,
-          radius: 16000, // Increased radius for restaurant searches
+          radius: searchRadius,
           restaurantName: restaurantName || undefined
         }
       });

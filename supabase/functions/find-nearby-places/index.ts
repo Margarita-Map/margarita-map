@@ -11,9 +11,13 @@ serve(async (req) => {
   }
 
   try {
-    const { latitude, longitude, radius = 8000, restaurantName } = await req.json()
+    const { latitude, longitude, radius = 16000, restaurantName } = await req.json()
     
-    console.log(`Searching for ${restaurantName ? `"${restaurantName}" restaurants` : 'Mexican restaurants'} near ${latitude}, ${longitude} within ${radius}m`)
+    console.log(`=== SEARCH DEBUG INFO ===`)
+    console.log(`Location: ${latitude}, ${longitude}`)
+    console.log(`Radius: ${radius}m (${(radius / 1609.34).toFixed(1)} miles)`)
+    console.log(`Restaurant: ${restaurantName || 'All Mexican restaurants'}`)
+    console.log(`========================`)
     
     const apiKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
     console.log('=== API KEY DEBUGGING ===')
@@ -172,8 +176,16 @@ serve(async (req) => {
           place.location.lat,
           place.location.lng
         )
+        console.log(`Distance to ${place.name}: ${distance.toFixed(2)} miles`)
         return { ...place, distance }
       })
+      
+      console.log(`=== DISTANCE DEBUG ===`)
+      console.log(`Search center: ${latitude}, ${longitude}`)
+      placesWithDistance.forEach(place => {
+        console.log(`${place.name}: ${place.distance?.toFixed(2)} miles away at ${place.location.lat}, ${place.location.lng}`)
+      })
+      console.log(`====================`)
 
       // Enhanced sorting for restaurant searches
       const sortedPlaces = placesWithDistance
