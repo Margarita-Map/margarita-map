@@ -10,8 +10,9 @@ const MariachiBand = () => {
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Use your purchased TunePocket music file
-    audioRef.current.src = "/audio/la-cucaracha.mp3"; // Update this filename to match your downloaded file
+    // Use a reliable audio source that works with CORS
+    audioRef.current.src = "https://www.bensound.com/bensound-music/bensound-mariachi.mp3";
+    audioRef.current.crossOrigin = "anonymous";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
     
