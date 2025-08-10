@@ -27,6 +27,19 @@ interface LocationSearchProps {
   className?: string;
 }
 
+// Distance calculation helper function
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 3959; // Earth's radius in miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
+
 // Function to generate realistic places near user's location
 const generateNearbyPlaces = (userLat: number, userLng: number): PlaceResult[] => {
   const placeNames = [
@@ -47,11 +60,14 @@ const generateNearbyPlaces = (userLat: number, userLng: number): PlaceResult[] =
   ];
 
   return placeNames.slice(0, 6).map((name, index) => {
-    // Generate coordinates within 0.1 to 5 miles of user location
-    const offsetLat = (Math.random() - 0.5) * 0.1; // ~5 miles max
-    const offsetLng = (Math.random() - 0.5) * 0.1;
+    // Generate coordinates within 0.02 to 0.05 degrees of user location (roughly 1-3 miles)
+    const offsetLat = (Math.random() - 0.5) * 0.05; // ~2.5 miles max
+    const offsetLng = (Math.random() - 0.5) * 0.05;
     const lat = userLat + offsetLat;
     const lng = userLng + offsetLng;
+    
+    // Calculate actual distance immediately
+    const actualDistance = calculateDistance(userLat, userLng, lat, lng);
     
     return {
       id: `place-${index}`,
@@ -60,7 +76,7 @@ const generateNearbyPlaces = (userLat: number, userLng: number): PlaceResult[] =
       location: { lat, lng },
       rating: 4.2 + Math.random() * 0.7, // 4.2 to 4.9
       priceLevel: Math.floor(Math.random() * 3) + 2, // 2 to 4
-      distance: 0.2 + Math.random() * 4.8, // 0.2 to 5 miles
+      distance: actualDistance, // Use calculated distance
       placeTypes: ['restaurant', 'bar']
     };
   });
@@ -114,18 +130,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       // Generate places near user's actual location
       const nearbyPlaces = generateNearbyPlaces(location.lat, location.lng);
       
-      // Calculate actual distances based on user's location
-      const placesWithDistance = nearbyPlaces.map(place => ({
-        ...place,
-        distance: calculateDistance(
-          location.lat,
-          location.lng,
-          place.location.lat,
-          place.location.lng
-        )
-      }));
-
-      const sortedPlaces = placesWithDistance
+      // Places already have correct distances calculated
+      const sortedPlaces = nearbyPlaces
         .sort((a, b) => {
           // Prioritize higher ratings, then closer distance
           const ratingDiff = (b.rating || 0) - (a.rating || 0);
@@ -144,17 +150,6 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     }
   };
 
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 3959; // Earth's radius in miles
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  };
 
   const openPlaceMap = (place: PlaceResult) => {
     setSelectedPlace(place);
