@@ -60,7 +60,8 @@ const Index = () => {
     // or add it to a favorites list
   };
   const handlePlacesFound = (places: PlaceDetails[]) => {
-    console.log("Places found in Index.tsx:", places?.length || 0, places);
+    console.log("handlePlacesFound called with places:", places?.length || 0, places);
+    console.log("Setting nearbyPlaces state to:", places);
     setNearbyPlaces(places);
   };
   const handlePlaceSelect = (place: PlaceDetails) => {
