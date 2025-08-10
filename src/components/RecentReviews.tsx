@@ -46,23 +46,51 @@ const RecentReviews = ({ maxItems = 6 }: { maxItems?: number }) => {
           would_recommend,
           created_at,
           photo_urls,
-          restaurants!inner (
-            name,
-            address
-          ),
-          profiles (
-            display_name
-          )
+          restaurant_id,
+          user_id
         `)
         .order('created_at', { ascending: false })
         .limit(maxItems);
+
+      console.log('Reviews query result:', { data, error });
 
       if (error) {
         console.error('Error fetching reviews:', error);
         return;
       }
 
-      setReviews((data as unknown as Review[]) || []);
+      if (data && data.length > 0) {
+        // Fetch restaurant and profile data separately
+        const reviewsWithDetails = await Promise.all(
+          data.map(async (review) => {
+            const [restaurantResult, profileResult] = await Promise.all([
+              supabase
+                .from('restaurants')
+                .select('name, address')
+                .eq('id', review.restaurant_id)
+                .maybeSingle(),
+              review.user_id 
+                ? supabase
+                    .from('profiles')
+                    .select('display_name')
+                    .eq('user_id', review.user_id)
+                    .maybeSingle()
+                : Promise.resolve({ data: null, error: null })
+            ]);
+
+            return {
+              ...review,
+              restaurants: restaurantResult.data,
+              profiles: profileResult.data
+            };
+          })
+        );
+
+        setReviews(reviewsWithDetails as Review[]);
+      } else {
+        setReviews([]);
+      }
+
     } catch (error) {
       console.error('Error:', error);
     } finally {
