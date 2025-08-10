@@ -2,3 +2,6 @@ project_id = "lbetqwmrajuucthndinv"
 
 [functions.get-secret]
 verify_jwt = false
+
+[functions.find-nearby-places]
+verify_jwt = false

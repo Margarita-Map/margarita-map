@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Star, Map, Navigation, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 import PlaceMapDialog from './PlaceMapDialog';
 
 interface PlaceResult {
@@ -38,48 +39,6 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
     Math.sin(dLon/2) * Math.sin(dLon/2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
   return R * c;
-};
-
-// Function to generate realistic places near user's location
-const generateNearbyPlaces = (userLat: number, userLng: number): PlaceResult[] => {
-  const placeNames = [
-    'El Corazón Tequileria', 'Casa Margarita', 'Agave Azul Mexican Cantina',
-    'Tequila Sunrise Bar & Grill', 'Los Amigos Mexican Kitchen', 'Mezcal & Co.',
-    'La Cantina Mexicana', 'Patrón Palace', 'Don Julio\'s', 'Blue Agave Grill',
-    'Margaritaville Cantina', 'Azteca Mexican Grill'
-  ];
-  
-  const streetNames = [
-    'Main St', 'Oak Ave', 'Pine St', 'Elm St', 'Maple Dr', 'Cedar St',
-    'First Ave', 'Second St', 'Park Blvd', 'Market St', 'Church St', 'Mill Rd'
-  ];
-  
-  const areas = [
-    'Downtown', 'Midtown', 'Historic District', 'Arts Quarter', 'Riverside',
-    'Financial District', 'Old Town', 'City Center', 'Uptown', 'Westside'
-  ];
-
-  return placeNames.slice(0, 6).map((name, index) => {
-    // Generate coordinates within 0.02 to 0.05 degrees of user location (roughly 1-3 miles)
-    const offsetLat = (Math.random() - 0.5) * 0.05; // ~2.5 miles max
-    const offsetLng = (Math.random() - 0.5) * 0.05;
-    const lat = userLat + offsetLat;
-    const lng = userLng + offsetLng;
-    
-    // Calculate actual distance immediately
-    const actualDistance = calculateDistance(userLat, userLng, lat, lng);
-    
-    return {
-      id: `place-${index}`,
-      name: name,
-      address: `${Math.floor(Math.random() * 999) + 100} ${streetNames[index % streetNames.length]}, ${areas[index % areas.length]}`,
-      location: { lat, lng },
-      rating: 4.2 + Math.random() * 0.7, // 4.2 to 4.9
-      priceLevel: Math.floor(Math.random() * 3) + 2, // 2 to 4
-      distance: actualDistance, // Use calculated distance
-      placeTypes: ['restaurant', 'bar']
-    };
-  });
 };
 
 export const LocationSearch = ({ className }: LocationSearchProps) => {
@@ -124,23 +83,28 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     setLoading(true);
     
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Generate places near user's actual location
-      const nearbyPlaces = generateNearbyPlaces(location.lat, location.lng);
-      
-      // Places already have correct distances calculated
-      const sortedPlaces = nearbyPlaces
-        .sort((a, b) => {
-          // Prioritize higher ratings, then closer distance
-          const ratingDiff = (b.rating || 0) - (a.rating || 0);
-          if (Math.abs(ratingDiff) > 0.3) return ratingDiff;
-          return (a.distance || 0) - (b.distance || 0);
-        });
+      // Call the Supabase edge function to get real places
+      const { data, error } = await supabase.functions.invoke('find-nearby-places', {
+        body: { 
+          latitude: location.lat, 
+          longitude: location.lng,
+          radius: 8000 // 5 miles in meters
+        }
+      });
 
-      setPlaces(sortedPlaces);
-      toast.success(`Found ${sortedPlaces.length} Mexican restaurants and tequila bars nearby!`);
+      if (error) {
+        console.error('Error from edge function:', error);
+        toast.error('Error searching for places. Please try again.');
+        return;
+      }
+
+      if (data?.places && data.places.length > 0) {
+        setPlaces(data.places);
+        toast.success(`Found ${data.places.length} real Mexican restaurants and tequila bars nearby!`);
+      } else {
+        toast.info('No Mexican restaurants or tequila bars found in your area.');
+        setPlaces([]);
+      }
       
     } catch (error) {
       console.error('Error searching for places:', error);
@@ -217,8 +181,19 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {places.map((place) => (
             <Card key={place.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
-              <div className="h-48 bg-gradient-to-br from-orange-200 to-red-200 flex items-center justify-center">
-                <div className="text-6xl">🌮</div>
+              <div className="h-48 bg-gradient-to-br from-orange-200 to-red-200 flex items-center justify-center relative overflow-hidden">
+                {place.photos && place.photos.length > 0 ? (
+                  <img 
+                    src={place.photos[0]} 
+                    alt={place.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                ) : null}
+                <div className={`text-6xl ${place.photos && place.photos.length > 0 ? 'hidden' : ''}`}>🌮</div>
               </div>
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
