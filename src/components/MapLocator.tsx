@@ -179,6 +179,21 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
         searchNearbyBars(service, mapInstanceRef.current, location, searchTerm);
       } else {
         console.error("Geocoding failed:", status);
+        console.log("Attempting direct restaurant search instead...");
+        
+        // If geocoding fails, try a direct text search for the restaurant
+        // Use current map center or user's location as fallback
+        const service = new window.google.maps.places.PlacesService(mapInstanceRef.current);
+        const currentCenter = mapInstanceRef.current.getCenter() || userLocationRef.current;
+        
+        if (currentCenter) {
+          console.log("Using current map center for restaurant search:", currentCenter.toJSON());
+          searchNearbyBars(service, mapInstanceRef.current, currentCenter, searchTerm);
+        } else {
+          console.log("No location available, searching globally");
+          // Search globally without specific location
+          searchNearbyBars(service, mapInstanceRef.current, undefined, searchTerm);
+        }
       }
     });
   };
@@ -195,13 +210,21 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     }
   }, [searchLocation, isMapInitialized]);
 
-  const loadSupabaseRestaurants = async (map: google.maps.Map, searchLocation: google.maps.LatLng) => {
+  const loadSupabaseRestaurants = async (map: google.maps.Map, searchLocation: google.maps.LatLng, searchQuery?: string) => {
     try {
-      const { data: restaurants, error } = await supabase
+      let query = supabase
         .from('restaurants')
         .select('*')
         .not('latitude', 'is', null)
         .not('longitude', 'is', null);
+
+      // If there's a search query, also search by restaurant name
+      if (searchQuery) {
+        console.log('Searching Supabase restaurants for:', searchQuery);
+        query = query.or(`name.ilike.%${searchQuery}%,address.ilike.%${searchQuery}%`);
+      }
+
+      const { data: restaurants, error } = await query;
 
       if (error) {
         console.error('Error fetching restaurants:', error);
@@ -315,7 +338,7 @@ const MapLocator = ({ searchLocation, onLocationSelect, onPlacesFound, onMapRead
     if (!searchLocation) return;
 
     // Load Supabase restaurants first
-    const supabaseRestaurants = await loadSupabaseRestaurants(map, searchLocation);
+    const supabaseRestaurants = await loadSupabaseRestaurants(map, searchLocation, originalSearchQuery);
 
     // Variables for managing multiple searches
     let allResults: google.maps.places.PlaceResult[] = [];
