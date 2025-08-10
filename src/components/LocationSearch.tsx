@@ -7,6 +7,7 @@ import { MapPin, Star, Map, Navigation, Loader2, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import PlaceMapDialog from './PlaceMapDialog';
+import AllPlacesMap from './AllPlacesMap';
 
 interface PlaceResult {
   id: string;
@@ -52,6 +53,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [restaurantName, setRestaurantName] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
+  const [showAllPlacesMap, setShowAllPlacesMap] = useState(false);
+  const [searchLocation, setSearchLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
@@ -161,6 +164,9 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
 
       const location = geocodeResult.results[0].geometry.location;
       const coordinates = { lat: location.lat, lng: location.lng };
+      
+      // Store search location for map centering
+      setSearchLocation(coordinates);
       
       // Search for places at this location
       await searchNearbyPlaces(coordinates);
@@ -398,6 +404,49 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
           <Loader2 className="w-8 h-8 mx-auto animate-spin mb-4" />
           <p className="text-muted-foreground">Searching for the best Mexican restaurants and tequila bars...</p>
         </div>
+      )}
+
+      {places.length > 0 && (
+        <>
+          {/* Map Controls */}
+          <div className="flex justify-center gap-4 mb-6">
+            <Button 
+              onClick={() => setShowAllPlacesMap(true)}
+              variant="default" 
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+            >
+              <Map className="w-4 h-4 mr-2" />
+              View All {places.length} Places on Map
+            </Button>
+          </div>
+
+          {/* All Places Map */}
+          {showAllPlacesMap && (searchLocation || userLocation) && (
+            <div className="mb-8">
+              <Card className="overflow-hidden">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">All Nearby Mexican Restaurants & Tequila Bars</CardTitle>
+                    <Button 
+                      onClick={() => setShowAllPlacesMap(false)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Hide Map
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <AllPlacesMap
+                    places={places}
+                    userLocation={searchLocation || userLocation!}
+                    className="h-96"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          )}
+        </>
       )}
 
       {places.length > 0 && (
