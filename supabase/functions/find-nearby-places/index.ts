@@ -26,25 +26,30 @@ serve(async (req) => {
     
     // Test a simple geocoding API call first to verify the key works
     if (apiKey) {
-      const testGeoUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`
+      const testGeoUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey.trim()}`
       console.log('Testing API key with geocoding...')
+      console.log('Test URL (without key):', testGeoUrl.replace(apiKey.trim(), '[HIDDEN]'))
       
       try {
         const geoResponse = await fetch(testGeoUrl)
         const geoData = await geoResponse.json()
         console.log('Geocoding test status:', geoData.status)
-        console.log('Geocoding test response:', JSON.stringify(geoData, null, 2))
+        console.log('Geocoding response details:', JSON.stringify(geoData, null, 2))
         
         if (geoData.status === 'REQUEST_DENIED') {
-          console.error('API key denied. Common causes:')
-          console.error('1. API key restrictions (check HTTP referrers, IP restrictions)')
-          console.error('2. Required APIs not enabled: Places API, Geocoding API, Maps JavaScript API')
-          console.error('3. API key from wrong Google Cloud project')
+          console.error('API key denied. Full error details:')
+          console.error('Status:', geoData.status)
           console.error('Error message:', geoData.error_message || 'No specific error message')
+          console.error('Available results:', geoData.results ? geoData.results.length : 'undefined')
           return getFallbackPlaces(latitude, longitude)
+        }
+        
+        if (geoData.status === 'OK') {
+          console.log('✅ API key is working! Proceeding with Places API...')
         }
       } catch (testError) {
         console.error('API key test failed:', testError)
+        return getFallbackPlaces(latitude, longitude)
       }
     }
     
