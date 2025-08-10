@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useSEO } from '@/hooks/useSEO';
 import Navbar from '@/components/Navbar';
+import PhotoLightbox from '@/components/PhotoLightbox';
 
 interface PartyPhoto {
   id: string;
@@ -27,6 +28,7 @@ const PhotoGallery = () => {
   const [uploading, setUploading] = useState(false);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     caption: '',
     locationName: '',
@@ -55,7 +57,7 @@ const PhotoGallery = () => {
         .from('party_photos')
         .select(`
           *,
-          profiles!party_photos_user_id_fkey (display_name)
+          profiles (display_name)
         `)
         .order('created_at', { ascending: false });
 
@@ -231,13 +233,17 @@ const PhotoGallery = () => {
         {/* Photo Grid */}
         {photos.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {photos.map((photo) => (
-              <Card key={photo.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            {photos.map((photo, index) => (
+              <Card 
+                key={photo.id} 
+                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                onClick={() => setSelectedPhotoIndex(index)}
+              >
                 <div className="aspect-square relative">
                   <img
                     src={photo.photo_url}
                     alt={photo.caption || `Photo from ${photo.location_name}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform hover:scale-105"
                   />
                 </div>
                 <CardContent className="p-4">
@@ -253,7 +259,7 @@ const PhotoGallery = () => {
                     </div>
                     
                     {photo.caption && (
-                      <p className="text-sm text-foreground">{photo.caption}</p>
+                      <p className="text-sm text-foreground line-clamp-2">{photo.caption}</p>
                     )}
                     
                     <div className="flex items-center gap-2 pt-2 border-t">
@@ -284,6 +290,19 @@ const PhotoGallery = () => {
             </Button>
           </div>
         )}
+
+        {/* Photo Lightbox */}
+        <PhotoLightbox
+          photos={photos}
+          currentIndex={selectedPhotoIndex}
+          onClose={() => setSelectedPhotoIndex(null)}
+          onNext={() => setSelectedPhotoIndex(prev => 
+            prev !== null && prev < photos.length - 1 ? prev + 1 : prev
+          )}
+          onPrevious={() => setSelectedPhotoIndex(prev => 
+            prev !== null && prev > 0 ? prev - 1 : prev
+          )}
+        />
       </div>
     </div>
   );
