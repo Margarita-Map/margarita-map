@@ -1,6 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { MapPin, BookOpen, Star, Menu, PartyPopper, Trophy, Calendar, Facebook, Camera } from "lucide-react";
+import { 
+  MapPin, 
+  BookOpen, 
+  Star, 
+  Menu, 
+  PartyPopper, 
+  Trophy, 
+  Calendar, 
+  Facebook, 
+  Camera 
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 const Navbar = () => {
   const location = useLocation();
