@@ -11,7 +11,7 @@ const MariachiBand = () => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
     // Using a working mariachi music URL as fallback
-    audioRef.current.src = "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3";
+    audioRef.current.src = "https://archive.org/download/78_viva-mexico-viva-america_pedro-galindo-el-mariachi-tapatio-marmolejo_gbia0064106b/Viva%20Mexico%20-%20Viva%20America%20-%20Pedro%20Galindo.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
     
