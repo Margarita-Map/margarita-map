@@ -66,13 +66,21 @@ serve(async (req) => {
     
     if (restaurantName) {
       // Search for specific restaurant name with restaurant-focused queries
-      searchQueries = [
+      const baseSearches = [
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=food&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=meal_takeaway&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
         `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&keyword=${encodeURIComponent(restaurantName + ' restaurant')}&key=${apiKey}`
       ]
-      console.log(`Searching specifically for "${restaurantName}" restaurants only...`)
+      
+      // Add broader chain searches with larger radius for multiple locations
+      const chainSearches = [
+        `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius * 2}&type=restaurant&keyword=${encodeURIComponent(restaurantName)}&key=${apiKey}`,
+        `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(restaurantName + ' restaurant')}&location=${latitude},${longitude}&radius=${radius * 3}&type=restaurant&key=${apiKey}`
+      ]
+      
+      searchQueries = [...baseSearches, ...chainSearches]
+      console.log(`Searching for "${restaurantName}" restaurants including chain locations with expanded radius...`)
     } else {
       // Search for Mexican restaurants, margarita bars, and tequila bars
       searchQueries = [
