@@ -11,7 +11,7 @@ const MariachiBand = () => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
     // Using a working mariachi music URL as fallback
-    audioRef.current.src = "https://cdn.pixabay.com/audio/2022/03/25/audio_d1bb2b71ac.mp3";
+    audioRef.current.src = "https://archive.org/download/LaCucaracha-tradinionalMexicanSong/La%20Cucaracha%20-%20tradinional%20Mexican%20song.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
     
