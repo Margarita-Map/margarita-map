@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { latitude, longitude, radius = 5000 } = await req.json()
+    const { latitude, longitude, radius = 8000 } = await req.json()
     
     console.log(`Searching for places near ${latitude}, ${longitude} within ${radius}m`)
     
@@ -23,76 +23,124 @@ serve(async (req) => {
 
     console.log('API Key found, proceeding with search...')
 
-    // Use Google Places Nearby Search API
-    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=mexican&key=${apiKey}`
-    
-    console.log('Calling Google Places API:', url.replace(apiKey, 'API_KEY_HIDDEN'))
-    
-    const response = await fetch(url)
-    const data = await response.json()
+    // Try multiple search approaches
+    const searchApproaches = [
+      // First try Mexican restaurants specifically
+      {
+        url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&keyword=mexican&key=${apiKey}`,
+        name: 'Mexican keyword search'
+      },
+      // Then try text search for Mexican food
+      {
+        url: `https://maps.googleapis.com/maps/api/place/textsearch/json?query=mexican+restaurant&location=${latitude},${longitude}&radius=${radius}&key=${apiKey}`,
+        name: 'Mexican text search'
+      },
+      // Finally try broader restaurant search
+      {
+        url: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&type=restaurant&key=${apiKey}`,
+        name: 'All restaurants search'
+      }
+    ]
 
-    console.log('Google Places API response status:', data.status)
-    console.log('Number of results:', data.results?.length || 0)
-    
-    if (data.status === 'OK' && data.results) {
-      console.log('Successfully got results from Google Places')
+    let allPlaces = []
+
+    for (const approach of searchApproaches) {
+      console.log(`Trying ${approach.name}:`, approach.url.replace(apiKey, 'API_KEY_HIDDEN'))
       
-      const places = data.results.slice(0, 12).map((place: any) => ({
-        id: place.place_id,
-        name: place.name,
-        address: place.vicinity || place.formatted_address,
-        location: {
-          lat: place.geometry.location.lat,
-          lng: place.geometry.location.lng
-        },
-        rating: place.rating,
-        priceLevel: place.price_level,
-        photos: place.photos ? place.photos.slice(0, 1).map((photo: any) => 
-          `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`
-        ) : [],
-        placeTypes: place.types,
-        businessStatus: place.business_status
-      }))
+      const response = await fetch(approach.url)
+      const data = await response.json()
 
-      // Calculate distances
-      const placesWithDistance = places.map(place => {
-        const distance = calculateDistance(
-          latitude,
-          longitude,
-          place.location.lat,
-          place.location.lng
-        )
-        return { ...place, distance }
-      })
-
-      // Filter and sort places
-      const filteredPlaces = placesWithDistance
-        .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY')
-        .sort((a, b) => {
-          const ratingDiff = (b.rating || 0) - (a.rating || 0)
-          if (Math.abs(ratingDiff) > 0.3) return ratingDiff
-          return (a.distance || 0) - (b.distance || 0)
-        })
-
-      console.log(`Returning ${filteredPlaces.length} filtered places`)
+      console.log(`${approach.name} - Status:`, data.status)
+      console.log(`${approach.name} - Results:`, data.results?.length || 0)
       
+      if (data.status === 'OK' && data.results && data.results.length > 0) {
+        const places = data.results.slice(0, 8).map((place: any) => ({
+          id: place.place_id,
+          name: place.name,
+          address: place.vicinity || place.formatted_address,
+          location: {
+            lat: place.geometry.location.lat,
+            lng: place.geometry.location.lng
+          },
+          rating: place.rating || 4.0,
+          priceLevel: place.price_level || 2,
+          photos: place.photos ? place.photos.slice(0, 1).map((photo: any) => 
+            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`
+          ) : [],
+          placeTypes: place.types || ['restaurant'],
+          businessStatus: place.business_status || 'OPERATIONAL'
+        }))
+
+        allPlaces.push(...places)
+        
+        // If we found Mexican restaurants, prioritize them and break
+        if (approach.name.includes('Mexican') && places.length > 0) {
+          console.log(`Found ${places.length} Mexican restaurants, using these`)
+          break
+        }
+      } else if (data.error_message) {
+        console.error(`${approach.name} error:`, data.error_message)
+      }
+    }
+
+    if (allPlaces.length === 0) {
+      console.log('No places found, returning empty result')
       return new Response(
-        JSON.stringify({ places: filteredPlaces }),
-        {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200,
-        },
-      )
-    } else {
-      console.error('Google Places API error:', data.status, data.error_message)
-      return new Response(
-        JSON.stringify({ places: [], error: `Google Places API error: ${data.status}` }),
+        JSON.stringify({ places: [], error: 'No restaurants found in your area' }),
         {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200,
         },
       )
     }
+
+    // Remove duplicates
+    const uniquePlaces = allPlaces.filter((place, index, self) => 
+      index === self.findIndex(p => p.id === place.id)
+    )
+
+    // Calculate distances and filter
+    const placesWithDistance = uniquePlaces.map(place => {
+      const distance = calculateDistance(
+        latitude,
+        longitude,
+        place.location.lat,
+        place.location.lng
+      )
+      return { ...place, distance }
+    })
+
+    // Filter Mexican restaurants first, then others
+    const mexicanPlaces = placesWithDistance.filter(place => 
+      place.name.toLowerCase().includes('mexican') || 
+      place.name.toLowerCase().includes('cantina') ||
+      place.name.toLowerCase().includes('taco') ||
+      place.name.toLowerCase().includes('burrito') ||
+      place.placeTypes.some(type => type.includes('mexican'))
+    )
+
+    const finalPlaces = mexicanPlaces.length > 0 ? mexicanPlaces : placesWithDistance.slice(0, 12)
+
+    // Sort by rating and distance
+    const sortedPlaces = finalPlaces
+      .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY')
+      .sort((a, b) => {
+        const ratingDiff = (b.rating || 0) - (a.rating || 0)
+        if (Math.abs(ratingDiff) > 0.3) return ratingDiff
+        return (a.distance || 0) - (b.distance || 0)
+      })
+      .slice(0, 12)
+
+    console.log(`Returning ${sortedPlaces.length} places`)
+    
+    return new Response(
+      JSON.stringify({ places: sortedPlaces }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      },
+    )
+
   } catch (error) {
     console.error('Error finding nearby places:', error)
     return new Response(
