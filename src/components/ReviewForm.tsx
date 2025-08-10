@@ -195,9 +195,9 @@ const ReviewForm = ({ selectedPlace }: ReviewFormProps) => {
                         {form.watch('restaurant_name') || placeInfo?.name}
                       </h3>
                       {(form.watch('restaurant_address') || placeInfo?.address) && (
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <div className="text-sm text-muted-foreground mt-1">
                           📍 {form.watch('restaurant_address') || placeInfo?.address}
-                        </p>
+                        </div>
                       )}
                     </div>
                   </div>
