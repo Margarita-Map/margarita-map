@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { MapPin, Star, Map, Navigation, Loader2, Search } from 'lucide-react';
+import { MapPin, Star, Map, Navigation, Loader2, Search, PenTool } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import PlaceMapDialog from './PlaceMapDialog';
@@ -44,6 +45,7 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 };
 
 export const LocationSearch = ({ className }: LocationSearchProps) => {
+  const navigate = useNavigate();
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [places, setPlaces] = useState<PlaceResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -268,6 +270,18 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const closeMap = () => {
     setIsMapOpen(false);
     setSelectedPlace(null);
+  };
+
+  const openReviewForm = (place: PlaceResult) => {
+    navigate('/rate-drink', {
+      state: {
+        selectedPlace: {
+          name: place.name,
+          address: place.address,
+          id: place.id
+        }
+      }
+    });
   };
 
   const renderStars = (rating: number) => {
@@ -500,15 +514,26 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
                     </p>
                   )}
 
-                  <Button 
-                    onClick={() => openPlaceMap(place)}
-                    variant="outline" 
-                    size="sm"
-                    className="w-full"
-                  >
-                    <Map className="w-4 h-4 mr-2" />
-                    View on Map
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={() => openPlaceMap(place)}
+                      variant="outline" 
+                      size="sm"
+                      className="flex-1"
+                    >
+                      <Map className="w-4 h-4 mr-2" />
+                      View on Map
+                    </Button>
+                    <Button 
+                      onClick={() => openReviewForm(place)}
+                      variant="default" 
+                      size="sm"
+                      className="flex-1 bg-gradient-sunset hover:bg-gradient-sunset/90 text-white border-0"
+                    >
+                      <PenTool className="w-4 h-4 mr-2" />
+                      Rate & Review
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
