@@ -10,8 +10,9 @@ const MariachiBand = () => {
   useEffect(() => {
     // Create audio element with mariachi music
     audioRef.current = new Audio();
-    // Using a working mariachi music URL - you can replace this with your own mariachi music file
-    audioRef.current.src = "https://www.bensound.com/bensound-music/bensound-mariachi.mp3";
+    // Add your downloaded mariachi music file to the public folder (e.g., public/audio/mariachi.mp3)
+    // Then update this path to match your file
+    audioRef.current.src = "/audio/mariachi.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
 
