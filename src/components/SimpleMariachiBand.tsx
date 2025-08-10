@@ -1,18 +1,40 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const SimpleMariachiBand = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  useEffect(() => {
+    // Create and setup audio on component mount
+    audioRef.current = new Audio("https://archive.org/download/78_viva-mexico-viva-america_pedro-galindo-el-mariachi-tapatio-marmolejo_gbia0064106b/Viva%20Mexico%20-%20Viva%20America%20-%20Pedro%20Galindo.mp3");
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.5;
+    
+    // Try to auto-play
+    const playAudio = async () => {
+      try {
+        await audioRef.current?.play();
+        setIsPlaying(true);
+      } catch (error) {
+        // Auto-play failed (browser policy), user will need to click
+        setIsPlaying(false);
+      }
+    };
+    
+    playAudio();
+    
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+
   const toggleMusic = () => {
-    if (!audioRef.current) {
-      // Create audio element on first click
-      audioRef.current = new Audio("https://archive.org/download/78_viva-mexico-viva-america_pedro-galindo-el-mariachi-tapatio-marmolejo_gbia0064106b/Viva%20Mexico%20-%20Viva%20America%20-%20Pedro%20Galindo.mp3");
-      audioRef.current.loop = true;
-      audioRef.current.volume = 0.5;
-    }
+    if (!audioRef.current) return;
 
     if (isPlaying) {
       audioRef.current.pause();
