@@ -37,9 +37,6 @@ const Index = () => {
         </div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto">
-          <p className="text-xl md:text-2xl text-green-400 mb-4 font-medium tracking-wide">
-            The Official Drink of Fun
-          </p>
           <div className="animate-float mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-6 mb-4">
             <img src={partyCharacter} alt="Party character holding margarita" className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" />
