@@ -19,6 +19,7 @@ serve(async (req) => {
     console.log('API Key status:', apiKey ? 'Found' : 'Missing')
     console.log('API Key length:', apiKey?.length || 0)
     console.log('API Key starts with:', apiKey ? apiKey.substring(0, 10) + '...' : 'None')
+    console.log('Full API Key for debugging:', apiKey)
     
     // Test a simple geocoding API call first to verify the key works
     if (apiKey) {
