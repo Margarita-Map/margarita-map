@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star, ThumbsUp, ThumbsDown, User, Calendar } from "lucide-react";
 import AgaveRating from "./AgaveRating";
-import { PlaceDetails } from "@/hooks/useGoogleMaps";
+import { PlaceDetails } from "@/types/place";
 import { usePlaceReviews } from "@/hooks/usePlaceReviews";
 import { PhotoGallery } from "./PhotoGallery";
 

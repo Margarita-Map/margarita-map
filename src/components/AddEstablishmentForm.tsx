@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone, Globe, Building, LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useGoogleMaps } from "@/hooks/useGoogleMaps";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,7 +23,6 @@ const AddEstablishmentForm = ({ onSuccess }: AddEstablishmentFormProps) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const { geocodeAddress, isLoaded } = useGoogleMaps();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -74,17 +73,10 @@ const AddEstablishmentForm = ({ onSuccess }: AddEstablishmentFormProps) => {
     setIsSubmitting(true);
 
     try {
-      // Get coordinates from address using Google Maps geocoding
+      // For now, we'll store without coordinates since we removed Google Maps
+      // This can be enhanced later with a different geocoding service
       let latitude: number | null = null;
       let longitude: number | null = null;
-
-      if (isLoaded) {
-        const location = await geocodeAddress(formData.address);
-        if (location) {
-          latitude = location.lat();
-          longitude = location.lng();
-        }
-      }
 
       // Clean website URL
       let website = formData.website.trim();

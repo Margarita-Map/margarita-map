@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { PlaceDetails } from './useGoogleMaps';
+import { PlaceDetails } from '@/types/place';
 
 export interface Review {
   id: string;
