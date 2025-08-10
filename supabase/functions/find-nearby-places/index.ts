@@ -29,9 +29,14 @@ serve(async (req) => {
         const geoResponse = await fetch(testGeoUrl)
         const geoData = await geoResponse.json()
         console.log('Geocoding test status:', geoData.status)
+        console.log('Geocoding test response:', JSON.stringify(geoData, null, 2))
         
         if (geoData.status === 'REQUEST_DENIED') {
-          console.error('API key denied - key invalid or billing issue')
+          console.error('API key denied. Common causes:')
+          console.error('1. API key restrictions (check HTTP referrers, IP restrictions)')
+          console.error('2. Required APIs not enabled: Places API, Geocoding API, Maps JavaScript API')
+          console.error('3. API key from wrong Google Cloud project')
+          console.error('Error message:', geoData.error_message || 'No specific error message')
           return getFallbackPlaces(latitude, longitude)
         }
       } catch (testError) {
