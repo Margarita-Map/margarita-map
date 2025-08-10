@@ -289,14 +289,19 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
         {/* Location Search Bar */}
         <div className="max-w-md mx-auto mb-6">
           <form onSubmit={handleSearchSubmit} className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Enter city, address, or location..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1"
-              disabled={searchLoading || loading}
-            />
+            <div className="flex-1 relative">
+              <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
+                1
+              </div>
+              <Input
+                type="text"
+                placeholder="Enter city, address, or location..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+                disabled={searchLoading || loading}
+              />
+            </div>
             <Button 
               type="submit"
               disabled={searchLoading || loading || !searchQuery.trim()}
@@ -315,14 +320,19 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
         {/* Restaurant Name Search */}
         <div className="max-w-md mx-auto mb-6">
           <div className="space-y-3">
-            <Input
-              type="text"
-              placeholder="Search for specific restaurant (e.g., Lupe Tortilla)"
-              value={restaurantName}
-              onChange={(e) => setRestaurantName(e.target.value)}
-              className="w-full"
-              disabled={searchLoading || loading}
-            />
+            <div className="relative">
+              <div className="absolute -left-8 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center text-sm font-bold">
+                2
+              </div>
+              <Input
+                type="text"
+                placeholder="Search for specific restaurant (e.g., Lupe Tortilla)"
+                value={restaurantName}
+                onChange={(e) => setRestaurantName(e.target.value)}
+                className="w-full"
+                disabled={searchLoading || loading}
+              />
+            </div>
             <Button 
               onClick={handleRestaurantSearch}
               disabled={searchLoading || loading || !restaurantName.trim()}
