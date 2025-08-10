@@ -61,8 +61,13 @@ const Index = () => {
   };
   const handlePlacesFound = (places: PlaceDetails[]) => {
     console.log("handlePlacesFound called with places:", places?.length || 0, places);
+    console.log("Current nearbyPlaces state before update:", nearbyPlaces?.length || 0);
     console.log("Setting nearbyPlaces state to:", places);
     setNearbyPlaces(places);
+    // Force a re-render check
+    setTimeout(() => {
+      console.log("nearbyPlaces state after update:", nearbyPlaces?.length || 0);
+    }, 100);
   };
   const handlePlaceSelect = (place: PlaceDetails) => {
     console.log("Selected place from list:", place);

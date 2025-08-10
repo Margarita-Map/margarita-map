@@ -15,6 +15,7 @@ interface PlacesListProps {
 
 const PlacesList = ({ places, onPlaceSelect }: PlacesListProps) => {
   console.log("PlacesList rendered with places:", places?.length || 0, places);
+  console.log("PlacesList props object:", { places, onPlaceSelect });
   
   const navigate = useNavigate();
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
