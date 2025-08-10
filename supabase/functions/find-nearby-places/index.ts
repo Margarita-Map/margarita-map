@@ -16,8 +16,11 @@ serve(async (req) => {
     console.log(`Searching for places near ${latitude}, ${longitude} within ${radius}m`)
     
     const apiKey = Deno.env.get('GOOGLE_MAPS_API_KEY')
+    console.log('=== API KEY DEBUGGING ===')
     console.log('API Key status:', apiKey ? 'Found' : 'Missing')
     console.log('API Key length:', apiKey?.length || 0)
+    console.log('API Key first 10 chars:', apiKey ? apiKey.substring(0, 10) + '...' : 'N/A')
+    console.log('API Key last 5 chars:', apiKey ? '...' + apiKey.substring(apiKey.length - 5) : 'N/A')
     
     if (!apiKey) {
       console.error('GOOGLE_MAPS_API_KEY not found in environment variables')
