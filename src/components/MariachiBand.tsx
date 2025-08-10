@@ -3,7 +3,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const MariachiBand = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true); // Start as playing
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [audioStatus, setAudioStatus] = useState('loading');
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -23,10 +23,20 @@ const MariachiBand = () => {
       
       audioRef.current.src = primarySrc;
       
-      // Handle successful loading
-      audioRef.current.addEventListener('canplaythrough', () => {
+      // Handle successful loading and auto-play
+      audioRef.current.addEventListener('canplaythrough', async () => {
         console.log('Audio loaded successfully');
         setAudioStatus('ready');
+        
+        // Try to auto-play when ready
+        try {
+          await audioRef.current?.play();
+          setIsPlaying(true);
+          console.log('Auto-play started');
+        } catch (error) {
+          console.log('Auto-play blocked by browser, user interaction required:', error);
+          setIsPlaying(false);
+        }
       });
       
       audioRef.current.addEventListener('loadstart', () => {
