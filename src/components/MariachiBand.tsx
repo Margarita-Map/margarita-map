@@ -8,9 +8,10 @@ const MariachiBand = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Create audio element with mariachi music (using a placeholder URL)
+    // Create audio element with mariachi music
     audioRef.current = new Audio();
-    audioRef.current.src = "https://www.soundjay.com/misc/sounds/mariachi.mp3"; // Placeholder - you'll need to add actual mariachi music file
+    // Using a working mariachi music URL - you can replace this with your own mariachi music file
+    audioRef.current.src = "https://www.bensound.com/bensound-music/bensound-mariachi.mp3";
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
 
@@ -36,7 +37,7 @@ const MariachiBand = () => {
         setIsPlaying(true);
       }
     } catch (error) {
-      console.log("Audio playback failed:", error);
+      console.log("Audio playback failed - you may need to add your own mariachi music file:", error);
     }
   };
 
@@ -44,68 +45,83 @@ const MariachiBand = () => {
     <div className="flex items-center justify-center gap-4 mb-8">
       {/* Mariachi Band Animation */}
       <div className="flex items-end gap-2">
-        {/* Mariachi Guitarist 1 */}
+        {/* Mexican Mariachi Guitarist 1 */}
         <div className="relative">
           <div className="text-5xl animate-bounce" style={{ animationDelay: '0s' }}>
-            🧑‍🎤
+            🧔🏽‍♂️
           </div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.1s' }}>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
             🎸
           </div>
-          <div className="absolute -top-2 -right-1 text-lg animate-pulse text-yellow-400">
+          <div className="absolute -top-3 -right-2 text-lg animate-pulse text-yellow-400">
             ♪
+          </div>
+          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
+            🇲🇽
           </div>
         </div>
 
-        {/* Mariachi Trumpeter */}
+        {/* Mexican Mariachi Trumpeter */}
         <div className="relative">
           <div className="text-5xl animate-bounce" style={{ animationDelay: '0.2s' }}>
-            👨‍🎤
+            👨🏽‍🦱
           </div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.3s' }}>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
             🎺
           </div>
-          <div className="absolute -top-2 -left-1 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '0.5s' }}>
+          <div className="absolute -top-3 -left-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '0.5s' }}>
             ♫
+          </div>
+          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
+            🇲🇽
           </div>
         </div>
 
-        {/* Mariachi Violinist */}
+        {/* Mexican Mariachi Violinist */}
         <div className="relative">
           <div className="text-5xl animate-bounce" style={{ animationDelay: '0.4s' }}>
-            🧑‍🎤
+            👨🏽‍🦲
           </div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.5s' }}>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
             🎻
           </div>
-          <div className="absolute -top-2 -right-1 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1s' }}>
+          <div className="absolute -top-3 -right-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1s' }}>
             ♪
+          </div>
+          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
+            🇲🇽
           </div>
         </div>
 
-        {/* Mariachi Singer with Maracas */}
+        {/* Mexican Mariachi Singer with Maracas */}
         <div className="relative">
           <div className="text-5xl animate-bounce" style={{ animationDelay: '0.6s' }}>
-            👨‍🎤
+            🧔🏽
           </div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.7s' }}>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
             🪇
           </div>
-          <div className="absolute -top-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1.5s' }}>
+          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1.5s' }}>
             ♫
+          </div>
+          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
+            🇲🇽
           </div>
         </div>
 
-        {/* Mariachi Accordionist */}
+        {/* Mexican Mariachi Accordionist */}
         <div className="relative">
           <div className="text-5xl animate-bounce" style={{ animationDelay: '0.8s' }}>
-            🧑‍🎤
+            👨🏽‍🦳
           </div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce" style={{ animationDelay: '0.9s' }}>
+          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
             🪗
           </div>
-          <div className="absolute -top-2 -left-1 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '2s' }}>
+          <div className="absolute -top-3 -left-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '2s' }}>
             ♪
+          </div>
+          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
+            🇲🇽
           </div>
         </div>
       </div>
