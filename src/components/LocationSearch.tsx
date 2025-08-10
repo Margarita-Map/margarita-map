@@ -33,7 +33,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
   const [locationLoading, setLocationLoading] = useState(false);
 
   useEffect(() => {
-    getCurrentLocation();
+    // Don't auto-search on component mount to prevent continuous searching
+    // User must click the button to search
   }, []);
 
   const getCurrentLocation = () => {
@@ -68,7 +69,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
 
   const searchNearbyPlaces = async (location: { lat: number; lng: number }) => {
     if (!window.google?.maps) {
-      toast.error('Google Maps not loaded');
+      toast.error('Google Maps service is currently unavailable. Please try again later.');
+      setLoading(false);
       return;
     }
 
@@ -155,8 +157,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       }
     } catch (error) {
       console.error('Error searching for places:', error);
-      toast.error('Error searching for places. Please try again.');
-    } finally {
+      toast.error('Google Maps service is currently unavailable. Please check your internet connection and try again.');
       setLoading(false);
     }
   };
