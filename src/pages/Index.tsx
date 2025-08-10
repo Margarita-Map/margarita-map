@@ -53,7 +53,7 @@ const Index = () => {
             </div>
           </div>
           
-          <p className="text-lg sm:text-xl mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4 font-extrabold text-yellow-300 md:text-4xl">Wherever has the Best margaritas usually has the best food and fun too! Find, rate, review, post pics, post Tequila Tasting Events and more. Let the World know where to go!!! A</p>
+          <p className="text-lg sm:text-xl mb-6 md:mb-8 max-w-2xl mx-auto drop-shadow-lg leading-relaxed px-4 font-extrabold text-yellow-300 md:text-3xl">Wherever has the Best margaritas usually has the best food and fun too! Find, rate, review, post pics, post Tequila Tasting Events and more. Let the World know where to go!!! And let your favorite bartend</p>
         </div>
         
         <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
