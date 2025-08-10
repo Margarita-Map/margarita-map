@@ -183,12 +183,18 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       return;
     }
 
-    if (!userLocation) {
-      toast.error('Please get your current location first or search by city');
+    if (!userLocation && !searchQuery.trim()) {
+      toast.error('Please enter a location or get your current location first');
       return;
     }
 
-    await searchNearbyPlaces(userLocation, restaurantName.trim());
+    if (searchQuery.trim()) {
+      // Search in specified location
+      await searchRestaurantInLocation(searchQuery, restaurantName);
+    } else {
+      // Search near current location
+      await searchNearbyPlaces(userLocation!, restaurantName.trim());
+    }
   };
 
   const searchRestaurantInLocation = async (locationQuery: string, restaurantName: string) => {
