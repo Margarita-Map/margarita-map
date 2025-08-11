@@ -36,8 +36,14 @@ const SimpleMariachiBand = () => {
     // Try to play immediately
     playAudio();
     
-    // Also try on first user interaction
-    const handleFirstInteraction = async () => {
+    // Also try on first user interaction (but not if they're clicking the toggle button)
+    const handleFirstInteraction = async (event: Event) => {
+      // Don't auto-play if user is clicking the music control button
+      const target = event.target as HTMLElement;
+      if (target?.closest('[title*="Music"]')) {
+        return;
+      }
+      
       if (!isPlaying && audioRef.current) {
         try {
           await audioRef.current.play();
@@ -63,14 +69,24 @@ const SimpleMariachiBand = () => {
   }, []);
 
   const toggleMusic = async () => {
-    if (!audioRef.current) return;
+    console.log('Toggle music clicked. Current isPlaying:', isPlaying);
+    console.log('audioRef.current exists:', !!audioRef.current);
+    
+    if (!audioRef.current) {
+      console.log('No audio reference found');
+      return;
+    }
 
     try {
       if (isPlaying) {
+        console.log('Attempting to pause audio');
         audioRef.current.pause();
+        console.log('Audio paused successfully. Audio paused state:', audioRef.current.paused);
         setIsPlaying(false);
       } else {
+        console.log('Attempting to play audio');
         await audioRef.current.play();
+        console.log('Audio play attempted');
         setIsPlaying(true);
       }
     } catch (error) {
