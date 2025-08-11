@@ -15,16 +15,21 @@ import SimpleMariachiBand from "@/components/SimpleMariachiBand";
 import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
+import margaritaMapLogo from "@/assets/margarita-map-logo.jpg";
+
 const Index = () => {
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showManageForm, setShowManageForm] = useState(false);
+  
   useSEO({
     title: "Margarita Map | Find the Best Margaritas Near You",
     description: "Discover top-rated margaritas with Margarita Map's honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margarita map, margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
-  return <div className="min-h-screen bg-gradient-tropical">
+
+  return (
+    <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
       
       {/* Hero Section */}
@@ -40,10 +45,16 @@ const Index = () => {
           <div className="animate-float mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-6 mb-4">
             <img src={partyCharacter} alt="Party character holding margarita" className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" />
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg leading-tight">
-              Find Your Perfect
-              <span className="block bg-gradient-sunset bg-clip-text text-transparent mt-2"> 🍹</span>
-            </h1>
+            <div className="text-center">
+              <img 
+                src={margaritaMapLogo} 
+                alt="Margarita Map Logo" 
+                className="w-64 h-36 md:w-80 md:h-45 lg:w-96 lg:h-54 mx-auto mb-4 rounded-xl shadow-2xl border-4 border-white/20 animate-pulse"
+              />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg leading-tight bg-gradient-to-r from-lime-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
+                Find Your Perfect Margarita! 🍹
+              </h1>
+            </div>
             <img src={partyCharacter} alt="Party character holding margarita" className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full border-2 border-white/30 shadow-lg animate-bounce" style={{
               animationDelay: '0.5s'
             }} />
@@ -218,6 +229,8 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         </div>
       </section>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
