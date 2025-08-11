@@ -12,6 +12,7 @@ import {
   Camera 
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import margaritaMapLogo from "@/assets/margarita-map-logo.jpg";
 const Navbar = () => {
   const location = useLocation();
   
@@ -105,10 +106,14 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3 md:py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 md:gap-3">
-            <div className="text-2xl md:text-3xl animate-shake">🍹</div>
-            <span className="text-lg md:text-2xl font-bold bg-gradient-sunset bg-clip-text text-transparent leading-tight">
-              <span className="hidden sm:inline">The BEST Margaritas near me</span>
-              <span className="sm:hidden">The Best Margaritas Near You</span>
+            <img 
+              src={margaritaMapLogo} 
+              alt="Margarita Map Logo" 
+              className="w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-md animate-pulse"
+            />
+            <span className="text-xl md:text-3xl font-bold bg-gradient-to-r from-lime-400 via-orange-500 to-pink-500 bg-clip-text text-transparent leading-tight">
+              <span className="hidden sm:inline">Margarita Map</span>
+              <span className="sm:hidden">Margarita Map</span>
             </span>
           </Link>
 

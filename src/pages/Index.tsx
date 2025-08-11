@@ -20,9 +20,9 @@ const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showManageForm, setShowManageForm] = useState(false);
   useSEO({
-    title: "Find the Best Margaritas Near Me | Honest Reviews & Bar Locator",
-    description: "Discover top-rated margaritas with our honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
-    keywords: "margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
+    title: "Margarita Map | Find the Best Margaritas Near You",
+    description: "Discover top-rated margaritas with Margarita Map's honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
+    keywords: "margarita map, margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
