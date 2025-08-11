@@ -62,15 +62,20 @@ const SimpleMariachiBand = () => {
     };
   }, []);
 
-  const toggleMusic = () => {
+  const toggleMusic = async () => {
     if (!audioRef.current) return;
 
-    if (isPlaying) {
-      audioRef.current.pause();
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error('Audio toggle error:', error);
       setIsPlaying(false);
-    } else {
-      audioRef.current.play();
-      setIsPlaying(true);
     }
   };
 
