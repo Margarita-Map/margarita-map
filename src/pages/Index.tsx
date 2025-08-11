@@ -49,7 +49,7 @@ const Index = () => {
               <img 
                 src={margaritaMapLogo} 
                 alt="Margarita Map Logo" 
-                className="w-64 h-36 md:w-80 md:h-45 lg:w-96 lg:h-54 mx-auto mb-4 rounded-xl shadow-2xl border-4 border-white/20 animate-pulse"
+                className="w-80 h-45 md:w-96 md:h-54 lg:w-[28rem] lg:h-64 mx-auto mb-4 rounded-xl shadow-2xl border-4 border-white/20 animate-pulse"
               />
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white drop-shadow-lg leading-tight bg-gradient-to-r from-lime-400 via-orange-500 to-pink-500 bg-clip-text text-transparent">
                 Find Your Perfect Margarita! 🍹
