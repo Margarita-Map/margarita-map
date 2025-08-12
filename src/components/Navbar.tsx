@@ -118,7 +118,7 @@ const Navbar = () => {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => window.open('https://www.facebook.com/margaritamaps', '_blank')}
+              onClick={() => window.open('https://www.facebook.com/margaritamap', '_blank')}
               className="flex items-center gap-2"
             >
               <Facebook className="w-4 h-4" />
@@ -139,7 +139,7 @@ const Navbar = () => {
                 <NavLinks />
                 <Button 
                   variant="ghost" 
-                  onClick={() => window.open('https://www.facebook.com/margaritamaps', '_blank')}
+                  onClick={() => window.open('https://www.facebook.com/margaritamap', '_blank')}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-base font-medium hover:bg-accent hover:text-accent-foreground justify-start"
                 >
                   <Facebook className="w-5 h-5" />
