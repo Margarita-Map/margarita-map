@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'the-best-margaritas-near-me',
   webDir: 'dist',
   server: {
-    url: 'https://8a2e43fc-df64-4257-aba2-2f1063e04d67.lovableproject.com?forceHideBadge=true',
+    url: 'https://margaritamaps.com?forceHideBadge=true',
     cleartext: true
   },
   plugins: {
