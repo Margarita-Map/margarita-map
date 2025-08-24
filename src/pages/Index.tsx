@@ -36,6 +36,9 @@ const Index = () => {
           loop
           playsInline
           className="w-full h-[50vh] md:h-[60vh] object-cover"
+          onLoadedData={(e) => {
+            e.currentTarget.currentTime = 11;
+          }}
         >
           <source src="/videos/hero-video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
