@@ -1,18 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 const SimpleMariachiBand = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
   useEffect(() => {
     // Create and setup audio on component mount
     audioRef.current = new Audio("https://archive.org/download/78_viva-mexico-viva-america_pedro-galindo-el-mariachi-tapatio-marmolejo_gbia0064106b/Viva%20Mexico%20-%20Viva%20America%20-%20Pedro%20Galindo.mp3");
     audioRef.current.loop = true;
     audioRef.current.volume = 0.3;
     audioRef.current.preload = "auto";
-    
+
     // Aggressive auto-play attempt
     const playAudio = async () => {
       try {
@@ -32,10 +30,10 @@ const SimpleMariachiBand = () => {
         }, 100);
       }
     };
-    
+
     // Try to play immediately
     playAudio();
-    
+
     // Also try on first user interaction (but not if they're clicking the toggle button)
     const handleFirstInteraction = async (event: Event) => {
       // Don't auto-play if user is clicking the music control button
@@ -43,7 +41,6 @@ const SimpleMariachiBand = () => {
       if (target?.closest('[title*="Music"]')) {
         return;
       }
-      
       if (!isPlaying && audioRef.current) {
         try {
           await audioRef.current.play();
@@ -53,11 +50,14 @@ const SimpleMariachiBand = () => {
         }
       }
     };
-    
+
     // Add listeners for first user interaction
-    document.addEventListener('click', handleFirstInteraction, { once: true });
-    document.addEventListener('touchstart', handleFirstInteraction, { once: true });
-    
+    document.addEventListener('click', handleFirstInteraction, {
+      once: true
+    });
+    document.addEventListener('touchstart', handleFirstInteraction, {
+      once: true
+    });
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -67,16 +67,13 @@ const SimpleMariachiBand = () => {
       document.removeEventListener('touchstart', handleFirstInteraction);
     };
   }, []);
-
   const toggleMusic = async () => {
     console.log('Toggle music clicked. Current isPlaying:', isPlaying);
     console.log('audioRef.current exists:', !!audioRef.current);
-    
     if (!audioRef.current) {
       console.log('No audio reference found');
       return;
     }
-
     try {
       if (isPlaying) {
         console.log('Attempting to pause audio');
@@ -94,113 +91,12 @@ const SimpleMariachiBand = () => {
       setIsPlaying(false);
     }
   };
-
-  return (
-    <div className="flex items-center justify-center gap-4 mb-8">
+  return <div className="flex items-center justify-center gap-4 mb-8">
       {/* Mariachi Band Animation */}
-      <div className="flex items-end gap-2">
-        {/* Mexican Mariachi Guitarist 1 */}
-        <div className="relative">
-          <div className="text-5xl animate-bounce" style={{ animationDelay: '0s' }}>
-            🧔🏽‍♂️
-          </div>
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
-            🎸
-          </div>
-          <div className="absolute -top-3 -right-2 text-lg animate-pulse text-yellow-400">
-            ♪
-          </div>
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
-            🇲🇽
-          </div>
-        </div>
-
-        {/* Mexican Mariachi Trumpeter */}
-        <div className="relative">
-          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.2s' }}>
-            👨🏽‍🦱
-          </div>
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
-            🎺
-          </div>
-          <div className="absolute -top-3 -left-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '0.5s' }}>
-            ♫
-          </div>
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
-            🇲🇽
-          </div>
-        </div>
-
-        {/* Mexican Mariachi Violinist */}
-        <div className="relative">
-          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.4s' }}>
-            👨🏽‍🦲
-          </div>
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
-            🎻
-          </div>
-          <div className="absolute -top-3 -right-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1s' }}>
-            ♪
-          </div>
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
-            🇲🇽
-          </div>
-        </div>
-
-        {/* Mexican Mariachi Singer with Maracas */}
-        <div className="relative">
-          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.6s' }}>
-            🧔🏽
-          </div>
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
-            🪇
-          </div>
-          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '1.5s' }}>
-            ♫
-          </div>
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
-            🇲🇽
-          </div>
-        </div>
-
-        {/* Mexican Mariachi Accordionist */}
-        <div className="relative">
-          <div className="text-5xl animate-bounce" style={{ animationDelay: '0.8s' }}>
-            👨🏽‍🦳
-          </div>
-          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xl">
-            🪗
-          </div>
-          <div className="absolute -top-3 -left-2 text-lg animate-pulse text-yellow-400" style={{ animationDelay: '2s' }}>
-            ♪
-          </div>
-          <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 text-xs">
-            🇲🇽
-          </div>
-        </div>
-      </div>
+      
 
       {/* Music Control Button */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleMusic}
-          className="bg-white/20 backdrop-blur-sm border-2 border-white/30 hover:scale-110 transition-transform text-white hover:bg-white/30"
-          title={isPlaying ? "Pause Mariachi Music" : "Play Mariachi Music"}
-        >
-          {isPlaying ? (
-            <Volume2 className="w-4 h-4" />
-          ) : (
-            <VolumeX className="w-4 h-4" />
-          )}
-        </Button>
-        <span className="text-sm text-white/90 font-medium">
-          Click for mariachi music
-        </span>
-      </div>
-    </div>
-  );
+      
+    </div>;
 };
-
 export default SimpleMariachiBand;
