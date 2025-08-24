@@ -28,6 +28,21 @@ const Index = () => {
   return <div className="min-h-screen bg-gradient-tropical">
       <Navbar />
       
+      {/* Hero Video Section */}
+      <section className="relative">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-[50vh] md:h-[60vh] object-cover"
+        >
+          <source src="/videos/hero-video.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="absolute inset-0 bg-black/30" />
+      </section>
+      
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20 md:py-0">
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
