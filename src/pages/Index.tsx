@@ -37,7 +37,6 @@ const Index = () => {
         </div>
         
         <div className="relative z-10 text-center max-w-4xl mx-auto">
-          <SimpleMariachiBand />
           <div className="animate-float mb-6 md:mb-8">
           <div className="flex items-center justify-center gap-6 mb-4">
             
