@@ -14,6 +14,7 @@ import PhotoGallery from "./pages/PhotoGallery";
 import TequilaBrands from "./pages/TequilaBrands";
 import TequilaEvents from "./pages/TequilaEvents";
 import MargaritaGame from "./pages/MargaritaGame";
+import QuartersGame from "./pages/QuartersGame";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/tequila-brands" element={<TequilaBrands />} />
           <Route path="/tequila-events" element={<TequilaEvents />} />
           <Route path="/margarita-game" element={<MargaritaGame />} />
+          <Route path="/quarters-game" element={<QuartersGame />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
