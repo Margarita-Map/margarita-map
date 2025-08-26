@@ -3,7 +3,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, RotateCcw, Users, Star } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Trophy, RotateCcw, Users, Star, Clock, Move } from "lucide-react";
 import GameTile from "./GameTile";
 import { GameState, TileType } from "./types";
 import { checkMatches, removeMatches, dropTiles, fillEmptyTiles } from "./gameLogic";
@@ -11,6 +12,7 @@ import { toast } from "sonner";
 
 const BOARD_SIZE = 8;
 const MOVE_GOAL = 30;
+const TIME_GOAL = 90; // 90 seconds
 const SCORE_GOAL = 5000;
 
 const MargaritaGameBoard = () => {
@@ -21,7 +23,9 @@ const MargaritaGameBoard = () => {
     selectedTile: null,
     isAnimating: false,
     gameOver: false,
-    won: false
+    won: false,
+    timeLeft: TIME_GOAL,
+    isTimerMode: false
   });
 
   const initializeBoard = useCallback(() => {
@@ -44,15 +48,30 @@ const MargaritaGameBoard = () => {
   }, []);
 
   const resetGame = () => {
-    setGameState({
+    setGameState(prev => ({
       board: initializeBoard(),
       score: 0,
       moves: MOVE_GOAL,
       selectedTile: null,
       isAnimating: false,
       gameOver: false,
-      won: false
-    });
+      won: false,
+      timeLeft: TIME_GOAL,
+      isTimerMode: prev.isTimerMode
+    }));
+  };
+
+  const toggleGameMode = () => {
+    setGameState(prev => ({
+      ...prev,
+      isTimerMode: !prev.isTimerMode,
+      gameOver: false,
+      won: false,
+      score: 0,
+      moves: MOVE_GOAL,
+      timeLeft: TIME_GOAL,
+      board: initializeBoard()
+    }));
   };
 
   useEffect(() => {
@@ -107,7 +126,7 @@ const MargaritaGameBoard = () => {
       setGameState(prev => ({
         ...prev,
         board: newBoard,
-        moves: prev.moves - 1,
+        moves: prev.isTimerMode ? prev.moves : prev.moves - 1,
         isAnimating: true
       }));
       
@@ -158,9 +177,25 @@ const MargaritaGameBoard = () => {
     }, 500);
   };
 
+  // Timer countdown
+  useEffect(() => {
+    if (gameState.isTimerMode && !gameState.gameOver && !gameState.isAnimating && gameState.timeLeft > 0) {
+      const timer = setInterval(() => {
+        setGameState(prev => ({
+          ...prev,
+          timeLeft: prev.timeLeft - 1
+        }));
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [gameState.isTimerMode, gameState.gameOver, gameState.isAnimating, gameState.timeLeft]);
+
   // Check win/lose conditions
   useEffect(() => {
-    if (gameState.moves <= 0) {
+    const shouldEnd = gameState.isTimerMode ? gameState.timeLeft <= 0 : gameState.moves <= 0;
+    
+    if (shouldEnd && !gameState.gameOver) {
       if (gameState.score >= SCORE_GOAL) {
         setGameState(prev => ({ ...prev, won: true, gameOver: true }));
         toast("🏆 Congratulations! You collected enough margaritas!");
@@ -169,7 +204,7 @@ const MargaritaGameBoard = () => {
         toast("😔 Game Over! Try again to collect more margaritas!");
       }
     }
-  }, [gameState.moves, gameState.score]);
+  }, [gameState.moves, gameState.timeLeft, gameState.score, gameState.isTimerMode, gameState.gameOver]);
 
   const shareScore = () => {
     if (navigator.share) {
@@ -193,17 +228,41 @@ const MargaritaGameBoard = () => {
           🍹 Margarita Crush 🍹
         </CardTitle>
         
-        <div className="flex justify-between items-center mt-4">
-          <Badge variant="secondary" className="bg-lime-100 text-lime-800 dark:bg-lime-800 dark:text-lime-100">
-            <Star className="w-4 h-4 mr-1" />
-            Score: {gameState.score}
-          </Badge>
-          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-            Moves: {gameState.moves}
-          </Badge>
-          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
-            Goal: {SCORE_GOAL}
-          </Badge>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-center gap-3">
+            <Move className="w-4 h-4" />
+            <span className="text-sm">Moves</span>
+            <Switch 
+              checked={gameState.isTimerMode} 
+              onCheckedChange={toggleGameMode}
+              disabled={!gameState.gameOver && (gameState.moves < MOVE_GOAL || gameState.timeLeft < TIME_GOAL)}
+            />
+            <span className="text-sm">Timer</span>
+            <Clock className="w-4 h-4" />
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <Badge variant="secondary" className="bg-lime-100 text-lime-800 dark:bg-lime-800 dark:text-lime-100">
+              <Star className="w-4 h-4 mr-1" />
+              Score: {gameState.score}
+            </Badge>
+            
+            {gameState.isTimerMode ? (
+              <Badge variant="secondary" className="bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100">
+                <Clock className="w-4 h-4 mr-1" />
+                Time: {Math.floor(gameState.timeLeft / 60)}:{(gameState.timeLeft % 60).toString().padStart(2, '0')}
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                <Move className="w-4 h-4 mr-1" />
+                Moves: {gameState.moves}
+              </Badge>
+            )}
+            
+            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100">
+              Goal: {SCORE_GOAL}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
 

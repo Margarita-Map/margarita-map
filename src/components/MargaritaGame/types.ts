@@ -16,4 +16,6 @@ export interface GameState {
   isAnimating: boolean;
   gameOver: boolean;
   won: boolean;
+  timeLeft: number;
+  isTimerMode: boolean;
 }
