@@ -30,19 +30,12 @@ const Index = () => {
       
       {/* Hero Video Section */}
       <section className="relative">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="w-full h-[50vh] md:h-[60vh] object-cover"
-          onLoadedData={(e) => {
-            e.currentTarget.currentTime = 11;
-          }}
-        >
-          <source src="/videos/hero-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div className="w-full h-[50vh] md:h-[60vh] bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center">
+          <div className="text-center text-white">
+            <p className="text-lg mb-2">Video will play here</p>
+            <p className="text-sm opacity-75">Please upload video file directly to chat</p>
+          </div>
+        </div>
         <div className="absolute inset-0 bg-black/30" />
       </section>
       
