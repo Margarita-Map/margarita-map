@@ -98,6 +98,28 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Quarters Game Section */}
+      <section className="py-12 md:py-20 bg-gradient-to-br from-amber-500 to-orange-600">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
+              🪙 Play Quarters Game! 🍹
+            </h2>
+            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed">
+              Challenge your friends in the classic drinking game! Bounce quarters into margarita glasses and make your opponents drink in this skill-based party game.
+            </p>
+            <Button 
+              variant="secondary" 
+              size="lg" 
+              className="font-bold bg-white text-orange-600 hover:bg-white/90 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              onClick={() => navigate('/quarters-game')}
+            >
+              🎯 Start Playing Quarters!
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Drink Specials Section */}
       <section data-section="drink-specials" className="py-12 md:py-20 bg-muted/30">
         <div className="container mx-auto px-4">
