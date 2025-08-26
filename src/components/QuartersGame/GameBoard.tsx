@@ -50,10 +50,10 @@ const QuartersGameBoard = () => {
   const GLASS_WIDTH = 60;
   const GLASS_HEIGHT = 80;
   const QUARTER_RADIUS = 8;
-  const GRAVITY = 0.4;
-  const BOUNCE_DAMPING = 0.6;
-  const WALL_BOUNCE_DAMPING = 0.7;
-  const FRICTION = 0.98;
+  const GRAVITY = 0.2;
+  const BOUNCE_DAMPING = 0.7;
+  const WALL_BOUNCE_DAMPING = 0.8;
+  const FRICTION = 0.995;
 
   const drawGame = useCallback((ctx: CanvasRenderingContext2D) => {
     // Clear canvas
@@ -141,6 +141,8 @@ const QuartersGameBoard = () => {
   const updatePhysics = useCallback(() => {
     if (!gameState.quarter.isMoving) return;
 
+    console.log('Quarter position:', gameState.quarter.x, gameState.quarter.y, 'velocity:', gameState.quarter.vx, gameState.quarter.vy);
+
     setGameState(prev => {
       const newQuarter = { ...prev.quarter };
       
@@ -176,16 +178,18 @@ const QuartersGameBoard = () => {
       // Check table bounce
       if (newQuarter.y + QUARTER_RADIUS >= TABLE_Y && newQuarter.vy > 0) {
         if (newQuarter.x >= 0 && newQuarter.x <= CANVAS_WIDTH) {
+          console.log('Quarter bounced on table!');
           newQuarter.y = TABLE_Y - QUARTER_RADIUS;
           newQuarter.vy *= -BOUNCE_DAMPING;
           newQuarter.hasBouncedOnTable = true;
           
           // Add some randomness to the bounce
-          newQuarter.vx += (Math.random() - 0.5) * 0.5;
+          newQuarter.vx += (Math.random() - 0.5) * 0.3;
           
-          if (Math.abs(newQuarter.vy) < 1) {
+          // Only stop if velocity is very low and on table
+          if (Math.abs(newQuarter.vy) < 0.5 && Math.abs(newQuarter.vx) < 0.5) {
             newQuarter.vy = 0;
-            newQuarter.vx *= 0.9;
+            newQuarter.vx *= 0.8;
           }
         }
       }
@@ -220,12 +224,13 @@ const QuartersGameBoard = () => {
         };
       }
       
-      // Check boundaries and stop if out of bounds or stopped
-      if (newQuarter.x < -50 || newQuarter.x > CANVAS_WIDTH + 50 || 
-          newQuarter.y > CANVAS_HEIGHT + 50 ||
-          (Math.abs(newQuarter.vx) < 0.2 && Math.abs(newQuarter.vy) < 0.2 && 
-           newQuarter.y >= TABLE_Y - QUARTER_RADIUS - 2)) {
+      // Check boundaries and stop if out of bounds or stopped - made more lenient
+      if (newQuarter.x < -100 || newQuarter.x > CANVAS_WIDTH + 100 || 
+          newQuarter.y > CANVAS_HEIGHT + 100 ||
+          (Math.abs(newQuarter.vx) < 0.1 && Math.abs(newQuarter.vy) < 0.1 && 
+           newQuarter.hasBouncedOnTable && newQuarter.y >= TABLE_Y - QUARTER_RADIUS - 5)) {
         
+        console.log('Quarter stopped or went out of bounds');
         toast.info(`Player ${prev.currentPlayer} missed! Next player's turn.`);
         
         return {
@@ -311,20 +316,22 @@ const QuartersGameBoard = () => {
     
     const dx = gameState.aimEnd.x - gameState.aimStart.x;
     const dy = gameState.aimEnd.y - gameState.aimStart.y;
-    const power = Math.min(Math.sqrt(dx * dx + dy * dy) / 10, 15);
+    const power = Math.min(Math.sqrt(dx * dx + dy * dy) / 15, 10); // Reduced power
+    
+    console.log('Shooting quarter with velocity:', dx / 15, dy / 15);
     
     setGameState(prev => ({
       ...prev,
       isAiming: false,
       aimStart: null,
       aimEnd: null,
-        quarter: {
-          ...prev.quarter,
-          vx: dx / 10,
-          vy: dy / 10,
-          isMoving: true,
-          hasBouncedOnTable: false
-        }
+      quarter: {
+        ...prev.quarter,
+        vx: dx / 15, // Reduced velocity
+        vy: dy / 15, // Reduced velocity
+        isMoving: true,
+        hasBouncedOnTable: false
+      }
     }));
   };
 
