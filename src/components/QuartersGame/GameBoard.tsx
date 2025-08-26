@@ -12,6 +12,7 @@ interface GameState {
     y: number;
     vx: number;
     vy: number;
+    rotation: number;
     isMoving: boolean;
     hasBouncedOnTable: boolean;
   };
@@ -32,6 +33,7 @@ const QuartersGameBoard = () => {
       y: 350,
       vx: 0,
       vy: 0,
+      rotation: 0,
       isMoving: false,
       hasBouncedOnTable: false
     },
@@ -48,9 +50,10 @@ const QuartersGameBoard = () => {
   const GLASS_WIDTH = 60;
   const GLASS_HEIGHT = 80;
   const QUARTER_RADIUS = 8;
-  const GRAVITY = 0.5;
-  const BOUNCE_DAMPING = 0.7;
-  const FRICTION = 0.99;
+  const GRAVITY = 0.4;
+  const BOUNCE_DAMPING = 0.6;
+  const WALL_BOUNCE_DAMPING = 0.7;
+  const FRICTION = 0.98;
 
   const drawGame = useCallback((ctx: CanvasRenderingContext2D) => {
     // Clear canvas
@@ -92,22 +95,35 @@ const QuartersGameBoard = () => {
     ctx.fillRect(GLASS_X + 15, GLASS_Y + GLASS_HEIGHT + 20, 30, 5);
     ctx.strokeRect(GLASS_X + 15, GLASS_Y + GLASS_HEIGHT + 20, 30, 5);
     
-    // Draw quarter
-    const quarterGradient = ctx.createRadialGradient(
-      gameState.quarter.x, gameState.quarter.y, 0,
-      gameState.quarter.x, gameState.quarter.y, QUARTER_RADIUS
-    );
+    // Draw quarter with rotation
+    ctx.save();
+    ctx.translate(gameState.quarter.x, gameState.quarter.y);
+    ctx.rotate(gameState.quarter.rotation);
+    
+    const quarterGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, QUARTER_RADIUS);
     quarterGradient.addColorStop(0, '#FFD700');
     quarterGradient.addColorStop(0.7, '#DAA520');
     quarterGradient.addColorStop(1, '#B8860B');
     
     ctx.beginPath();
-    ctx.arc(gameState.quarter.x, gameState.quarter.y, QUARTER_RADIUS, 0, Math.PI * 2);
+    ctx.arc(0, 0, QUARTER_RADIUS, 0, Math.PI * 2);
     ctx.fillStyle = quarterGradient;
     ctx.fill();
     ctx.strokeStyle = '#B8860B';
     ctx.lineWidth = 2;
     ctx.stroke();
+    
+    // Add quarter details for rotation effect
+    ctx.strokeStyle = '#B8860B';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-QUARTER_RADIUS * 0.6, 0);
+    ctx.lineTo(QUARTER_RADIUS * 0.6, 0);
+    ctx.moveTo(0, -QUARTER_RADIUS * 0.6);
+    ctx.lineTo(0, QUARTER_RADIUS * 0.6);
+    ctx.stroke();
+    
+    ctx.restore();
     
     // Draw aiming line
     if (gameState.isAiming && gameState.aimStart && gameState.aimEnd) {
@@ -131,12 +147,31 @@ const QuartersGameBoard = () => {
       // Apply gravity
       newQuarter.vy += GRAVITY;
       
+      // Add rotation based on horizontal velocity
+      newQuarter.rotation += newQuarter.vx * 0.05;
+      
       // Update position
       newQuarter.x += newQuarter.vx;
       newQuarter.y += newQuarter.vy;
       
       // Apply friction
       newQuarter.vx *= FRICTION;
+      
+      // Check wall bounces (left and right walls)
+      if (newQuarter.x - QUARTER_RADIUS <= 0 || newQuarter.x + QUARTER_RADIUS >= CANVAS_WIDTH) {
+        if (newQuarter.x - QUARTER_RADIUS <= 0) {
+          newQuarter.x = QUARTER_RADIUS;
+        } else {
+          newQuarter.x = CANVAS_WIDTH - QUARTER_RADIUS;
+        }
+        newQuarter.vx *= -WALL_BOUNCE_DAMPING;
+      }
+      
+      // Check ceiling bounce
+      if (newQuarter.y - QUARTER_RADIUS <= 0) {
+        newQuarter.y = QUARTER_RADIUS;
+        newQuarter.vy *= -BOUNCE_DAMPING;
+      }
       
       // Check table bounce
       if (newQuarter.y + QUARTER_RADIUS >= TABLE_Y && newQuarter.vy > 0) {
@@ -145,7 +180,10 @@ const QuartersGameBoard = () => {
           newQuarter.vy *= -BOUNCE_DAMPING;
           newQuarter.hasBouncedOnTable = true;
           
-          if (Math.abs(newQuarter.vy) < 2) {
+          // Add some randomness to the bounce
+          newQuarter.vx += (Math.random() - 0.5) * 0.5;
+          
+          if (Math.abs(newQuarter.vy) < 1) {
             newQuarter.vy = 0;
             newQuarter.vx *= 0.9;
           }
@@ -175,6 +213,7 @@ const QuartersGameBoard = () => {
             y: 350,
             vx: 0,
             vy: 0,
+            rotation: 0,
             isMoving: false,
             hasBouncedOnTable: false
           }
@@ -182,10 +221,10 @@ const QuartersGameBoard = () => {
       }
       
       // Check boundaries and stop if out of bounds or stopped
-      if (newQuarter.x < -20 || newQuarter.x > CANVAS_WIDTH + 20 || 
-          newQuarter.y > CANVAS_HEIGHT + 20 ||
-          (Math.abs(newQuarter.vx) < 0.1 && Math.abs(newQuarter.vy) < 0.1 && 
-           newQuarter.y >= TABLE_Y - QUARTER_RADIUS - 1)) {
+      if (newQuarter.x < -50 || newQuarter.x > CANVAS_WIDTH + 50 || 
+          newQuarter.y > CANVAS_HEIGHT + 50 ||
+          (Math.abs(newQuarter.vx) < 0.2 && Math.abs(newQuarter.vy) < 0.2 && 
+           newQuarter.y >= TABLE_Y - QUARTER_RADIUS - 2)) {
         
         toast.info(`Player ${prev.currentPlayer} missed! Next player's turn.`);
         
@@ -197,6 +236,7 @@ const QuartersGameBoard = () => {
             y: 350,
             vx: 0,
             vy: 0,
+            rotation: 0,
             isMoving: false,
             hasBouncedOnTable: false
           }
@@ -278,13 +318,13 @@ const QuartersGameBoard = () => {
       isAiming: false,
       aimStart: null,
       aimEnd: null,
-      quarter: {
-        ...prev.quarter,
-        vx: dx / 10,
-        vy: dy / 10,
-        isMoving: true,
-        hasBouncedOnTable: false
-      }
+        quarter: {
+          ...prev.quarter,
+          vx: dx / 10,
+          vy: dy / 10,
+          isMoving: true,
+          hasBouncedOnTable: false
+        }
     }));
   };
 
@@ -298,6 +338,7 @@ const QuartersGameBoard = () => {
         y: 350,
         vx: 0,
         vy: 0,
+        rotation: 0,
         isMoving: false,
         hasBouncedOnTable: false
       },
