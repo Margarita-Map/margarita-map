@@ -50,10 +50,10 @@ const QuartersGameBoard = () => {
   const GLASS_WIDTH = 60;
   const GLASS_HEIGHT = 80;
   const QUARTER_RADIUS = 8;
-  const GRAVITY = 0.2;
+  const GRAVITY = 0.1;
   const BOUNCE_DAMPING = 0.7;
   const WALL_BOUNCE_DAMPING = 0.8;
-  const FRICTION = 0.995;
+  const FRICTION = 0.98;
 
   const drawGame = useCallback((ctx: CanvasRenderingContext2D) => {
     // Clear canvas
@@ -316,9 +316,9 @@ const QuartersGameBoard = () => {
     
     const dx = gameState.aimEnd.x - gameState.aimStart.x;
     const dy = gameState.aimEnd.y - gameState.aimStart.y;
-    const power = Math.min(Math.sqrt(dx * dx + dy * dy) / 15, 10); // Reduced power
+    const power = Math.min(Math.sqrt(dx * dx + dy * dy) / 20, 8); // Even more reduced power
     
-    console.log('Shooting quarter with velocity:', dx / 15, dy / 15);
+    console.log('Shooting quarter with velocity:', dx / 20, dy / 20);
     
     setGameState(prev => ({
       ...prev,
@@ -327,8 +327,8 @@ const QuartersGameBoard = () => {
       aimEnd: null,
       quarter: {
         ...prev.quarter,
-        vx: dx / 15, // Reduced velocity
-        vy: dy / 15, // Reduced velocity
+        vx: dx / 20, // Much slower velocity
+        vy: dy / 20, // Much slower velocity
         isMoving: true,
         hasBouncedOnTable: false
       }
