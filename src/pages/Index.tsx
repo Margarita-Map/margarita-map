@@ -16,6 +16,7 @@ import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
 import celebrationImage from "@/assets/celebration-margaritas.jpg";
 import margaritaMapLogo from "@/assets/margarita-map-logo.jpg";
+
 const Index = () => {
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
@@ -72,6 +73,28 @@ const Index = () => {
       <section className="py-12 md:py-20 bg-background/90 backdrop-blur-sm">
         <div className="container mx-auto px-4">
           <LocationSearch />
+        </div>
+      </section>
+
+      {/* Margarita Game Section */}
+      <section className="py-12 md:py-20 bg-gradient-lime">
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
+              🍹 Play Margarita Crush! 🎮
+            </h2>
+            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed">
+              Challenge your friends in our addictive match-3 game! Collect margarita glasses, score points, and become the ultimate margarita master.
+            </p>
+            <Button 
+              variant="secondary" 
+              size="lg" 
+              className="font-bold bg-white text-lime-600 hover:bg-white/90 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+              onClick={() => navigate('/margarita-game')}
+            >
+              🎯 Start Playing Now!
+            </Button>
+          </div>
         </div>
       </section>
 

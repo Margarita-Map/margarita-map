@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +13,7 @@ import PartyDetails from "./pages/PartyDetails";
 import PhotoGallery from "./pages/PhotoGallery";
 import TequilaBrands from "./pages/TequilaBrands";
 import TequilaEvents from "./pages/TequilaEvents";
+import MargaritaGame from "./pages/MargaritaGame";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +34,7 @@ const App = () => (
           <Route path="/photo-gallery" element={<PhotoGallery />} />
           <Route path="/tequila-brands" element={<TequilaBrands />} />
           <Route path="/tequila-events" element={<TequilaEvents />} />
+          <Route path="/margarita-game" element={<MargaritaGame />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
