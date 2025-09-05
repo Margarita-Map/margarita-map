@@ -214,8 +214,6 @@ const QuartersGameBoard = () => {
   const updatePhysics = useCallback(() => {
     if (!gameState.quarter.isMoving) return;
 
-    console.log('Quarter position:', gameState.quarter.x, gameState.quarter.y, 'velocity:', gameState.quarter.vx, gameState.quarter.vy);
-
     setGameState(prev => {
       const newQuarter = { ...prev.quarter };
       
@@ -225,12 +223,14 @@ const QuartersGameBoard = () => {
       // Add rotation based on horizontal velocity
       newQuarter.rotation += newQuarter.vx * 0.05;
       
-      // Update position
+      // Update position - this was the missing piece!
       newQuarter.x += newQuarter.vx;
       newQuarter.y += newQuarter.vy;
       
       // Apply friction
       newQuarter.vx *= FRICTION;
+      
+      console.log('Quarter position:', newQuarter.x, newQuarter.y, 'velocity:', newQuarter.vx, newQuarter.vy);
       
       // Check wall bounces (left and right walls)
       if (newQuarter.x - QUARTER_RADIUS <= 0 || newQuarter.x + QUARTER_RADIUS >= CANVAS_WIDTH) {
@@ -394,9 +394,9 @@ const QuartersGameBoard = () => {
     const distance = Math.sqrt(dx * dx + dy * dy);
     const power = Math.min(distance / 100, 1.5);
     
-    // Normalize direction and apply power
-    const normalizedVx = (dx / distance) * power * 8;
-    const normalizedVy = (dy / distance) * power * 8;
+    // Normalize direction and apply power - reduced speed significantly
+    const normalizedVx = (dx / distance) * power * 3;  // Reduced from 8 to 3
+    const normalizedVy = (dy / distance) * power * 3;  // Reduced from 8 to 3
     
     console.log('Shooting quarter with velocity:', normalizedVx, normalizedVy);
     
