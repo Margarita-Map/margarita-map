@@ -136,6 +136,10 @@ export default {
 					'50%': { 
 						boxShadow: '0 0 30px hsl(80 100% 45%), 0 0 60px hsl(80 100% 45%)'
 					}
+				},
+				'marquee': {
+					'0%': { transform: 'translateX(100%)' },
+					'100%': { transform: 'translateX(-100%)' }
 				}
 			},
 			animation: {
@@ -145,7 +149,8 @@ export default {
 				'shake': 'shake 0.5s ease-in-out',
 				'pulse-slow': 'pulse-slow 2s ease-in-out infinite',
 				'glitch': 'glitch 0.5s ease-in-out infinite',
-				'neon-pulse': 'neon-pulse 2s ease-in-out infinite'
+				'neon-pulse': 'neon-pulse 2s ease-in-out infinite',
+				'marquee': 'marquee 15s linear infinite'
 			}
 		}
 	},

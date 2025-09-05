@@ -44,6 +44,38 @@ const Index = () => {
         <div className="absolute inset-0 bg-black/30" />
       </section>
       
+      {/* Logo Banner Section */}
+      <section className="bg-gradient-electric border-y-8 border-black py-8 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-6">
+            {/* Logo */}
+            <div className="card-brutal p-4 bg-white">
+              <img 
+                src="/lovable-uploads/52d9a7ef-79d5-4e08-8f60-652a639ee6bb.png" 
+                alt="Margarita Map Logo" 
+                className="h-16 md:h-24 object-contain"
+              />
+            </div>
+            
+            {/* Scrolling Text */}
+            <div className="w-full bg-black border-4 border-black p-4 overflow-hidden">
+              <div className="animate-marquee whitespace-nowrap">
+                <span className="text-2xl md:text-4xl font-black text-primary mx-8">
+                  🍹 WELCOME TO MARGARITA MAP 🍹 YOUR GUIDE TO THE BEST DRINKS AND ESTABLISHMENTS AROUND THE WORLD 🍹
+                </span>
+                <span className="text-2xl md:text-4xl font-black text-secondary mx-8">
+                  🍹 WELCOME TO MARGARITA MAP 🍹 YOUR GUIDE TO THE BEST DRINKS AND ESTABLISHMENTS AROUND THE WORLD 🍹
+                </span>
+                <span className="text-2xl md:text-4xl font-black text-accent mx-8">
+                  🍹 WELCOME TO MARGARITA MAP 🍹 YOUR GUIDE TO THE BEST DRINKS AND ESTABLISHMENTS AROUND THE WORLD 🍹
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-20 md:py-0">
         <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
