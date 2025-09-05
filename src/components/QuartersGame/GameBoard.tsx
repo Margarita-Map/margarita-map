@@ -35,10 +35,10 @@ const QuartersGameBoard = () => {
   const GLASS_WIDTH = 60;
   const GLASS_HEIGHT = 80;
   const QUARTER_RADIUS = 8;
-  const GRAVITY = 0.1;
-  const BOUNCE_DAMPING = 0.7;
+  const GRAVITY = 0.2;  // Increased gravity for more realistic drop
+  const BOUNCE_DAMPING = 0.6;  // Reduced for better bounces
   const WALL_BOUNCE_DAMPING = 0.8;
-  const FRICTION = 0.98;
+  const FRICTION = 0.99;  // Reduced friction so quarter moves longer
   const HAND_X = 120;
   const HAND_Y = 200;
   
@@ -212,9 +212,9 @@ const QuartersGameBoard = () => {
   }, [gameState]);
 
   const updatePhysics = useCallback(() => {
-    if (!gameState.quarter.isMoving) return;
-
     setGameState(prev => {
+      if (!prev.quarter.isMoving) return prev;
+      
       const newQuarter = { ...prev.quarter };
       
       // Apply gravity
@@ -223,7 +223,7 @@ const QuartersGameBoard = () => {
       // Add rotation based on horizontal velocity
       newQuarter.rotation += newQuarter.vx * 0.05;
       
-      // Update position - this was the missing piece!
+      // Update position - this is the key fix!
       newQuarter.x += newQuarter.vx;
       newQuarter.y += newQuarter.vy;
       
@@ -250,20 +250,18 @@ const QuartersGameBoard = () => {
       
       // Check table bounce
       if (newQuarter.y + QUARTER_RADIUS >= TABLE_Y && newQuarter.vy > 0) {
-        if (newQuarter.x >= 0 && newQuarter.x <= CANVAS_WIDTH) {
-          console.log('Quarter bounced on table!');
-          newQuarter.y = TABLE_Y - QUARTER_RADIUS;
-          newQuarter.vy *= -BOUNCE_DAMPING;
-          newQuarter.hasBouncedOnTable = true;
-          
-          // Add some randomness to the bounce
-          newQuarter.vx += (Math.random() - 0.5) * 0.3;
-          
-          // Only stop if velocity is very low and on table
-          if (Math.abs(newQuarter.vy) < 0.5 && Math.abs(newQuarter.vx) < 0.5) {
-            newQuarter.vy = 0;
-            newQuarter.vx *= 0.8;
-          }
+        console.log('Quarter bounced on table!');
+        newQuarter.y = TABLE_Y - QUARTER_RADIUS;
+        newQuarter.vy *= -BOUNCE_DAMPING;
+        newQuarter.hasBouncedOnTable = true;
+        
+        // Add some randomness to the bounce
+        newQuarter.vx += (Math.random() - 0.5) * 0.3;
+        
+        // Only stop if velocity is very low and on table
+        if (Math.abs(newQuarter.vy) < 0.5 && Math.abs(newQuarter.vx) < 0.5) {
+          newQuarter.vy = 0;
+          newQuarter.vx *= 0.8;
         }
       }
       
@@ -298,9 +296,9 @@ const QuartersGameBoard = () => {
         };
       }
       
-      // Check boundaries and stop if out of bounds or stopped - made more lenient
-      if (newQuarter.x < -100 || newQuarter.x > CANVAS_WIDTH + 100 || 
-          newQuarter.y > CANVAS_HEIGHT + 100 ||
+      // Check boundaries and stop if out of bounds or stopped
+      if (newQuarter.x < -50 || newQuarter.x > CANVAS_WIDTH + 50 || 
+          newQuarter.y > CANVAS_HEIGHT + 50 ||
           (Math.abs(newQuarter.vx) < 0.1 && Math.abs(newQuarter.vy) < 0.1 && 
            newQuarter.hasBouncedOnTable && newQuarter.y >= TABLE_Y - QUARTER_RADIUS - 5)) {
         
@@ -328,7 +326,7 @@ const QuartersGameBoard = () => {
         quarter: newQuarter
       };
     });
-  }, [gameState.quarter.isMoving]);
+  }, []); // Empty dependency array to avoid stale closures
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -394,9 +392,9 @@ const QuartersGameBoard = () => {
     const distance = Math.sqrt(dx * dx + dy * dy);
     const power = Math.min(distance / 100, 1.5);
     
-    // Normalize direction and apply power - reduced speed significantly
-    const normalizedVx = (dx / distance) * power * 3;  // Reduced from 8 to 3
-    const normalizedVy = (dy / distance) * power * 3;  // Reduced from 8 to 3
+    // Normalize direction and apply power - much slower and more controllable
+    const normalizedVx = (dx / distance) * power * 1.5;  // Reduced from 3 to 1.5
+    const normalizedVy = (dy / distance) * power * 1.5;  // Reduced from 3 to 1.5
     
     console.log('Shooting quarter with velocity:', normalizedVx, normalizedVy);
     
