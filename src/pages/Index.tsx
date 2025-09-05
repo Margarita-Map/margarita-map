@@ -26,7 +26,7 @@ const Index = () => {
     description: "Discover top-rated margaritas with Margarita Map's honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
     keywords: "margarita map, margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
   });
-  return <div className="min-h-screen bg-gradient-tropical">
+  return <div className="min-h-screen bg-gradient-neon">
       <Navbar />
       
       {/* Hero Video Section */}
@@ -77,44 +77,42 @@ const Index = () => {
       </section>
 
       {/* Margarita Game Section */}
-      <section className="py-12 md:py-20 bg-gradient-lime">
+      <section className="py-12 md:py-20 bg-gradient-electric border-y-8 border-black">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
-              🍹 Play Margarita Crush! 🎮
+          <div className="max-w-3xl mx-auto card-brutal p-8 bg-white">
+            <h2 className="text-4xl md:text-6xl font-black text-black mb-6 animate-glitch">
+              🍹 MARGARITA CRUSH! 🎮
             </h2>
-            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed">
-              Challenge your friends in our addictive match-3 game! Collect margarita glasses, score points, and become the ultimate margarita master.
+            <p className="text-lg md:text-xl text-black font-bold mb-8 leading-relaxed">
+              CHALLENGE YOUR FRIENDS IN OUR ADDICTIVE MATCH-3 GAME! COLLECT MARGARITA GLASSES, SCORE POINTS, AND BECOME THE ULTIMATE MARGARITA MASTER.
             </p>
             <Button 
-              variant="secondary" 
+              variant="neon" 
               size="lg" 
-              className="font-bold bg-white text-lime-600 hover:bg-white/90 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               onClick={() => navigate('/margarita-game')}
             >
-              🎯 Start Playing Now!
+              🎯 START PLAYING NOW!
             </Button>
           </div>
         </div>
       </section>
 
       {/* Quarters Game Section */}
-      <section className="py-12 md:py-20 bg-gradient-to-br from-amber-500 to-orange-600">
+      <section className="py-12 md:py-20 bg-gradient-cyber border-y-8 border-black">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
-              🪙 Play Quarters Game! 🍹
+          <div className="max-w-3xl mx-auto card-brutal p-8 bg-white">
+            <h2 className="text-4xl md:text-6xl font-black text-black mb-6">
+              🪙 QUARTERS GAME! 🍹
             </h2>
-            <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed">
-              Challenge your friends in the classic drinking game! Bounce quarters into margarita glasses and make your opponents drink in this skill-based party game.
+            <p className="text-lg md:text-xl text-black font-bold mb-8 leading-relaxed">
+              CHALLENGE YOUR FRIENDS IN THE CLASSIC DRINKING GAME! BOUNCE QUARTERS INTO MARGARITA GLASSES AND MAKE YOUR OPPONENTS DRINK!
             </p>
             <Button 
-              variant="secondary" 
+              variant="cyber" 
               size="lg" 
-              className="font-bold bg-white text-orange-600 hover:bg-white/90 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               onClick={() => navigate('/quarters-game')}
             >
-              🎯 Start Playing Quarters!
+              🎯 START PLAYING QUARTERS!
             </Button>
           </div>
         </div>
@@ -132,7 +130,7 @@ const Index = () => {
                 Check out the best drink deals happening right now at establishments near you.
               </p>
             </div>
-            <Button variant="tropical" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/party-central')}>
+            <Button variant="electric" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/party-central')}>
               <Utensils className="w-5 h-5" />
               View All Specials
             </Button>
@@ -165,7 +163,7 @@ const Index = () => {
             <h2 className="text-3xl md:text-4xl font-bold">
               Recent Reviews 📝
             </h2>
-            <Button variant="festive" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
+            <Button variant="cyber" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
               <Star className="w-5 h-5" />
               Write a Review
             </Button>
@@ -186,11 +184,11 @@ const Index = () => {
               Add your establishment to our directory and manage your daily drink specials to attract more customers.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Button variant="tropical" size="lg" onClick={() => setShowAddForm(!showAddForm)}>
-                {showAddForm ? "Hide Form" : "Add Your Establishment"}
+              <Button variant="electric" size="lg" onClick={() => setShowAddForm(!showAddForm)}>
+                {showAddForm ? "HIDE FORM" : "ADD YOUR ESTABLISHMENT"}
               </Button>
-              <Button variant="festive" size="lg" onClick={() => setShowManageForm(!showManageForm)}>
-                {showManageForm ? "Hide Management" : "Manage Specials"}
+              <Button variant="neon" size="lg" onClick={() => setShowManageForm(!showManageForm)}>
+                {showManageForm ? "HIDE MANAGEMENT" : "MANAGE SPECIALS"}
               </Button>
             </div>
           </div>
@@ -206,22 +204,24 @@ const Index = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-12 md:py-20 bg-gradient-sunset">
+      <section className="py-12 md:py-20 bg-gradient-sunset border-y-8 border-black">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6 leading-tight">
-            Ready to Find Your Perfect Margarita? 🍹
-          </h2>
-          <p className="text-lg md:text-xl text-white/90 mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
-            Join thousands of margarita enthusiasts discovering amazing drinks and sharing honest reviews.
-          </p>
-           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-             <Button variant="lime" size="lg" className="font-bold w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
-               Start Rating
-             </Button>
-             <Button variant="tropical" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
-               Share Your Review
-             </Button>
-           </div>
+          <div className="card-brutal p-8 bg-white max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-6xl font-black text-black mb-6 leading-tight animate-neon-pulse">
+              READY TO FIND YOUR PERFECT MARGARITA? 🍹
+            </h2>
+            <p className="text-lg md:text-xl text-black font-bold mb-8 max-w-2xl mx-auto leading-relaxed">
+              JOIN THOUSANDS OF MARGARITA ENTHUSIASTS DISCOVERING AMAZING DRINKS AND SHARING HONEST REVIEWS!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Button variant="neon" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
+                START RATING
+              </Button>
+              <Button variant="electric" size="lg" className="w-full sm:w-auto" onClick={() => navigate('/rate-drink')}>
+                SHARE YOUR REVIEW
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 
