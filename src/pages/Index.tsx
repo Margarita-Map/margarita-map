@@ -14,7 +14,7 @@ import LocationSearch from "@/components/LocationSearch";
 import SimpleMariachiBand from "@/components/SimpleMariachiBand";
 import heroImage from "@/assets/hero-margarita.jpg";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
-import celebrationImage from "@/assets/celebration-margaritas.jpg";
+import celebrationImage from "/lovable-uploads/3a617b49-e4d5-47fa-860b-07b083b031f1.png";
 import margaritaMapLogo from "@/assets/margarita-map-logo.jpg";
 
 const Index = () => {
