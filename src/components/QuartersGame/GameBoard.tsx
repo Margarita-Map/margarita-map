@@ -15,6 +15,7 @@ interface GameState {
     rotation: number;
     isMoving: boolean;
     hasBouncedOnTable: boolean;
+    inHand: boolean;
   };
   aimStart: { x: number; y: number } | null;
   aimEnd: { x: number; y: number } | null;
@@ -24,26 +25,10 @@ const QuartersGameBoard = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
   
-  const [gameState, setGameState] = useState<GameState>({
-    currentPlayer: 1,
-    scores: { player1: 0, player2: 0 },
-    isAiming: false,
-    quarter: {
-      x: 100,
-      y: 350,
-      vx: 0,
-      vy: 0,
-      rotation: 0,
-      isMoving: false,
-      hasBouncedOnTable: false
-    },
-    aimStart: null,
-    aimEnd: null
-  });
-
+  // Game constants
   const CANVAS_WIDTH = 800;
-  const CANVAS_HEIGHT = 400;
-  const TABLE_HEIGHT = 50;
+  const CANVAS_HEIGHT = 500;
+  const TABLE_HEIGHT = 60;
   const TABLE_Y = CANVAS_HEIGHT - TABLE_HEIGHT;
   const GLASS_X = 650;
   const GLASS_Y = TABLE_Y - 80;
@@ -54,24 +39,59 @@ const QuartersGameBoard = () => {
   const BOUNCE_DAMPING = 0.7;
   const WALL_BOUNCE_DAMPING = 0.8;
   const FRICTION = 0.98;
+  const HAND_X = 120;
+  const HAND_Y = 200;
+  
+  const [gameState, setGameState] = useState<GameState>({
+    currentPlayer: 1,
+    scores: { player1: 0, player2: 0 },
+    isAiming: false,
+    quarter: {
+      x: HAND_X,
+      y: HAND_Y,
+      vx: 0,
+      vy: 0,
+      rotation: 0,
+      isMoving: false,
+      hasBouncedOnTable: false,
+      inHand: true
+    },
+    aimStart: null,
+    aimEnd: null
+  });
+
 
   const drawGame = useCallback((ctx: CanvasRenderingContext2D) => {
-    // Clear canvas
-    ctx.fillStyle = '#8B4513';
+    // Clear canvas with room background
+    const bgGradient = ctx.createLinearGradient(0, 0, 0, CANVAS_HEIGHT);
+    bgGradient.addColorStop(0, '#87CEEB');
+    bgGradient.addColorStop(1, '#4682B4');
+    ctx.fillStyle = bgGradient;
     ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     
     // Draw table
-    ctx.fillStyle = '#8B4513';
+    const tableGradient = ctx.createLinearGradient(0, TABLE_Y, 0, CANVAS_HEIGHT);
+    tableGradient.addColorStop(0, '#8B4513');
+    tableGradient.addColorStop(1, '#654321');
+    ctx.fillStyle = tableGradient;
     ctx.fillRect(0, TABLE_Y, CANVAS_WIDTH, TABLE_HEIGHT);
     
-    // Draw table surface
+    // Draw table surface with wood grain effect
     ctx.fillStyle = '#A0522D';
-    ctx.fillRect(0, TABLE_Y, CANVAS_WIDTH, 10);
+    ctx.fillRect(0, TABLE_Y, CANVAS_WIDTH, 12);
+    ctx.strokeStyle = '#654321';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < CANVAS_WIDTH; i += 20) {
+      ctx.beginPath();
+      ctx.moveTo(i, TABLE_Y);
+      ctx.lineTo(i + 10, TABLE_Y + 12);
+      ctx.stroke();
+    }
     
     // Draw margarita glass
     const glassGradient = ctx.createLinearGradient(GLASS_X, GLASS_Y, GLASS_X, GLASS_Y + GLASS_HEIGHT);
-    glassGradient.addColorStop(0, 'rgba(200, 255, 200, 0.3)');
-    glassGradient.addColorStop(1, 'rgba(150, 255, 150, 0.5)');
+    glassGradient.addColorStop(0, 'rgba(50, 255, 150, 0.3)');
+    glassGradient.addColorStop(1, 'rgba(0, 200, 100, 0.5)');
     
     // Glass bowl (wider at top)
     ctx.beginPath();
@@ -95,7 +115,44 @@ const QuartersGameBoard = () => {
     ctx.fillRect(GLASS_X + 15, GLASS_Y + GLASS_HEIGHT + 20, 30, 5);
     ctx.strokeRect(GLASS_X + 15, GLASS_Y + GLASS_HEIGHT + 20, 30, 5);
     
-    // Draw quarter with rotation
+    // Draw hand only when quarter is in hand
+    if (gameState.quarter.inHand) {
+      // Draw arm
+      ctx.strokeStyle = '#D2B48C';
+      ctx.lineWidth = 20;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(20, HAND_Y + 60);
+      ctx.lineTo(HAND_X - 20, HAND_Y + 20);
+      ctx.stroke();
+      
+      // Draw hand (simplified)
+      ctx.fillStyle = '#D2B48C';
+      
+      // Palm
+      ctx.beginPath();
+      ctx.ellipse(HAND_X, HAND_Y, 25, 35, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#B8860B';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      
+      // Thumb
+      ctx.beginPath();
+      ctx.ellipse(HAND_X - 25, HAND_Y - 10, 8, 20, -0.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      
+      // Fingers
+      for (let i = 0; i < 4; i++) {
+        ctx.beginPath();
+        ctx.ellipse(HAND_X - 15 + i * 10, HAND_Y - 25, 6, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+    
+    // Draw quarter
     ctx.save();
     ctx.translate(gameState.quarter.x, gameState.quarter.y);
     ctx.rotate(gameState.quarter.rotation);
@@ -125,16 +182,32 @@ const QuartersGameBoard = () => {
     
     ctx.restore();
     
-    // Draw aiming line
-    if (gameState.isAiming && gameState.aimStart && gameState.aimEnd) {
+    // Draw aiming line from hand to mouse
+    if (gameState.isAiming && gameState.aimStart && gameState.aimEnd && gameState.quarter.inHand) {
       ctx.strokeStyle = '#FF4444';
       ctx.lineWidth = 3;
       ctx.setLineDash([5, 5]);
       ctx.beginPath();
-      ctx.moveTo(gameState.aimStart.x, gameState.aimStart.y);
+      ctx.moveTo(HAND_X, HAND_Y);
       ctx.lineTo(gameState.aimEnd.x, gameState.aimEnd.y);
       ctx.stroke();
       ctx.setLineDash([]);
+      
+      // Draw power indicator
+      const distance = Math.sqrt(
+        Math.pow(gameState.aimEnd.x - HAND_X, 2) + 
+        Math.pow(gameState.aimEnd.y - HAND_Y, 2)
+      );
+      const power = Math.min(distance / 100, 1);
+      
+      ctx.fillStyle = `rgba(255, ${255 - power * 200}, 0, 0.7)`;
+      ctx.fillRect(10, 10, power * 100, 20);
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(10, 10, 100, 20);
+      ctx.fillStyle = '#000';
+      ctx.font = '12px Arial';
+      ctx.fillText('Power', 115, 25);
     }
   }, [gameState]);
 
@@ -213,13 +286,14 @@ const QuartersGameBoard = () => {
           ...prev,
           scores: newScores,
           quarter: {
-            x: 100,
-            y: 350,
+            x: HAND_X,
+            y: HAND_Y,
             vx: 0,
             vy: 0,
             rotation: 0,
             isMoving: false,
-            hasBouncedOnTable: false
+            hasBouncedOnTable: false,
+            inHand: true
           }
         };
       }
@@ -237,13 +311,14 @@ const QuartersGameBoard = () => {
           ...prev,
           currentPlayer: prev.currentPlayer === 1 ? 2 : 1,
           quarter: {
-            x: 100,
-            y: 350,
+            x: HAND_X,
+            y: HAND_Y,
             vx: 0,
             vy: 0,
             rotation: 0,
             isMoving: false,
-            hasBouncedOnTable: false
+            hasBouncedOnTable: false,
+            inHand: true
           }
         };
       }
@@ -278,7 +353,7 @@ const QuartersGameBoard = () => {
   }, [drawGame, updatePhysics]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (gameState.quarter.isMoving) return;
+    if (gameState.quarter.isMoving || !gameState.quarter.inHand) return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -290,7 +365,7 @@ const QuartersGameBoard = () => {
     setGameState(prev => ({
       ...prev,
       isAiming: true,
-      aimStart: { x: prev.quarter.x, y: prev.quarter.y },
+      aimStart: { x: HAND_X, y: HAND_Y },
       aimEnd: { x, y }
     }));
   };
@@ -312,13 +387,18 @@ const QuartersGameBoard = () => {
   };
 
   const handleMouseUp = () => {
-    if (!gameState.isAiming || !gameState.aimStart || !gameState.aimEnd) return;
+    if (!gameState.isAiming || !gameState.aimStart || !gameState.aimEnd || !gameState.quarter.inHand) return;
     
-    const dx = gameState.aimEnd.x - gameState.aimStart.x;
-    const dy = gameState.aimEnd.y - gameState.aimStart.y;
-    const power = Math.min(Math.sqrt(dx * dx + dy * dy) / 20, 8); // Even more reduced power
+    const dx = gameState.aimEnd.x - HAND_X;
+    const dy = gameState.aimEnd.y - HAND_Y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const power = Math.min(distance / 100, 1.5);
     
-    console.log('Shooting quarter with velocity:', dx / 20, dy / 20);
+    // Normalize direction and apply power
+    const normalizedVx = (dx / distance) * power * 8;
+    const normalizedVy = (dy / distance) * power * 8;
+    
+    console.log('Shooting quarter with velocity:', normalizedVx, normalizedVy);
     
     setGameState(prev => ({
       ...prev,
@@ -327,10 +407,13 @@ const QuartersGameBoard = () => {
       aimEnd: null,
       quarter: {
         ...prev.quarter,
-        vx: dx / 20, // Much slower velocity
-        vy: dy / 20, // Much slower velocity
+        x: HAND_X,
+        y: HAND_Y,
+        vx: normalizedVx,
+        vy: normalizedVy,
         isMoving: true,
-        hasBouncedOnTable: false
+        hasBouncedOnTable: false,
+        inHand: false
       }
     }));
   };
@@ -341,13 +424,14 @@ const QuartersGameBoard = () => {
       scores: { player1: 0, player2: 0 },
       isAiming: false,
       quarter: {
-        x: 100,
-        y: 350,
+        x: HAND_X,
+        y: HAND_Y,
         vx: 0,
         vy: 0,
         rotation: 0,
         isMoving: false,
-        hasBouncedOnTable: false
+        hasBouncedOnTable: false,
+        inHand: true
       },
       aimStart: null,
       aimEnd: null
