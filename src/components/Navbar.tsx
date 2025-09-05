@@ -106,10 +106,11 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3 md:py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 md:gap-3">
-            <span className="text-xl md:text-3xl font-bold bg-gradient-to-r from-lime-400 via-orange-500 to-pink-500 bg-clip-text text-transparent leading-tight">
-              <span className="hidden sm:inline">Margarita Map</span>
-              <span className="sm:hidden">Margarita Map</span>
-            </span>
+            <img 
+              src="/lovable-uploads/52d9a7ef-79d5-4e08-8f60-652a639ee6bb.png" 
+              alt="Margarita Map Logo" 
+              className="h-8 md:h-10 object-contain"
+            />
           </Link>
 
           {/* Desktop menu */}
