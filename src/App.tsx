@@ -13,6 +13,7 @@ import PartyDetails from "./pages/PartyDetails";
 import PhotoGallery from "./pages/PhotoGallery";
 import TequilaBrands from "./pages/TequilaBrands";
 import TequilaEvents from "./pages/TequilaEvents";
+import EstablishmentDetails from "./pages/EstablishmentDetails";
 import MargaritaGame from "./pages/MargaritaGame";
 import ShellGame from "./pages/ShellGame";
 import NotFound from "./pages/NotFound";
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/photo-gallery" element={<PhotoGallery />} />
           <Route path="/tequila-brands" element={<TequilaBrands />} />
           <Route path="/tequila-events" element={<TequilaEvents />} />
+          <Route path="/establishment/:id" element={<EstablishmentDetails />} />
           <Route path="/margarita-game" element={<MargaritaGame />} />
           <Route path="/shell-game" element={<ShellGame />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

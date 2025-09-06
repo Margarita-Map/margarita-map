@@ -116,11 +116,11 @@ const WeeklySpotlight = () => {
             <Button 
               variant="neon" 
               size="lg"
-              onClick={() => navigate(`/rate-drink?restaurant=${spotlightRestaurant.id}`)}
+              onClick={() => navigate(`/establishment/${spotlightRestaurant.id}`)}
               className="w-full sm:w-auto"
             >
-              <Star className="w-5 h-5 mr-2" />
-              VIEW REVIEWS & RATE THIS SPOT
+              <ExternalLink className="w-5 h-5 mr-2" />
+              VIEW ESTABLISHMENT PAGE
             </Button>
           </div>
 
