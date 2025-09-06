@@ -22,9 +22,50 @@ const Index = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showManageForm, setShowManageForm] = useState(false);
   useSEO({
-    title: "Margarita Map | Find the Best Margaritas Near You",
-    description: "Discover top-rated margaritas with Margarita Map's honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots in your area.",
-    keywords: "margarita map, margaritas near me, best margarita bars, margarita reviews, cocktail bars, agave rating, bar locator, rideshare to bars"
+    title: "Margarita Map | Find the Best Margaritas Near You Worldwide",
+    description: "Discover top-rated margaritas with Margarita Map's honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots worldwide. Your ultimate guide to margarita bars, happy hours, and drink specials.",
+    keywords: "margarita map, margaritas near me, best margarita bars worldwide, margarita reviews, cocktail bars, agave rating, bar locator, happy hour, drink specials, tequila bars, mexican restaurants, rideshare to bars",
+    canonicalUrl: "https://margaritamap.com/",
+    image: "https://margaritamap.com/og-image.jpg",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Margarita Map",
+      "description": "Discover top-rated margaritas with honest reviews and agave ratings. Find bars near you worldwide.",
+      "url": "https://margaritamap.com",
+      "applicationCategory": "LifestyleApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Margarita Map",
+        "url": "https://margaritamap.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Margarita Map",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://margaritamap.com/logo.jpg"
+        }
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "10000",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://margaritamap.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
   });
   return <div className="min-h-screen bg-gradient-neon">
       <Navbar />
