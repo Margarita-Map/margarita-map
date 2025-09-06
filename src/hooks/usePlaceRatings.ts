@@ -19,11 +19,32 @@ export const usePlaceRatings = (places: PlaceDetails[]) => {
       
       setLoading(true);
       try {
-        const { data: restaurants, error: restaurantsError } = await supabase
-          .from('restaurants')
-          .select('id, name, address, latitude, longitude, phone, website')
-          .not('latitude', 'is', null)
-          .not('longitude', 'is', null);
+        // Add retry logic for network errors
+        let retries = 3;
+        let restaurants = null;
+        let restaurantsError = null;
+
+        while (retries > 0 && !restaurants) {
+          try {
+            const result = await supabase
+              .from('restaurants')
+              .select('id, name, address, latitude, longitude, phone, website')
+              .not('latitude', 'is', null)
+              .not('longitude', 'is', null);
+            
+            restaurants = result.data;
+            restaurantsError = result.error;
+            break;
+          } catch (err) {
+            retries--;
+            if (retries === 0) {
+              restaurantsError = err;
+            } else {
+              // Wait before retry
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
+        }
 
         if (restaurantsError) {
           console.error('Error fetching restaurants:', restaurantsError);

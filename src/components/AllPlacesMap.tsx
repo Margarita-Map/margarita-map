@@ -13,6 +13,8 @@ interface Place {
   };
   rating?: number;
   distance?: number;
+  website?: string;
+  phoneNumber?: string;
 }
 
 interface AllPlacesMapProps {
@@ -95,6 +97,8 @@ const AllPlacesMap = ({ places, userLocation, className }: AllPlacesMapProps) =>
               <p class="text-sm text-gray-600 mb-1">${place.address}</p>
               ${place.rating ? `<p class="text-sm text-yellow-600">⭐ ${place.rating}/5</p>` : ''}
               ${place.distance ? `<p class="text-sm text-blue-600">📍 ${place.distance.toFixed(1)} miles away</p>` : ''}
+              ${place.website ? `<p class="text-sm"><a href="${place.website}" target="_blank" class="text-blue-600 hover:text-blue-800 underline">🌐 Visit Website</a></p>` : ''}
+              ${place.phoneNumber ? `<p class="text-sm text-gray-600">📞 ${place.phoneNumber}</p>` : ''}
               ${isClosest ? '<p class="text-xs text-red-600 font-medium">🎯 Closest to you</p>' : ''}
             </div>`
           )

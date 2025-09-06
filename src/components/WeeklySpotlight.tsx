@@ -21,10 +21,30 @@ const WeeklySpotlight = () => {
   useEffect(() => {
     const fetchSpotlightRestaurant = async () => {
       try {
-        // Get all restaurants with cache busting
-        const { data: restaurants, error } = await supabase
-          .from('restaurants')
-          .select('id, name, address, phone, website');
+        // Add retry logic for network errors
+        let retries = 3;
+        let restaurants = null;
+        let error = null;
+
+        while (retries > 0 && !restaurants) {
+          try {
+            const result = await supabase
+              .from('restaurants')
+              .select('id, name, address, phone, website');
+            
+            restaurants = result.data;
+            error = result.error;
+            break;
+          } catch (err) {
+            retries--;
+            if (retries === 0) {
+              error = err;
+            } else {
+              // Wait before retry
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          }
+        }
 
         if (error) throw error;
 

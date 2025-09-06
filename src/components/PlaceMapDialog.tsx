@@ -12,6 +12,8 @@ interface PlaceMapDialogProps {
       lng: number;
     };
     address: string;
+    website?: string;
+    phoneNumber?: string;
   };
 }
 
@@ -23,9 +25,28 @@ const PlaceMapDialog = ({ isOpen, onClose, place }: PlaceMapDialogProps) => {
           <DialogTitle className="text-xl font-semibold">
             {place.name}
           </DialogTitle>
-          <p className="text-sm text-muted-foreground mt-1">
-            {place.address}
-          </p>
+          <div className="space-y-1">
+            <p className="text-sm text-muted-foreground">
+              {place.address}
+            </p>
+            {place.website && (
+              <p className="text-sm">
+                <a 
+                  href={place.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  🌐 Visit Website
+                </a>
+              </p>
+            )}
+            {place.phoneNumber && (
+              <p className="text-sm text-muted-foreground">
+                📞 {place.phoneNumber}
+              </p>
+            )}
+          </div>
         </DialogHeader>
         <div className="flex-1 p-6 pt-4">
           <PlaceMap
