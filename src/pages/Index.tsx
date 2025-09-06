@@ -15,7 +15,7 @@ import SimpleMariachiBand from "@/components/SimpleMariachiBand";
 import WeeklySpotlight from "@/components/WeeklySpotlight";
 import heroImage from "/lovable-uploads/3a617b49-e4d5-47fa-860b-07b083b031f1.png";
 import partyCharacter from "@/assets/party-character-sunglasses.jpg";
-import celebrationImage from "/lovable-uploads/3a617b49-e4d5-47fa-860b-07b083b031f1.png";
+import celebrationImage from "/lovable-uploads/4d4300e7-d955-4786-a435-711ae6d0d532.png";
 import margaritaMapLogo from "@/assets/margarita-map-logo.jpg";
 
 const Index = () => {
