@@ -48,7 +48,7 @@ export const usePlaceReviews = (place: PlaceDetails | null) => {
       // Try name search first
       const nameResult = await supabase
         .from('restaurants')
-        .select('id, name, address')
+        .select('id, name, address, phone, website')
         .ilike('name', `%${place.name.replace(/['"]/g, '')}%`)
         .limit(5);
 
@@ -60,7 +60,7 @@ export const usePlaceReviews = (place: PlaceDetails | null) => {
         // If no name match, try address search
         const addressResult = await supabase
           .from('restaurants')
-          .select('id, name, address')
+          .select('id, name, address, phone, website')
           .ilike('address', `%${place.address.replace(/['"]/g, '')}%`)
           .limit(5);
         

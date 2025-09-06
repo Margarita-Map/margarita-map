@@ -22,7 +22,7 @@ export const usePlaceRatings = (places: PlaceDetails[]) => {
         // Get restaurants with coordinates only (we'll filter by location)
         const { data: restaurants, error: restaurantsError } = await supabase
           .from('restaurants')
-          .select('id, name, address, latitude, longitude')
+          .select('id, name, address, latitude, longitude, phone, website')
           .not('latitude', 'is', null)
           .not('longitude', 'is', null);
 

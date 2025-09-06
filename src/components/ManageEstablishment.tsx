@@ -48,7 +48,7 @@ const ManageEstablishment = () => {
       try {
         const { data, error } = await supabase
           .from('restaurants')
-          .select('id, name, address')
+          .select('id, name, address, phone, website')
           .eq('owner_id', user.id)
           .order('name');
 

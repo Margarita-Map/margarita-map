@@ -66,7 +66,7 @@ const RecentReviews = ({ maxItems = 6 }: { maxItems?: number }) => {
             const [restaurantResult, profileResult] = await Promise.all([
               supabase
                 .from('restaurants')
-                .select('name, address')
+                .select('name, address, phone, website')
                 .eq('id', review.restaurant_id)
                 .maybeSingle(),
               review.user_id 
