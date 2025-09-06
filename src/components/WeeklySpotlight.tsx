@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Globe, Star } from "lucide-react";
+import { MapPin, Phone, Globe, Star, ExternalLink } from "lucide-react";
 
 interface Restaurant {
   id: string;
@@ -13,6 +14,7 @@ interface Restaurant {
 }
 
 const WeeklySpotlight = () => {
+  const navigate = useNavigate();
   const [spotlightRestaurant, setSpotlightRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -108,6 +110,18 @@ const WeeklySpotlight = () => {
                 Visit Website
               </Button>
             )}
+          </div>
+
+          <div className="mt-6">
+            <Button 
+              variant="neon" 
+              size="lg"
+              onClick={() => navigate('/rate-drink')}
+              className="w-full sm:w-auto"
+            >
+              <ExternalLink className="w-5 h-5 mr-2" />
+              VIEW REVIEWS & RATE THIS SPOT
+            </Button>
           </div>
 
           <div className="mt-6 p-4 bg-gradient-cyber rounded-lg border-2 border-black">
