@@ -116,11 +116,11 @@ const WeeklySpotlight = () => {
             <Button 
               variant="neon" 
               size="lg"
-              onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spotlightRestaurant.address)}`, '_blank')}
+              onClick={() => navigate(`/rate-drink?restaurant=${spotlightRestaurant.id}`)}
               className="w-full sm:w-auto"
             >
-              <MapPin className="w-5 h-5 mr-2" />
-              VIEW ON MAP & GET DIRECTIONS
+              <Star className="w-5 h-5 mr-2" />
+              VIEW REVIEWS & RATE THIS SPOT
             </Button>
           </div>
 
