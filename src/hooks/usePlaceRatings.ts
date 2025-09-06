@@ -19,7 +19,6 @@ export const usePlaceRatings = (places: PlaceDetails[]) => {
       
       setLoading(true);
       try {
-        // Get restaurants with coordinates only (we'll filter by location)
         const { data: restaurants, error: restaurantsError } = await supabase
           .from('restaurants')
           .select('id, name, address, latitude, longitude, phone, website')

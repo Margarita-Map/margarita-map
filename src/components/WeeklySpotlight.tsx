@@ -21,7 +21,7 @@ const WeeklySpotlight = () => {
   useEffect(() => {
     const fetchSpotlightRestaurant = async () => {
       try {
-        // Get all restaurants
+        // Get all restaurants with cache busting
         const { data: restaurants, error } = await supabase
           .from('restaurants')
           .select('id, name, address, phone, website');
@@ -29,6 +29,7 @@ const WeeklySpotlight = () => {
         if (error) throw error;
 
         if (restaurants && restaurants.length > 0) {
+          console.log('Spotlight restaurants data:', restaurants); // Debug logging
           // Use day number to ensure same restaurant shows all day
           const now = new Date();
           const startOfYear = new Date(now.getFullYear(), 0, 1);

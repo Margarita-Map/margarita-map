@@ -127,6 +127,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       }
 
       if (data?.places && data.places.length > 0) {
+        console.log('Places data received:', data.places); // Debug logging
         setPlaces(data.places);
         if (restaurantName) {
           toast.success(`Found ${data.places.length} ${restaurantName} locations nearby!`);
