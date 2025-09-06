@@ -29,13 +29,13 @@ const WeeklySpotlight = () => {
         if (error) throw error;
 
         if (restaurants && restaurants.length > 0) {
-          // Use week number to ensure same restaurant shows all week
+          // Use day number to ensure same restaurant shows all day
           const now = new Date();
           const startOfYear = new Date(now.getFullYear(), 0, 1);
-          const weekNumber = Math.ceil(((now.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
+          const dayNumber = Math.ceil((now.getTime() - startOfYear.getTime()) / 86400000);
           
-          // Use week number as seed for consistent random selection
-          const selectedIndex = weekNumber % restaurants.length;
+          // Use day number as seed for consistent random selection
+          const selectedIndex = dayNumber % restaurants.length;
           setSpotlightRestaurant(restaurants[selectedIndex]);
         }
       } catch (error) {
@@ -53,11 +53,11 @@ const WeeklySpotlight = () => {
       <Card className="card-brutal bg-gradient-neon border-4 border-black">
         <CardHeader>
           <CardTitle className="text-2xl md:text-3xl font-black text-center">
-            🌟 SPOTLIGHT OF THE WEEK 🌟
+            🌟 SPOTLIGHT OF THE DAY 🌟
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">
-          <div className="animate-pulse text-lg font-bold">Loading this week's featured establishment...</div>
+          <div className="animate-pulse text-lg font-bold">Loading today's featured establishment...</div>
         </CardContent>
       </Card>
     );
@@ -72,7 +72,7 @@ const WeeklySpotlight = () => {
       <CardHeader className="bg-primary text-primary-foreground">
         <CardTitle className="text-2xl md:text-3xl font-black text-center flex items-center justify-center gap-2">
           <Star className="w-8 h-8 text-yellow-400 animate-pulse" />
-          SPOTLIGHT OF THE WEEK
+          SPOTLIGHT OF THE DAY
           <Star className="w-8 h-8 text-yellow-400 animate-pulse" />
         </CardTitle>
         <p className="text-center text-sm opacity-90 font-semibold">
