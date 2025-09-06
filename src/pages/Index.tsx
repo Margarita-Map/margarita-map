@@ -24,7 +24,7 @@ const Index = () => {
   useSEO({
     title: "Margarita Map | Find the Best Margaritas Near You Worldwide",
     description: "Discover top-rated margaritas with Margarita Map's honest agave rating system. Find bars near you, read real reviews, get rideshare links, and explore the best margarita spots worldwide. Your ultimate guide to margarita bars, happy hours, and drink specials.",
-    keywords: "margarita map, margaritas near me, best margarita bars worldwide, margarita reviews, cocktail bars, agave rating, bar locator, happy hour, drink specials, tequila bars, mexican restaurants, rideshare to bars",
+    keywords: "margarita map, maps of the world, the best margaritas near me, margaritas, tequila companies, party planner, mexican food, margaritas near me, best margarita bars worldwide, margarita reviews, cocktail bars, agave rating, bar locator, happy hour, drink specials, tequila bars, mexican restaurants, rideshare to bars",
     canonicalUrl: "https://margaritamap.com/",
     image: "https://margaritamap.com/og-image.jpg",
     structuredData: {
