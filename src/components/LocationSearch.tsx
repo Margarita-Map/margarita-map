@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { MapPin, Star, Map, Navigation, Loader2, Search, PenTool } from 'lucide-react';
+import { MapPin, Star, Map, Navigation, Loader2, Search, PenTool, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import PlaceMapDialog from './PlaceMapDialog';
@@ -541,25 +541,39 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
                     </p>
                   )}
 
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={() => openPlaceMap(place)}
-                      variant="outline" 
-                      size="sm"
-                      className="flex-1"
-                    >
-                      <Map className="w-4 h-4 mr-2" />
-                      View on Map
-                    </Button>
-                    <Button 
-                      onClick={() => openReviewForm(place)}
-                      variant="default" 
-                      size="sm"
-                      className="flex-1 bg-gradient-sunset hover:bg-gradient-sunset/90 text-white border-0"
-                    >
-                      <PenTool className="w-4 h-4 mr-2" />
-                      Rate & Review
-                    </Button>
+                  <div className="flex flex-col gap-2">
+                    {place.website && (
+                      <Button 
+                        onClick={() => window.open(place.website, '_blank')}
+                        variant="neon" 
+                        size="sm"
+                        className="w-full"
+                      >
+                        <Globe className="w-4 h-4 mr-2" />
+                        Visit Website
+                      </Button>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={() => openPlaceMap(place)}
+                        variant="outline" 
+                        size="sm"
+                        className="flex-1"
+                      >
+                        <Map className="w-4 h-4 mr-2" />
+                        View on Map
+                      </Button>
+                      <Button 
+                        onClick={() => openReviewForm(place)}
+                        variant="default" 
+                        size="sm"
+                        className="flex-1 bg-gradient-sunset hover:bg-gradient-sunset/90 text-white border-0"
+                      >
+                        <PenTool className="w-4 h-4 mr-2" />
+                        Rate & Review
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </CardContent>
