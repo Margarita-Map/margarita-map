@@ -91,7 +91,7 @@ const WeeklySpotlight = () => {
             <span>{spotlightRestaurant.address}</span>
           </div>
 
-          <div className="flex flex-col gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             {spotlightRestaurant.phone && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="w-4 h-4" />
@@ -99,15 +99,17 @@ const WeeklySpotlight = () => {
               </div>
             )}
             
-            <Button 
-              variant="neon" 
-              size="lg"
-              onClick={() => window.open(spotlightRestaurant.website || `https://www.google.com/search?q=${encodeURIComponent(spotlightRestaurant.name + ' ' + spotlightRestaurant.address)}`, '_blank')}
-              className="font-bold w-full sm:w-auto"
-            >
-              <Globe className="w-5 h-5 mr-2" />
-              {spotlightRestaurant.website ? 'VISIT WEBSITE' : 'SEARCH ONLINE'}
-            </Button>
+            {spotlightRestaurant.website && (
+              <Button 
+                variant="neon" 
+                size="lg"
+                onClick={() => window.open(spotlightRestaurant.website, '_blank')}
+                className="font-bold w-full sm:w-auto"
+              >
+                <Globe className="w-5 h-5 mr-2" />
+                VISIT WEBSITE
+              </Button>
+            )}
           </div>
 
           <div className="mt-6">
