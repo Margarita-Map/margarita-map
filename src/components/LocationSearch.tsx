@@ -112,9 +112,13 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       
       if (isZipCodeSearch) {
         searchRadius = 40000; // 25 miles for zip code searches
+        console.log(`🎯 Zip code search: Using ${(searchRadius * 0.000621371).toFixed(1)} mile radius`);
       } else if (restaurantName) {
         searchRadius = 32000; // 20 miles for restaurant search
+        console.log(`🍴 Restaurant search: Using ${(searchRadius * 0.000621371).toFixed(1)} mile radius`);
       }
+      
+      console.log(`🔍 Searching near ${location.lat}, ${location.lng} with ${(searchRadius * 0.000621371).toFixed(1)} mile radius`);
       
       // Call the Supabase edge function to get real places
       const { data, error } = await supabase.functions.invoke('find-nearby-places', {
@@ -138,7 +142,8 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       }
 
       if (data?.places && data.places.length > 0) {
-        console.log('Places data received:', data.places); // Debug logging
+        console.log(`✅ Found ${data.places.length} places:`, data.places.map(p => `${p.name} (${p.distance?.toFixed(1)}mi)`)); 
+        
         // Ensure each place has proper website data
         const placesWithWebsites = data.places.map((place: any) => ({
           ...place,
@@ -153,6 +158,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
           toast.success(`Found ${placesWithWebsites.length} Mexican restaurants and tequila bars!`);
         }
       } else {
+        console.log('❌ No places found in search results');
         if (restaurantName) {
           toast.info(`No ${restaurantName} locations found in your area.`);
         } else {
@@ -183,8 +189,11 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       
       // Check if it's a zip code (5 digits or 5+4 format)
       const zipCodePattern = /^\d{5}(-\d{4})?$/;
-      if (zipCodePattern.test(searchAddress)) {
+      const isZipCode = zipCodePattern.test(searchAddress);
+      
+      if (isZipCode) {
         searchAddress = `${searchAddress}, USA`; // Add country for better geocoding
+        console.log(`🔍 Detected zip code: ${locationQuery}, enhanced to: ${searchAddress}`);
       }
 
       // Use Google's Geocoding API to convert location name to coordinates
@@ -199,26 +208,32 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
 
       const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchAddress)}&key=${geoData.value}`;
       
+      console.log(`🌍 Geocoding "${searchAddress}"...`);
       const response = await fetch(geocodeUrl);
       const geocodeResult = await response.json();
 
       if (geocodeResult.status !== 'OK' || !geocodeResult.results.length) {
+        console.error('Geocoding failed:', geocodeResult);
         toast.error('Location not found. Please try a different search term or zip code.');
         return;
       }
 
       const location = geocodeResult.results[0].geometry.location;
       const coordinates = { lat: location.lat, lng: location.lng };
+      const formattedAddress = geocodeResult.results[0].formatted_address;
+      
+      console.log(`📍 Location found: ${formattedAddress} at ${coordinates.lat}, ${coordinates.lng}`);
       
       // Store search location for map centering
       setSearchLocation(coordinates);
       
+      // Clear previous results to show fresh data
+      setPlaces([]);
+      
       // Use a larger search radius for zip code searches to capture more places
-      const isZipCode = zipCodePattern.test(locationQuery.trim());
       await searchNearbyPlaces(coordinates, undefined, isZipCode);
       
-      const locationName = geocodeResult.results[0].formatted_address;
-      toast.success(`Found places in ${locationName}`);
+      toast.success(`Found places in ${formattedAddress}`);
       
     } catch (error) {
       console.error('Error searching location:', error);
