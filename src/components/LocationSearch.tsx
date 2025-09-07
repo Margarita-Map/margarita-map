@@ -103,12 +103,18 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     );
   };
 
-  const searchNearbyPlaces = async (location: { lat: number; lng: number }, restaurantName?: string) => {
+  const searchNearbyPlaces = async (location: { lat: number; lng: number }, restaurantName?: string, isZipCodeSearch = false) => {
     setLoading(true);
     
     try {
-      // Use larger radius for zip code searches to ensure we don't miss nearby places
-      const searchRadius = restaurantName ? 32000 : 16000; // 20 miles for restaurant search, 10 miles for general
+      // Use larger radius for zip code searches and restaurant searches
+      let searchRadius = 16000; // Default 10 miles
+      
+      if (isZipCodeSearch) {
+        searchRadius = 40000; // 25 miles for zip code searches
+      } else if (restaurantName) {
+        searchRadius = 32000; // 20 miles for restaurant search
+      }
       
       // Call the Supabase edge function to get real places
       const { data, error } = await supabase.functions.invoke('find-nearby-places', {
@@ -122,17 +128,29 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
 
       if (error) {
         console.error('Error from edge function:', error);
-        toast.error('Error searching for places. Please try again.');
+        // Provide more specific error handling
+        if (error.message?.includes('Failed to fetch')) {
+          toast.error('Network error. Please check your internet connection and try again.');
+        } else {
+          toast.error('Error searching for places. Please try again.');
+        }
         return;
       }
 
       if (data?.places && data.places.length > 0) {
         console.log('Places data received:', data.places); // Debug logging
-        setPlaces(data.places);
+        // Ensure each place has proper website data
+        const placesWithWebsites = data.places.map((place: any) => ({
+          ...place,
+          website: place.website || place.website_url || null,
+          phoneNumber: place.phoneNumber || place.phone_number || place.phone || null
+        }));
+        
+        setPlaces(placesWithWebsites);
         if (restaurantName) {
-          toast.success(`Found ${data.places.length} ${restaurantName} locations nearby!`);
+          toast.success(`Found ${placesWithWebsites.length} ${restaurantName} locations nearby!`);
         } else {
-          toast.success(`Found ${data.places.length} Mexican restaurants and tequila bars nearby!`);
+          toast.success(`Found ${placesWithWebsites.length} Mexican restaurants and tequila bars!`);
         }
       } else {
         if (restaurantName) {
@@ -145,7 +163,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       
     } catch (error) {
       console.error('Error searching for places:', error);
-      toast.error('Error searching for places. Please try again.');
+      toast.error('Network error. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -160,6 +178,15 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     setSearchLoading(true);
     
     try {
+      // Enhanced location parsing - handle zip codes, cities, states, and addresses
+      let searchAddress = locationQuery.trim();
+      
+      // Check if it's a zip code (5 digits or 5+4 format)
+      const zipCodePattern = /^\d{5}(-\d{4})?$/;
+      if (zipCodePattern.test(searchAddress)) {
+        searchAddress = `${searchAddress}, USA`; // Add country for better geocoding
+      }
+
       // Use Google's Geocoding API to convert location name to coordinates
       const { data: geoData, error: geoError } = await supabase.functions.invoke('get-secret', {
         body: { name: 'GOOGLE_MAPS_API_KEY' }
@@ -170,13 +197,13 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
         return;
       }
 
-      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(locationQuery)}&key=${geoData.value}`;
+      const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchAddress)}&key=${geoData.value}`;
       
       const response = await fetch(geocodeUrl);
       const geocodeResult = await response.json();
 
       if (geocodeResult.status !== 'OK' || !geocodeResult.results.length) {
-        toast.error('Location not found. Please try a different search term.');
+        toast.error('Location not found. Please try a different search term or zip code.');
         return;
       }
 
@@ -186,10 +213,12 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       // Store search location for map centering
       setSearchLocation(coordinates);
       
-      // Search for places at this location
-      await searchNearbyPlaces(coordinates);
+      // Use a larger search radius for zip code searches to capture more places
+      const isZipCode = zipCodePattern.test(locationQuery.trim());
+      await searchNearbyPlaces(coordinates, undefined, isZipCode);
       
-      toast.success(`Searching in ${geocodeResult.results[0].formatted_address}`);
+      const locationName = geocodeResult.results[0].formatted_address;
+      toast.success(`Found places in ${locationName}`);
       
     } catch (error) {
       console.error('Error searching location:', error);
@@ -334,7 +363,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
             <form onSubmit={handleSearchSubmit} className="flex gap-2">
               <Input
                 type="text"
-                placeholder="Enter city, address, or location..."
+                placeholder="Enter city, address, zip code, or location..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full"

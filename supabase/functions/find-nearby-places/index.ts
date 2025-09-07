@@ -170,23 +170,47 @@ serve(async (req) => {
         return getFallbackPlaces(latitude, longitude)
       }
 
-      // Process the filtered places
-      const places = filteredPlaces.slice(0, 15).map((place: any) => ({
-        id: place.place_id,
-        name: place.name,
-        address: place.vicinity || place.formatted_address || 'Address not available',
-        location: {
-          lat: place.geometry.location.lat,
-          lng: place.geometry.location.lng
-        },
-        rating: place.rating || 4.0,
-        priceLevel: place.price_level || 2,
-        photos: place.photos ? place.photos.slice(0, 1).map((photo: any) => 
-          `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`
-        ) : [],
-        placeTypes: place.types || ['restaurant'],
-        businessStatus: place.business_status || 'OPERATIONAL'
-      }))
+      // Process the filtered places and fetch detailed information including website
+      const placesPromises = filteredPlaces.slice(0, 15).map(async (place: any) => {
+        // Fetch place details to get website and phone number
+        let website = null;
+        let phoneNumber = null;
+        
+        try {
+          const detailsUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=website,formatted_phone_number&key=${apiKey}`;
+          const detailsResponse = await fetch(detailsUrl);
+          const detailsData = await detailsResponse.json();
+          
+          if (detailsData.status === 'OK' && detailsData.result) {
+            website = detailsData.result.website || null;
+            phoneNumber = detailsData.result.formatted_phone_number || null;
+          }
+        } catch (error) {
+          console.error(`Error fetching details for ${place.name}:`, error);
+        }
+        
+        return {
+          id: place.place_id,
+          name: place.name,
+          address: place.vicinity || place.formatted_address || 'Address not available',
+          location: {
+            lat: place.geometry.location.lat,
+            lng: place.geometry.location.lng
+          },
+          rating: place.rating || 4.0,
+          priceLevel: place.price_level || 2,
+          photos: place.photos ? place.photos.slice(0, 1).map((photo: any) => 
+            `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo.photo_reference}&key=${apiKey}`
+          ) : [],
+          placeTypes: place.types || ['restaurant'],
+          businessStatus: place.business_status || 'OPERATIONAL',
+          website: website,
+          phoneNumber: phoneNumber
+        };
+      });
+      
+      // Wait for all place details to be fetched
+      const places = await Promise.all(placesPromises);
 
       // Calculate distances
       const placesWithDistance = places.map(place => {
@@ -292,7 +316,9 @@ function getFallbackPlaces(latitude: number, longitude: number) {
       photos: [],
       placeTypes: ['restaurant', 'mexican'],
       businessStatus: 'OPERATIONAL',
-      distance: distance
+      distance: distance,
+      website: index % 3 === 0 ? `https://example-restaurant-${index}.com` : null,
+      phoneNumber: index % 2 === 0 ? `(555) ${100 + index}-${1000 + index}` : null
     }
   })
   
