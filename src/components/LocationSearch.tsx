@@ -120,7 +120,11 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       
       console.log(`🔍 Searching near ${location.lat}, ${location.lng} with ${(searchRadius * 0.000621371).toFixed(1)} mile radius`);
       
+      // Clear any previous results before making new search
+      setPlaces([]);
+      
       // Call the Supabase edge function to get real places
+      console.log('🚀 Calling find-nearby-places edge function...');
       const { data, error } = await supabase.functions.invoke('find-nearby-places', {
         body: { 
           latitude: location.lat, 
@@ -130,19 +134,21 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
         }
       });
 
+      console.log('📡 Edge function response:', { data, error });
+
       if (error) {
-        console.error('Error from edge function:', error);
+        console.error('❌ Error from edge function:', error);
         // Provide more specific error handling
         if (error.message?.includes('Failed to fetch')) {
           toast.error('Network error. Please check your internet connection and try again.');
         } else {
-          toast.error('Error searching for places. Please try again.');
+          toast.error(`Search error: ${error.message || 'Please try again.'}`);
         }
         return;
       }
 
       if (data?.places && data.places.length > 0) {
-        console.log(`✅ Found ${data.places.length} places:`, data.places.map(p => `${p.name} (${p.distance?.toFixed(1)}mi)`)); 
+        console.log(`✅ Found ${data.places.length} places from ${data.source || 'Google'}:`, data.places.map(p => `${p.name} (${p.distance?.toFixed(1)}mi)`)); 
         
         // Ensure each place has proper website data
         const placesWithWebsites = data.places.map((place: any) => ({
@@ -168,7 +174,7 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
       }
       
     } catch (error) {
-      console.error('Error searching for places:', error);
+      console.error('💥 Unexpected error searching for places:', error);
       toast.error('Network error. Please check your connection and try again.');
     } finally {
       setLoading(false);
