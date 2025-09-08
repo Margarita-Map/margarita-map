@@ -231,9 +231,14 @@ serve(async (req) => {
       })
       console.log(`====================`)
 
-      // Enhanced sorting for restaurant searches
+      // Enhanced sorting for restaurant searches with distance filtering
       const sortedPlaces = placesWithDistance
         .filter(place => place.businessStatus !== 'CLOSED_PERMANENTLY')
+        .filter(place => {
+          // For zip code searches, be more strict about distance to ensure location-specific results
+          const maxDistance = radius <= 20000 ? 12 : 25; // 12 miles for smaller radius, 25 for larger
+          return (place.distance || 0) <= maxDistance;
+        })
         .sort((a, b) => {
           if (restaurantName) {
             // When searching for specific restaurant, prioritize exact name matches
@@ -246,14 +251,14 @@ serve(async (req) => {
             // Then sort by distance for same-name restaurants
             return (a.distance || 0) - (b.distance || 0)
           } else {
-            // For general searches, sort by rating then distance
-            const ratingDiff = (b.rating || 0) - (a.rating || 0)
-            if (Math.abs(ratingDiff) > 0.3) return ratingDiff
+            // For general searches, sort by distance first to show truly local results
             return (a.distance || 0) - (b.distance || 0)
           }
         })
+        .slice(0, 15); // Limit to 15 results
 
       console.log(`Returning ${sortedPlaces.length} Mexican restaurants, margarita bars, and tequila bars from Google`)
+      console.log(`Distance range: ${sortedPlaces[0]?.distance?.toFixed(1)} - ${sortedPlaces[sortedPlaces.length-1]?.distance?.toFixed(1)} miles`)
       
       return new Response(
         JSON.stringify({ places: sortedPlaces, source: 'google' }),

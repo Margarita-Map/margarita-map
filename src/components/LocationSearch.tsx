@@ -107,11 +107,11 @@ export const LocationSearch = ({ className }: LocationSearchProps) => {
     setLoading(true);
     
     try {
-      // Use larger radius for zip code searches and restaurant searches
+      // Use smaller, more precise radius for zip code searches to get location-specific results
       let searchRadius = 16000; // Default 10 miles
       
       if (isZipCodeSearch) {
-        searchRadius = 40000; // 25 miles for zip code searches
+        searchRadius = 20000; // Reduced to 12.4 miles for zip code searches to avoid overlap
         console.log(`🎯 Zip code search: Using ${(searchRadius * 0.000621371).toFixed(1)} mile radius`);
       } else if (restaurantName) {
         searchRadius = 32000; // 20 miles for restaurant search
